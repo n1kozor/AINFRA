@@ -199,8 +199,8 @@ const Sidebar = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.2 }}
-                onMouseEnter={() => hoveredItem !== item.id && setHoveredItem(item.id)}
-onMouseLeave={() => hoveredItem !== null && setHoveredItem(null)}
+                onMouseEnter={() => setHoveredItem(item.id)}
+            onMouseLeave={() => setHoveredItem(null)}
               >
                 <ListItemButton
                   onClick={handleDevicesClick}
@@ -217,16 +217,17 @@ onMouseLeave={() => hoveredItem !== null && setHoveredItem(null)}
                   }}
                 >
                   <MotionListItemIcon
-                    sx={{
-                      minWidth: '42px',
-                      color: devicesOpen ? theme.palette.primary.main : theme.palette.text.primary,
-                      transition: 'all 0.3s ease',
-                    }}
-                    animate={{
-                      scale: hoveredItem === item.id || devicesOpen ? 1.1 : 1,
-                      rotate: devicesOpen ? 5 : 0
-                    }}
-                  >
+  sx={{
+    minWidth: '42px',
+    color: isActive(item.path) ? theme.palette.primary.main : theme.palette.text.primary,
+    transition: 'all 0.3s ease',
+  }}
+  animate={{
+    rotate: isActive(item.path) ? 5 : 0,
+    scale: isActive(item.path) ? 1.1 : 1
+  }}
+  whileHover={{ scale: 1.1 }}
+>
                     {item.icon}
                   </MotionListItemIcon>
                   <ListItemText
@@ -277,16 +278,17 @@ onMouseLeave={() => hoveredItem !== null && setHoveredItem(null)}
                         }}
                       >
                         <MotionListItemIcon
-                          sx={{
-                            minWidth: '42px',
-                            color: isActive(child.path) ? theme.palette.primary.main : alpha(theme.palette.text.primary, 0.8),
-                            transition: 'all 0.3s ease',
-                          }}
-                          animate={{
-                            scale: hoveredItem === child.id || isActive(child.path) ? 1.1 : 1,
-                            rotate: isActive(child.path) ? 5 : 0
-                          }}
-                        >
+  sx={{
+    minWidth: '42px',
+    color: isActive(item.path) ? theme.palette.primary.main : theme.palette.text.primary,
+    transition: 'all 0.3s ease',
+  }}
+  animate={{
+    rotate: isActive(item.path) ? 5 : 0,
+    scale: isActive(item.path) ? 1.1 : 1
+  }}
+  whileHover={{ scale: 1.1 }}
+>
                           {child.icon}
                         </MotionListItemIcon>
                         <ListItemText
@@ -326,35 +328,40 @@ onMouseLeave={() => hoveredItem !== null && setHoveredItem(null)}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2 }}
-              onMouseEnter={() => hoveredItem !== item.id && setHoveredItem(item.id)}
-onMouseLeave={() => hoveredItem !== null && setHoveredItem(null)}
+              onMouseEnter={() => setHoveredItem(item.id)}
+onMouseLeave={() => setHoveredItem(null)}
             >
               <ListItemButton
-                component={Link}
-                to={item.path}
-                sx={{
-                  borderRadius: '16px',
-                  p: 1.5,
-                  backgroundColor: isActive(item.path)
-                    ? alpha(theme.palette.primary.main, theme.palette.mode === 'dark' ? 0.15 : 0.08)
-                    : 'transparent',
-                  '&:hover': {
-                    backgroundColor: alpha(theme.palette.primary.main, theme.palette.mode === 'dark' ? 0.2 : 0.12),
+              component={Link}
+              to={item.path}
+              sx={{
+                borderRadius: '16px',
+                p: 1.5,
+                backgroundColor: isActive(item.path)
+                  ? alpha(theme.palette.primary.main, theme.palette.mode === 'dark' ? 0.15 : 0.08)
+                  : 'transparent',
+                transition: 'all 0.3s',
+                '&:hover': {
+                  backgroundColor: alpha(theme.palette.primary.main, theme.palette.mode === 'dark' ? 0.2 : 0.12),
+                  '.MuiListItemIcon-root': {
+                    color: theme.palette.primary.main,
+                    transform: 'scale(1.1) rotate(5deg)'
                   },
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                }}
-              >
+                },
+              }}
+            >
                 <MotionListItemIcon
-                  sx={{
-                    minWidth: '42px',
-                    color: isActive(item.path) ? theme.palette.primary.main : theme.palette.text.primary,
-                    transition: 'all 0.3s ease',
-                  }}
-                  animate={{
-                    scale: hoveredItem === item.id || isActive(item.path) ? 1.1 : 1,
-                    rotate: isActive(item.path) ? 5 : 0
-                  }}
-                >
+  sx={{
+    minWidth: '42px',
+    color: isActive(item.path) ? theme.palette.primary.main : theme.palette.text.primary,
+    transition: 'all 0.3s ease',
+  }}
+  animate={{
+    rotate: isActive(item.path) ? 5 : 0,
+    scale: isActive(item.path) ? 1.1 : 1
+  }}
+  whileHover={{ scale: 1.1 }}
+>
                   {item.icon}
                 </MotionListItemIcon>
                 <ListItemText
