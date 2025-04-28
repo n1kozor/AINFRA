@@ -1,0 +1,41 @@
+{
+  "title": "Plugins",
+  "addPlugin": "Add Plugin",
+  "addFirstPlugin": "Add First Plugin",
+  "pluginCount": "{{count}} plugins found",
+  "noPluginsYet": "No plugins added yet",
+  "noPluginsFound": "No plugins match your search",
+  "tryDifferentSearch": "Try searching with different terms",
+  "getStarted": "Create your first plugin to extend the platform's capabilities",
+  "active": "Active",
+  "inactive": "Inactive",
+  "author": "Author",
+  "createdAt": "Created At",
+  "updatedAt": "Updated At",
+  "description": "Description",
+  "name": "Name",
+  "version": "Version",
+  "pluginCode": "Plugin Code",
+  "uiSchema": "UI Schema",
+  "codeDescription": "Write your plugin code implementing the BasePlugin interface",
+  "schemaDescription": "Define the UI elements for your plugin (JSON format)",
+  "view": "View",
+  "loading": "Loading plugin...",
+  "deletePlugin": {
+    "title": "Delete Plugin",
+    "confirmation": "Are you sure you want to delete the plugin \"{{name}}\"?",
+    "warning": "If any devices are using this plugin, they may stop functioning properly."
+  },
+  "error": {
+    "title": "Error",
+    "loading": "Error loading plugins",
+    "create": "Error creating plugin"
+  },
+  "pluginNotFound": "Plugin could not be found. It may have been deleted.",
+  "basicInfo": "Basic Information",
+  "tabs": {
+    "code": "Code",
+    "uiSchema": "UI Schema"
+  },
+  "noUiSchema": "This plugin doesn't define a UI schema"
+}

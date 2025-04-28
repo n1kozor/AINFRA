@@ -1,0 +1,38 @@
+{
+  "title": "Dashboard",
+  "summary": "System Overview",
+  "addDevice": "Add Device",
+  "viewAll": "View All",
+  "viewDetails": "View Details",
+  "stats": {
+    "totalDevices": "Total Devices",
+    "standardDevices": "Standard Devices",
+    "customDevices": "Custom Devices",
+    "plugins": "Plugins"
+  },
+  "deviceStatus": {
+    "title": "Device Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "byOs": "By OS Type",
+    "noStandardDevices": "No standard devices available"
+  },
+  "recentDevices": {
+    "title": "Recent Devices",
+    "noDevices": "No devices added yet"
+  },
+  "osTypes": {
+    "windows": "Windows",
+    "linux": "Linux",
+    "macos": "MacOS",
+    "unknown": "Unknown"
+  },
+  "deviceTypes": {
+    "standard": "Standard",
+    "custom": "Custom"
+  },
+  "info": {
+    "standardDevice": "Standard devices include Windows, MacOS, and Linux servers/clients that can be monitored with Glances.",
+    "customDevice": "Custom devices can be any networked equipment that has a plugin defined for it."
+  }
+}

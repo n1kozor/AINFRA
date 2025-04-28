@@ -1,0 +1,138 @@
+{
+  "addDevice": "Add Device",
+  "addFirstDevice": "Add First Device",
+  "deviceCount": "{{count}} devices found",
+  "noDevicesFound": "No devices found",
+  "tryDifferentFilters": "Try adjusting your filters or add a new device",
+  "allDevices": {
+    "title": "All Devices"
+  },
+  "standardDevices": {
+    "title": "Standard Devices"
+  },
+  "customDevices": {
+    "title": "Custom Devices"
+  },
+  "deviceTypes": {
+    "standard": "Standard",
+    "custom": "Custom"
+  },
+  "osTypes": {
+    "windows": "Windows",
+    "macos": "MacOS",
+    "linux": "Linux"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "statusFilter": "Status Filter",
+  "statusOptions": {
+    "all": "All",
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "name": "Name",
+  "description": "Description",
+  "noDescription": "No description provided",
+  "ipAddress": "IP Address",
+  "type": "Type",
+  "osType": "OS Type",
+  "hostname": "Hostname",
+  "username": "Username",
+  "password": "Password",
+  "port": "Port",
+  "plugin": "Plugin",
+  "connectionParams": "Connection Parameters",
+  "added": "Added",
+  "lastUpdated": "Last Updated",
+  "details": "Details",
+  "basicInfo": "Basic Information",
+  "loading": "Loading device data...",
+  "error": "Error loading device",
+  "deviceNotFound": "Device could not be found. It may have been deleted or you don't have permission to view it.",
+  "deleteDevice": {
+    "title": "Delete Device",
+    "confirmation": "Are you sure you want to delete the device \"{{name}}\"?",
+    "warning": "This action cannot be undone. All device data will be permanently removed."
+  },
+  "steps": {
+    "basicInfo": "Basic Information",
+    "standardConfig": "Standard Configuration",
+    "customConfig": "Custom Configuration",
+    "review": "Review"
+  },
+  "basicInfoDescription": "Enter the basic information for your device, such as name, description, and IP address.",
+  "standardConfigDescription": "Configure standard device-specific settings like OS type, hostname, and credentials.",
+  "customConfigDescription": "Select a plugin for your custom device and configure its connection parameters.",
+  "reviewDescription": "Review your device configuration before creating it.",
+  "standardDeviceConfig": "Standard Device Configuration",
+  "customDeviceConfig": "Custom Device Configuration",
+  "manualConnectionParams": "Enter connection parameters for the plugin. These will be passed to the plugin when connecting to the device.",
+  "rawJson": "Raw JSON",
+  "author": "Author",
+  "cards": {
+    "systemInfo": "System Information",
+    "cpuUsage": "CPU Usage",
+    "memoryUsage": "Memory Usage",
+    "diskUsage": "Disk Usage",
+    "cpuDetails": "CPU Details",
+    "processes": "Processes",
+    "temperature": "Temperature",
+    "diskDetails": "Disk Details",
+    "networkInterfaces": "Network Interfaces",
+    "customDeviceStatus": "Device Status",
+    "customDeviceMetrics": "Device Metrics",
+    "availableOperations": "Available Operations",
+    "customComponents": "Components"
+  },
+  "tabs": {
+    "overview": "Overview",
+    "system": "System",
+    "storage": "Storage",
+    "network": "Network"
+  },
+  "systemInfo": {
+    "hostname": "Hostname",
+    "os": "Operating System",
+    "uptime": "Uptime"
+  },
+  "cpuInfo": {
+    "overall": "Overall CPU Usage",
+    "cores": "CPU Cores",
+    "core": "Core"
+  },
+  "diskInfo": {
+    "usage": "Usage",
+    "total": "Total",
+    "used": "Used",
+    "free": "Free",
+    "noData": "No disk information available"
+  },
+  "networkInfo": {
+    "received": "Received",
+    "sent": "Sent",
+    "packets": "packets",
+    "noData": "No network information available"
+  },
+  "processInfo": {
+    "total": "Total",
+    "running": "Running",
+    "sleeping": "Sleeping",
+    "threads": "Threads"
+  },
+  "errors": {
+    "failedToLoadStats": "Failed to load device statistics",
+    "failedToLoadData": "Failed to load device data",
+    "glancesError": "Glances API error",
+    "pluginError": "Plugin error",
+    "unknownError": "An unknown error occurred"
+  },
+  "operations": {
+    "execute": "Execute Operation",
+    "noParameters": "This operation does not require any parameters.",
+    "parameters": "Parameters"
+  },
+  "noDataAvailable": "No data available",
+  "noUiSchema": "This plugin does not define a UI schema"
+}

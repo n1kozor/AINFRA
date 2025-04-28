@@ -1,0 +1,46 @@
+{
+  "appName": "Infrastructure Platform",
+  "navigation": {
+    "dashboard": "Dashboard",
+    "devices": "Devices",
+    "standardDevices": "Standard Devices",
+    "customDevices": "Custom Devices",
+    "plugins": "Plugins",
+    "settings": "Settings"
+  },
+  "actions": {
+    "add": "Add",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "back": "Back",
+    "refresh": "Refresh",
+    "search": "Search"
+  },
+  "status": {
+    "online": "Online",
+    "offline": "Offline",
+    "warning": "Warning",
+    "error": "Error",
+    "loading": "Loading..."
+  },
+  "theme": {
+    "light": "Light Mode",
+    "dark": "Dark Mode"
+  },
+  "language": {
+    "en": "English",
+    "hu": "Hungarian"
+  },
+  "errors": {
+    "required": "This field is required",
+    "invalidIP": "Invalid IP address",
+    "connectionFailed": "Connection failed",
+    "loadFailed": "Failed to load data",
+    "saveFailed": "Failed to save data",
+    "deleteFailed": "Failed to delete",
+    "notFound": "Not found"
+  }
+}
