@@ -1,3 +1,4 @@
+// Plugins.tsx
 import React, { useState } from 'react';
 import {
   Box,
@@ -6,9 +7,7 @@ import {
   Grid,
   TextField,
   InputAdornment,
-  Card,
-  CardContent,
-  CardActions,
+  Paper,
   IconButton,
   Chip,
   CircularProgress,
@@ -27,6 +26,7 @@ import {
   Delete as DeleteIcon,
   Extension as PluginIcon,
   Code as CodeIcon,
+  Visibility as ViewIcon,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -108,19 +108,21 @@ const Plugins = () => {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: 2
         }}
       >
-        <Typography variant="subtitle1">
+        <Typography variant="subtitle1" fontWeight={500}>
           {t('plugins:pluginCount', { count: filteredPlugins.length })}
         </Typography>
 
-        <Box sx={{ width: { xs: '100%', sm: '300px' } }}>
+        <Box sx={{ width: { xs: '100%', sm: 'auto' } }}>
           <TextField
-            fullWidth
             placeholder={t('common:actions.search')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             size="small"
+            sx={{ minWidth: '250px' }}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -137,16 +139,25 @@ const Plugins = () => {
           <CircularProgress />
         </Box>
       ) : error ? (
-        <Typography color="error">
-          {t('plugins:error.loading')}
-        </Typography>
-      ) : filteredPlugins.length === 0 ? (
-        <Box
+        <Paper
+          elevation={0}
           sx={{
-            p: 4,
+            p: 3,
+            color: theme.palette.error.main,
+            border: `1px solid ${alpha(theme.palette.error.main, 0.3)}`
+          }}
+        >
+          <Typography fontWeight={500}>
+            {t('plugins:error.loading')}
+          </Typography>
+        </Paper>
+      ) : filteredPlugins.length === 0 ? (
+        <Paper
+          elevation={0}
+          sx={{
+            p: 5,
             textAlign: 'center',
-            bgcolor: theme.palette.background.paper,
-            borderRadius: 2,
+            border: `1px solid ${theme.palette.divider}`
           }}
         >
           <PluginIcon
@@ -157,7 +168,7 @@ const Plugins = () => {
               ? t('plugins:noPluginsFound')
               : t('plugins:noPluginsYet')}
           </Typography>
-          <Typography variant="body2" color="textSecondary" paragraph>
+          <Typography variant="body2" color="text.secondary" paragraph>
             {searchQuery
               ? t('plugins:tryDifferentSearch')
               : t('plugins:getStarted')}
@@ -170,21 +181,25 @@ const Plugins = () => {
           >
             {t('plugins:addFirstPlugin')}
           </Button>
-        </Box>
+        </Paper>
       ) : (
         <Grid container spacing={3}>
           {filteredPlugins.map((plugin) => (
             <Grid item xs={12} sm={6} md={4} key={plugin.id}>
-              <Card
+              <Paper
+                elevation={0}
                 sx={{
                   height: '100%',
                   display: 'flex',
                   flexDirection: 'column',
-                  transition: 'transform 0.2s, box-shadow 0.2s',
+                  transition: 'transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out',
+                  border: `1px solid ${theme.palette.divider}`,
                   '&:hover': {
                     transform: 'translateY(-4px)',
-                    boxShadow: theme.shadows[8],
+                    boxShadow: theme.shadows[2],
+                    borderColor: 'transparent'
                   },
+                  overflow: 'hidden'
                 }}
               >
                 <Box
@@ -192,7 +207,8 @@ const Plugins = () => {
                     p: 2,
                     display: 'flex',
                     alignItems: 'center',
-                    bgcolor: alpha(theme.palette.primary.main, 0.08),
+                    borderBottom: `1px solid ${theme.palette.divider}`,
+                    bgcolor: theme.palette.background.default
                   }}
                 >
                   <Box
@@ -201,15 +217,15 @@ const Plugins = () => {
                       alignItems: 'center',
                       justifyContent: 'center',
                       p: 1,
+                      borderRadius: '8px',
                       bgcolor: alpha(theme.palette.primary.main, 0.1),
-                      borderRadius: '50%',
                       mr: 2,
                     }}
                   >
                     <CodeIcon color="primary" />
                   </Box>
                   <Box sx={{ flexGrow: 1 }}>
-                    <Typography variant="h6" component="div" noWrap>
+                    <Typography variant="subtitle1" fontWeight={600} component="div" noWrap>
                       {plugin.name}
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
@@ -224,7 +240,7 @@ const Plugins = () => {
                   />
                 </Box>
 
-                <CardContent sx={{ flexGrow: 1, py: 2 }}>
+                <Box sx={{ flexGrow: 1, p: 2 }}>
                   {plugin.description && (
                     <Typography
                       variant="body2"
@@ -236,6 +252,7 @@ const Plugins = () => {
                         WebkitBoxOrient: 'vertical',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
+                        height: '4.5em'
                       }}
                     >
                       {plugin.description}
@@ -243,22 +260,31 @@ const Plugins = () => {
                   )}
 
                   <Box sx={{ mt: 'auto' }}>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
                       {plugin.author && (
                         <>
-                          {t('plugins:author')}: {plugin.author}
+                          {t('plugins:author')}: <b>{plugin.author}</b>
                         </>
                       )}
                     </Typography>
                   </Box>
-                </CardContent>
+                </Box>
 
-                <CardActions sx={{ justifyContent: 'space-between', p: 2, pt: 0 }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    p: 2,
+                    borderTop: `1px solid ${theme.palette.divider}`,
+                    bgcolor: theme.palette.background.default
+                  }}
+                >
                   <Button
                     variant="outlined"
                     size="small"
                     component={Link}
                     to={`/plugins/${plugin.id}`}
+                    startIcon={<ViewIcon />}
                   >
                     {t('plugins:view')}
                   </Button>
@@ -270,6 +296,7 @@ const Plugins = () => {
                       component={Link}
                       to={`/plugins/${plugin.id}/edit`}
                       aria-label={t('common:actions.edit')}
+                      sx={{ mr: 1 }}
                     >
                       <EditIcon fontSize="small" />
                     </IconButton>
@@ -282,8 +309,8 @@ const Plugins = () => {
                       <DeleteIcon fontSize="small" />
                     </IconButton>
                   </Box>
-                </CardActions>
-              </Card>
+                </Box>
+              </Paper>
             </Grid>
           ))}
         </Grid>

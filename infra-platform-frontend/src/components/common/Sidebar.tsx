@@ -28,7 +28,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../../context/AppContext';
 
-const DRAWER_WIDTH = 280;
+const DRAWER_WIDTH = 240;
 
 const Sidebar = () => {
   const { sidebarOpen } = useAppContext();
@@ -87,29 +87,22 @@ const Sidebar = () => {
       display: 'flex',
       flexDirection: 'column',
       p: 2,
-      background: theme.palette.mode === 'dark'
-        ? 'linear-gradient(180deg, rgba(21, 35, 56, 0.8) 0%, rgba(17, 30, 49, 0.95) 100%)'
-        : 'linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(250, 252, 255, 0.95) 100%)',
-      backdropFilter: 'blur(10px)',
+      backgroundColor: theme.palette.mode === 'dark'
+        ? '#121e2d' // Solid dark blue for dark mode sidebar
+        : '#f8fafc', // Light gray for light mode sidebar
     }}>
       <Box sx={{
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center',
         py: 2,
-        mb: 4
+        mb: 3
       }}>
-        <img src="/logo.svg" alt="InfraStructure Platform" style={{ height: '48px' }} />
         <Typography
-          variant="h5"
+          variant="h6"
           sx={{
-            ml: 1,
-            fontWeight: 800,
-            background: theme.palette.mode === 'dark'
-              ? 'linear-gradient(90deg, #3f8cff, #83b9ff)'
-              : 'linear-gradient(90deg, #2962ff, #5686ff)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent'
+            ml: 1.5,
+            fontWeight: 700,
+            color: theme.palette.primary.main,
           }}
         >
           InfraSphere
@@ -121,7 +114,7 @@ const Sidebar = () => {
         sx={{
           textTransform: 'uppercase',
           fontWeight: 700,
-          opacity: 0.6,
+          color: theme.palette.text.secondary,
           letterSpacing: 1,
           pl: 2,
           mb: 1
@@ -130,52 +123,27 @@ const Sidebar = () => {
         {t('navigation.main')}
       </Typography>
 
-      <List
-        sx={{
-          pt: 0,
-          '& .MuiListItemButton-root': {
-            borderRadius: '16px',
-            mb: 1,
-            py: 1.5,
-            pl: 2,
-            transition: theme.transitions.create(['background-color', 'transform', 'box-shadow'], {
-              duration: theme.transitions.duration.shorter,
-            }),
-            '&:hover': {
-              transform: 'translateY(-2px)',
-              boxShadow: theme.palette.mode === 'dark'
-                ? '0 6px 12px rgba(0,0,0,0.2)'
-                : '0 6px 12px rgba(0,0,0,0.07)'
-            }
-          },
-          '& .MuiListItemIcon-root': {
-            minWidth: '40px',
-            color: theme.palette.text.secondary,
-          },
-          '& .MuiListItemText-primary': {
-            fontSize: '0.95rem',
-            fontWeight: 500,
-          }
-        }}
-      >
+      <List sx={{ pt: 0 }}>
         {navItems.map((item) => (
           item.children ? (
             <React.Fragment key={item.text}>
-              <ListItem disablePadding>
+              <ListItem disablePadding sx={{ mb: 1 }}>
                 <ListItemButton
                   onClick={handleDevicesClick}
                   sx={{
-                    background: devicesOpen
+                    borderRadius: '10px',
+                    backgroundColor: devicesOpen
                       ? alpha(theme.palette.primary.main, 0.08)
                       : 'transparent',
                     '&:hover': {
-                      background: alpha(theme.palette.primary.main, 0.12),
+                      backgroundColor: alpha(theme.palette.primary.main, 0.12),
                     }
                   }}
                 >
                   <ListItemIcon
                     sx={{
-                      color: devicesOpen ? theme.palette.primary.main : undefined
+                      color: devicesOpen ? theme.palette.primary.main : theme.palette.text.primary,
+                      minWidth: '40px',
                     }}
                   >
                     {item.icon}
@@ -184,7 +152,7 @@ const Sidebar = () => {
                     primary={item.text}
                     primaryTypographyProps={{
                       fontWeight: devicesOpen ? 600 : 500,
-                      color: devicesOpen ? theme.palette.primary.main : undefined
+                      color: devicesOpen ? theme.palette.primary.main : theme.palette.text.primary,
                     }}
                   />
                   {devicesOpen ? <ExpandLess /> : <ExpandMore />}
@@ -194,30 +162,25 @@ const Sidebar = () => {
               <Collapse in={devicesOpen} timeout="auto" unmountOnExit>
                 <List component="div" disablePadding>
                   {item.children.map((child) => (
-                    <ListItem key={child.text} disablePadding>
+                    <ListItem key={child.text} disablePadding sx={{ mb: 1 }}>
                       <ListItemButton
                         component={Link}
                         to={child.path}
                         sx={{
                           pl: 4,
-                          background: isActive(child.path)
-                            ? theme.palette.mode === 'dark'
-                              ? 'linear-gradient(90deg, rgba(63, 140, 255, 0.15), rgba(131, 185, 255, 0.05))'
-                              : 'linear-gradient(90deg, rgba(41, 98, 255, 0.15), rgba(86, 134, 255, 0.05))'
+                          borderRadius: '10px',
+                          backgroundColor: isActive(child.path)
+                            ? alpha(theme.palette.primary.main, 0.12)
                             : 'transparent',
-                          borderLeft: isActive(child.path)
-                            ? `3px solid ${theme.palette.primary.main}`
-                            : '3px solid transparent',
                           '&:hover': {
-                            background: theme.palette.mode === 'dark'
-                              ? 'linear-gradient(90deg, rgba(63, 140, 255, 0.2), rgba(131, 185, 255, 0.08))'
-                              : 'linear-gradient(90deg, rgba(41, 98, 255, 0.2), rgba(86, 134, 255, 0.08))'
+                            backgroundColor: alpha(theme.palette.primary.main, 0.08),
                           }
                         }}
                       >
                         <ListItemIcon
                           sx={{
-                            color: isActive(child.path) ? theme.palette.primary.main : undefined
+                            color: isActive(child.path) ? theme.palette.primary.main : theme.palette.text.primary,
+                            minWidth: '40px',
                           }}
                         >
                           {child.icon}
@@ -226,7 +189,7 @@ const Sidebar = () => {
                           primary={child.text}
                           primaryTypographyProps={{
                             fontWeight: isActive(child.path) ? 600 : 500,
-                            color: isActive(child.path) ? theme.palette.primary.main : undefined
+                            color: isActive(child.path) ? theme.palette.primary.main : theme.palette.text.primary,
                           }}
                         />
                       </ListItemButton>
@@ -236,26 +199,24 @@ const Sidebar = () => {
               </Collapse>
             </React.Fragment>
           ) : (
-            <ListItem key={item.text} disablePadding>
+            <ListItem key={item.text} disablePadding sx={{ mb: 1 }}>
               <ListItemButton
                 component={Link}
                 to={item.path}
                 sx={{
-                  background: isActive(item.path)
-                    ? theme.palette.mode === 'dark'
-                      ? 'linear-gradient(90deg, rgba(63, 140, 255, 0.2), rgba(131, 185, 255, 0.05))'
-                      : 'linear-gradient(90deg, rgba(41, 98, 255, 0.2), rgba(86, 134, 255, 0.05))'
+                  borderRadius: '10px',
+                  backgroundColor: isActive(item.path)
+                    ? alpha(theme.palette.primary.main, 0.12)
                     : 'transparent',
                   '&:hover': {
-                    background: theme.palette.mode === 'dark'
-                      ? 'linear-gradient(90deg, rgba(63, 140, 255, 0.25), rgba(131, 185, 255, 0.1))'
-                      : 'linear-gradient(90deg, rgba(41, 98, 255, 0.25), rgba(86, 134, 255, 0.1))'
+                    backgroundColor: alpha(theme.palette.primary.main, 0.08),
                   }
                 }}
               >
                 <ListItemIcon
                   sx={{
-                    color: isActive(item.path) ? theme.palette.primary.main : undefined
+                    color: isActive(item.path) ? theme.palette.primary.main : theme.palette.text.primary,
+                    minWidth: '40px',
                   }}
                 >
                   {item.icon}
@@ -264,7 +225,7 @@ const Sidebar = () => {
                   primary={item.text}
                   primaryTypographyProps={{
                     fontWeight: isActive(item.path) ? 600 : 500,
-                    color: isActive(item.path) ? theme.palette.primary.main : undefined
+                    color: isActive(item.path) ? theme.palette.primary.main : theme.palette.text.primary,
                   }}
                 />
               </ListItemButton>
@@ -277,17 +238,17 @@ const Sidebar = () => {
 
       <Box sx={{
         p: 2,
-        borderRadius: '16px',
+        borderRadius: '10px',
         mb: 2,
-        background: theme.palette.mode === 'dark'
-          ? 'linear-gradient(135deg, rgba(63, 140, 255, 0.1), rgba(131, 185, 255, 0.05))'
-          : 'linear-gradient(135deg, rgba(41, 98, 255, 0.1), rgba(86, 134, 255, 0.05))',
+        backgroundColor: theme.palette.mode === 'dark'
+          ? alpha(theme.palette.primary.main, 0.1)
+          : alpha(theme.palette.primary.main, 0.05),
         border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
       }}>
         <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 0.5 }}>
           {t('sidebar.needHelp')}
         </Typography>
-        <Typography variant="body2" sx={{ opacity: 0.7, mb: 1.5 }}>
+        <Typography variant="body2" sx={{ mb: 1.5, color: theme.palette.text.secondary }}>
           {t('sidebar.supportDesc')}
         </Typography>
         <Box
@@ -298,17 +259,17 @@ const Sidebar = () => {
             py: 1,
             px: 2,
             border: 'none',
-            borderRadius: '12px',
-            background: theme.palette.primary.main,
+            borderRadius: '8px',
+            backgroundColor: theme.palette.primary.main,
             color: '#fff',
             fontWeight: 600,
             fontSize: '0.875rem',
             cursor: 'pointer',
             transition: 'all 0.2s',
             '&:hover': {
-              background: theme.palette.primary.dark,
+              backgroundColor: theme.palette.primary.dark,
               transform: 'translateY(-2px)',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+              boxShadow: '0 4px 8px rgba(0,0,0,0.15)',
             }
           }}
         >
@@ -331,17 +292,16 @@ const Sidebar = () => {
           boxSizing: 'border-box',
           border: 'none',
           boxShadow: theme.palette.mode === 'dark'
-            ? '4px 0 25px rgba(0,0,0,0.3)'
-            : '4px 0 25px rgba(0,0,0,0.1)',
+            ? '2px 0 10px rgba(0,0,0,0.2)'
+            : '2px 0 10px rgba(0,0,0,0.05)',
           transition: theme.transitions.create(['width', 'transform'], {
-            easing: theme.transitions.easing.easeInOut,
-            duration: theme.transitions.duration.standard,
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
           }),
           zIndex: 100, // Ensure sidebar is below AppBar
           mt: '64px', // Match AppBar height to avoid overlap
           height: 'calc(100% - 64px)', // Subtract AppBar height from total height
-          borderRadius: '0 24px 0 0',
-          overflow: 'visible',
+          overflow: 'hidden',
           ...(!sidebarOpen && {
             transform: 'translateX(-100%)',
             boxShadow: 'none',

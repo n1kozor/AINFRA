@@ -101,7 +101,7 @@ export const lightTheme: ThemeOptions = {
     },
   },
   shape: {
-    borderRadius: 16,
+    borderRadius: 4,
   },
   shadows: [
     'none',

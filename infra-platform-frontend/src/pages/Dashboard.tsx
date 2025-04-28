@@ -1,3 +1,4 @@
+// Dashboard.tsx
 import React from 'react';
 import {
   Grid,
@@ -9,6 +10,7 @@ import {
   useTheme,
   alpha,
   Divider,
+  Chip,
 } from '@mui/material';
 import {
   Computer as StandardIcon,
@@ -16,6 +18,7 @@ import {
   Extension as PluginIcon,
   Speed as SpeedIcon,
   Warning as WarningIcon,
+  ArrowForward as ArrowForwardIcon,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
@@ -85,6 +88,11 @@ const Dashboard = () => {
           to="/devices/new"
           variant="contained"
           color="primary"
+          startIcon={<StandardIcon />}
+          sx={{
+            px: 3,
+            py: 1,
+          }}
         >
           {t('dashboard:addDevice')}
         </Button>
@@ -146,6 +154,8 @@ const Dashboard = () => {
                     to="/devices"
                     size="small"
                     color="primary"
+                    endIcon={<ArrowForwardIcon />}
+                    sx={{ fontWeight: 600 }}
                   >
                     {t('dashboard:viewAll')}
                   </Button>
@@ -157,20 +167,28 @@ const Dashboard = () => {
                       <Grid item xs={6}>
                         <Box
                           sx={{
-                            borderRadius: 2,
+                            borderRadius: theme.shape.borderRadius,
                             bgcolor: alpha(theme.palette.success.main, 0.1),
                             p: 2,
                             textAlign: 'center',
+                            border: `1px solid ${alpha(theme.palette.success.main, 0.2)}`,
+                            transition: 'all 0.2s',
+                            '&:hover': {
+                              transform: 'translateY(-2px)',
+                              boxShadow: '0 5px 15px rgba(0,0,0,0.1)',
+                              bgcolor: alpha(theme.palette.success.main, 0.15),
+                            }
                           }}
                         >
                           <Typography
                             variant="h4"
                             color="success.main"
                             gutterBottom
+                            sx={{ fontWeight: 700 }}
                           >
                             {stats.activeDevices}
                           </Typography>
-                          <Typography variant="body2">
+                          <Typography variant="body2" sx={{ fontWeight: 500 }}>
                             {t('dashboard:deviceStatus.active')}
                           </Typography>
                         </Box>
@@ -179,20 +197,28 @@ const Dashboard = () => {
                       <Grid item xs={6}>
                         <Box
                           sx={{
-                            borderRadius: 2,
+                            borderRadius: theme.shape.borderRadius,
                             bgcolor: alpha(theme.palette.error.main, 0.1),
                             p: 2,
                             textAlign: 'center',
+                            border: `1px solid ${alpha(theme.palette.error.main, 0.2)}`,
+                            transition: 'all 0.2s',
+                            '&:hover': {
+                              transform: 'translateY(-2px)',
+                              boxShadow: '0 5px 15px rgba(0,0,0,0.1)',
+                              bgcolor: alpha(theme.palette.error.main, 0.15),
+                            }
                           }}
                         >
                           <Typography
                             variant="h4"
                             color="error.main"
                             gutterBottom
+                            sx={{ fontWeight: 700 }}
                           >
                             {stats.inactiveDevices}
                           </Typography>
-                          <Typography variant="body2">
+                          <Typography variant="body2" sx={{ fontWeight: 500 }}>
                             {t('dashboard:deviceStatus.inactive')}
                           </Typography>
                         </Box>
@@ -200,8 +226,8 @@ const Dashboard = () => {
                     </Grid>
                   )}
 
-                  <Box mt={3}>
-                    <Typography variant="subtitle1" gutterBottom>
+                  <Box mt={4}>
+                    <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
                       {t('dashboard:deviceStatus.byOs')}
                     </Typography>
 
@@ -211,7 +237,7 @@ const Dashboard = () => {
                           <Grid item xs={4} key={os}>
                             <Box
                               sx={{
-                                borderRadius: 2,
+                                borderRadius: theme.shape.borderRadius,
                                 bgcolor: alpha(
                                   os === 'windows'
                                     ? theme.palette.info.main
@@ -222,12 +248,33 @@ const Dashboard = () => {
                                 ),
                                 p: 2,
                                 textAlign: 'center',
+                                border: `1px solid ${alpha(
+                                  os === 'windows'
+                                    ? theme.palette.info.main
+                                    : os === 'linux'
+                                    ? theme.palette.warning.main
+                                    : theme.palette.secondary.main,
+                                  0.2
+                                )}`,
+                                transition: 'all 0.2s',
+                                '&:hover': {
+                                  transform: 'translateY(-2px)',
+                                  boxShadow: '0 5px 15px rgba(0,0,0,0.08)',
+                                  bgcolor: alpha(
+                                    os === 'windows'
+                                      ? theme.palette.info.main
+                                      : os === 'linux'
+                                      ? theme.palette.warning.main
+                                      : theme.palette.secondary.main,
+                                    0.15
+                                  ),
+                                }
                               }}
                             >
-                              <Typography variant="h5" gutterBottom>
+                              <Typography variant="h5" gutterBottom sx={{ fontWeight: 700 }}>
                                 {count}
                               </Typography>
-                              <Typography variant="body2">
+                              <Typography variant="body2" sx={{ fontWeight: 500 }}>
                                 {t(`dashboard:osTypes.${os}`)}
                               </Typography>
                             </Box>
@@ -235,7 +282,7 @@ const Dashboard = () => {
                         ))}
                       </Grid>
                     ) : (
-                      <Typography variant="body2" color="textSecondary">
+                      <Typography variant="body2" color="textSecondary" sx={{ textAlign: 'center', py: 2 }}>
                         {t('dashboard:deviceStatus.noStandardDevices')}
                       </Typography>
                     )}
@@ -256,6 +303,8 @@ const Dashboard = () => {
                     to="/devices"
                     size="small"
                     color="primary"
+                    endIcon={<ArrowForwardIcon />}
+                    sx={{ fontWeight: 600 }}
                   >
                     {t('dashboard:viewAll')}
                   </Button>
@@ -269,8 +318,12 @@ const Dashboard = () => {
                           sx={{
                             display: 'flex',
                             alignItems: 'center',
-                            py: 2,
+                            py: 2.5,
                             px: 3,
+                            transition: 'all 0.2s',
+                            '&:hover': {
+                              bgcolor: alpha(theme.palette.primary.main, 0.04),
+                            }
                           }}
                         >
                           <Box
@@ -279,7 +332,7 @@ const Dashboard = () => {
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
-                              p: 1,
+                              p: 1.5,
                               borderRadius: '50%',
                               bgcolor: alpha(
                                 device.type === 'standard'
@@ -287,6 +340,12 @@ const Dashboard = () => {
                                   : theme.palette.secondary.main,
                                 0.1
                               ),
+                              border: `1px solid ${alpha(
+                                device.type === 'standard'
+                                  ? theme.palette.primary.main
+                                  : theme.palette.secondary.main,
+                                0.2
+                              )}`,
                             }}
                           >
                             {device.type === 'standard' ? (
@@ -297,20 +356,73 @@ const Dashboard = () => {
                           </Box>
 
                           <Box sx={{ flexGrow: 1 }}>
-                            <Typography variant="subtitle1" noWrap>
+                            <Typography variant="subtitle1" noWrap sx={{ fontWeight: 600 }}>
                               {device.name}
                             </Typography>
-                            <Typography
-                              variant="body2"
-                              color="textSecondary"
-                              noWrap
-                            >
-                              {device.ip_address} • {
-                                device.type === 'standard'
-                                  ? t(`dashboard:osTypes.${device.standard_device?.os_type || 'unknown'}`)
-                                  : device.custom_device?.plugin_name || t('dashboard:deviceTypes.custom')
-                              }
-                            </Typography>
+                            <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
+                              <Typography
+                                variant="body2"
+                                color="textSecondary"
+                                noWrap
+                              >
+                                {device.ip_address}
+                              </Typography>
+                              <Chip
+                                size="small"
+                                label={
+                                  device.type === 'standard'
+                                    ? t(`dashboard:osTypes.${device.standard_device?.os_type || 'unknown'}`)
+                                    : device.custom_device?.plugin_name || t('dashboard:deviceTypes.custom')
+                                }
+                                sx={{
+                                  ml: 1,
+                                  height: 20,
+                                  fontSize: '0.7rem',
+                                  backgroundColor: alpha(
+                                    device.type === 'standard'
+                                      ? theme.palette.info.main
+                                      : theme.palette.secondary.main,
+                                    0.1
+                                  ),
+                                  color: device.type === 'standard'
+                                    ? theme.palette.info.main
+                                    : theme.palette.secondary.main,
+                                  border: `1px solid ${alpha(
+                                    device.type === 'standard'
+                                      ? theme.palette.info.main
+                                      : theme.palette.secondary.main,
+                                    0.2
+                                  )}`,
+                                }}
+                              />
+                              <Chip
+                                size="small"
+                                label={device.is_active
+                                  ? t('dashboard:deviceStatus.active')
+                                  : t('dashboard:deviceStatus.inactive')
+                                }
+                                sx={{
+                                  ml: 1,
+                                  height: 20,
+                                  fontSize: '0.7rem',
+                                  backgroundColor: alpha(
+                                    device.is_active
+                                      ? theme.palette.success.main
+                                      : theme.palette.error.main,
+                                    0.1
+                                  ),
+                                  color: device.is_active
+                                    ? theme.palette.success.main
+                                    : theme.palette.error.main,
+                                  border: `1px solid ${alpha(
+                                    device.is_active
+                                      ? theme.palette.success.main
+                                      : theme.palette.error.main,
+                                    0.2
+                                  )}`,
+                                }}
+                              />
+                            </Box>
                           </Box>
 
                           <Button
@@ -318,16 +430,26 @@ const Dashboard = () => {
                             to={`/devices/${device.id}`}
                             size="small"
                             variant="outlined"
+                            sx={{
+                              borderRadius: '10px',
+                              fontWeight: 600,
+                              '&:hover': {
+                                boxShadow: '0 4px 10px rgba(0,0,0,0.08)',
+                                transform: 'translateY(-2px)',
+                              }
+                            }}
                           >
                             {t('dashboard:viewDetails')}
                           </Button>
                         </Box>
-                        {index < recentDevices.length - 1 && <Divider />}
+                        {index < recentDevices.length - 1 && (
+                          <Divider sx={{ opacity: 0.6 }} />
+                        )}
                       </React.Fragment>
                     ))
                   ) : (
                     <Box sx={{ p: 3, textAlign: 'center' }}>
-                      <Typography color="textSecondary">
+                      <Typography color="textSecondary" sx={{ py: 2 }}>
                         {t('dashboard:recentDevices.noDevices')}
                       </Typography>
                     </Box>
@@ -356,15 +478,29 @@ const StatsCard = ({ title, value, icon, color }: StatsCardProps) => {
     <Card
       sx={{
         height: '100%',
+        borderRadius: theme.shape.borderRadius,
         boxShadow: theme.shadows[3],
-        transition: 'transform 0.2s, box-shadow 0.2s',
+        border: `1px solid ${alpha(theme.palette[color].main, 0.1)}`,
+        transition: 'all 0.3s ease',
         '&:hover': {
-          transform: 'translateY(-5px)',
-          boxShadow: theme.shadows[6],
+          transform: 'translateY(-6px)',
+          boxShadow: theme.shadows[8],
+          border: `1px solid ${alpha(theme.palette[color].main, 0.3)}`,
         },
+        position: 'relative',
+        overflow: 'hidden',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '4px',
+          background: theme.palette[color].main,
+        }
       }}
     >
-      <CardContent>
+      <CardContent sx={{ py: 3 }}>
         <Box
           sx={{
             display: 'flex',
@@ -377,24 +513,43 @@ const StatsCard = ({ title, value, icon, color }: StatsCardProps) => {
               variant="subtitle2"
               color="textSecondary"
               gutterBottom
+              sx={{ fontWeight: 500, fontSize: '0.875rem' }}
             >
               {title}
             </Typography>
-            <Typography variant="h4" component="div">
+            <Typography
+              variant="h4"
+              component="div"
+              sx={{
+                fontWeight: 700,
+                mt: 0.5,
+                color: theme.palette.mode === 'dark'
+                  ? theme.palette[color].light
+                  : theme.palette[color].dark
+              }}
+            >
               {value}
             </Typography>
           </Box>
 
           <Box
             sx={{
-              width: 56,
-              height: 56,
+              width: 60,
+              height: 60,
               borderRadius: '50%',
-              bgcolor: alpha(theme.palette[color].main, 0.1),
+              bgcolor: alpha(theme.palette[color].main, 0.12),
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               color: theme.palette[color].main,
+              border: `1px solid ${alpha(theme.palette[color].main, 0.24)}`,
+              boxShadow: `0 4px 10px ${alpha(theme.palette[color].main, 0.2)}`,
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                transform: 'scale(1.1)',
+                bgcolor: alpha(theme.palette[color].main, 0.18),
+                boxShadow: `0 6px 15px ${alpha(theme.palette[color].main, 0.3)}`,
+              }
             }}
           >
             {icon}

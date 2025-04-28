@@ -16,7 +16,7 @@ import {
   Badge,
   Tooltip,
   Fade,
-  Divider, // Hozzáadva a hiányzó Divider import
+  Divider,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -34,9 +34,13 @@ import { useThemeContext } from '../../context/ThemeContext';
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
   borderRadius: '20px',
-  backgroundColor: alpha(theme.palette.common.white, 0.08),
+  backgroundColor: theme.palette.mode === 'dark'
+    ? alpha(theme.palette.common.white, 0.15)
+    : alpha(theme.palette.common.black, 0.07),
   '&:hover': {
-    backgroundColor: alpha(theme.palette.common.white, 0.15),
+    backgroundColor: theme.palette.mode === 'dark'
+      ? alpha(theme.palette.common.white, 0.25)
+      : alpha(theme.palette.common.black, 0.09),
   },
   marginRight: theme.spacing(2),
   marginLeft: 0,
@@ -47,10 +51,14 @@ const Search = styled('div')(({ theme }) => ({
     width: 'auto',
   },
   transition: theme.transitions.create(['background-color', 'box-shadow']),
-  border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
+  border: `1px solid ${theme.palette.mode === 'dark'
+    ? alpha(theme.palette.common.white, 0.15)
+    : alpha(theme.palette.common.black, 0.05)}`,
   '&:focus-within': {
     boxShadow: `0 0 0 2px ${theme.palette.primary.main}`,
-    backgroundColor: alpha(theme.palette.common.white, 0.15),
+    backgroundColor: theme.palette.mode === 'dark'
+      ? alpha(theme.palette.common.white, 0.25)
+      : alpha(theme.palette.common.black, 0.09),
   }
 }));
 
@@ -62,7 +70,9 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  color: alpha(theme.palette.common.white, 0.7),
+  color: theme.palette.mode === 'dark'
+    ? alpha(theme.palette.common.white, 0.7)
+    : alpha(theme.palette.common.black, 0.6),
 }));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
@@ -83,16 +93,27 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 const ActionIconButton = styled(IconButton)(({ theme }) => ({
-  backgroundColor: alpha(theme.palette.common.white, 0.07),
+  backgroundColor: theme.palette.mode === 'dark'
+    ? alpha(theme.palette.common.white, 0.1)
+    : alpha(theme.palette.common.black, 0.05),
   borderRadius: '14px',
   padding: '10px',
   margin: '0 6px',
   transition: theme.transitions.create(['background-color', 'transform', 'box-shadow']),
-  border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
+  border: `1px solid ${theme.palette.mode === 'dark'
+    ? alpha(theme.palette.common.white, 0.1)
+    : alpha(theme.palette.common.black, 0.02)}`,
+  color: theme.palette.mode === 'dark'
+    ? theme.palette.common.white
+    : theme.palette.common.black,
   '&:hover': {
-    backgroundColor: alpha(theme.palette.common.white, 0.15),
+    backgroundColor: theme.palette.mode === 'dark'
+      ? alpha(theme.palette.common.white, 0.2)
+      : alpha(theme.palette.common.black, 0.1),
     transform: 'translateY(-2px)',
-    boxShadow: `0 4px 8px ${alpha(theme.palette.common.black, 0.2)}`,
+    boxShadow: theme.palette.mode === 'dark'
+      ? `0 4px 8px ${alpha(theme.palette.common.black, 0.25)}`
+      : `0 4px 8px ${alpha(theme.palette.common.black, 0.1)}`,
   },
 }));
 
@@ -131,11 +152,10 @@ const Header = () => {
       position="fixed"
       elevation={0}
       sx={{
-        backgroundColor: 'transparent',
-        backdropFilter: 'blur(12px)',
-        background: theme.palette.mode === 'dark'
-          ? 'linear-gradient(90deg, rgba(10, 25, 41, 0.85) 0%, rgba(19, 47, 76, 0.85) 100%)'
-          : 'linear-gradient(90deg, rgba(240, 244, 248, 0.85) 0%, rgba(215, 227, 252, 0.85) 100%)',
+        backgroundColor: theme.palette.mode === 'dark'
+          ? '#0f172a' // Solid dark blue for dark mode
+          : '#ffffff', // Solid white for light mode
+        backdropFilter: 'blur(10px)',
         zIndex: 1100, // Higher than sidebar
         boxShadow: theme.palette.mode === 'dark'
           ? '0 4px 20px rgba(0,0,0,0.3)'
@@ -144,6 +164,9 @@ const Header = () => {
           theme.palette.mode === 'dark' ? theme.palette.common.white : theme.palette.common.black,
           0.05
         )}`,
+        color: theme.palette.mode === 'dark'
+          ? theme.palette.common.white
+          : theme.palette.common.black, // Ensuring text is visible
       }}
     >
       <Toolbar sx={{ padding: theme => theme.spacing(1, 2) }}>
@@ -165,14 +188,10 @@ const Header = () => {
             display: { xs: 'none', sm: 'block' },
             fontWeight: 800,
             letterSpacing: '-0.5px',
-            background: theme.palette.mode === 'dark'
-              ? 'linear-gradient(90deg, #3f8cff, #83b9ff)'
-              : 'linear-gradient(90deg, #2962ff, #5686ff)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent'
+            color: theme.palette.primary.main, // Direct color setting instead of gradient
           }}
         >
-          {t('appName')}
+          InfraStructure Platform
         </Typography>
 
         <Search>
@@ -272,7 +291,7 @@ const Header = () => {
                     height: '18px',
                     minWidth: '18px',
                     borderRadius: '9px',
-                    boxShadow: '0 0 0 2px #fff',
+                    boxShadow: `0 0 0 2px ${theme.palette.mode === 'dark' ? '#0f172a' : '#ffffff'}`,
                   }
                 }}
               >
@@ -288,16 +307,24 @@ const Header = () => {
               alignItems: 'center',
               ml: 2,
               cursor: 'pointer',
-              background: alpha(theme.palette.common.white, 0.07),
+              background: theme.palette.mode === 'dark'
+                ? alpha(theme.palette.common.white, 0.1)
+                : alpha(theme.palette.common.black, 0.05),
               py: 0.5,
               px: 1,
               borderRadius: '14px',
-              border: `1px solid ${alpha(theme.palette.common.white, 0.1)}`,
+              border: `1px solid ${theme.palette.mode === 'dark'
+                ? alpha(theme.palette.common.white, 0.1)
+                : alpha(theme.palette.common.black, 0.03)}`,
               transition: theme.transitions.create(['background-color', 'transform', 'box-shadow']),
               '&:hover': {
-                backgroundColor: alpha(theme.palette.common.white, 0.15),
+                backgroundColor: theme.palette.mode === 'dark'
+                  ? alpha(theme.palette.common.white, 0.15)
+                  : alpha(theme.palette.common.black, 0.08),
                 transform: 'translateY(-2px)',
-                boxShadow: `0 4px 8px ${alpha(theme.palette.common.black, 0.2)}`,
+                boxShadow: theme.palette.mode === 'dark'
+                  ? `0 4px 8px ${alpha(theme.palette.common.black, 0.25)}`
+                  : `0 4px 8px ${alpha(theme.palette.common.black, 0.1)}`,
               }
             }}
           >

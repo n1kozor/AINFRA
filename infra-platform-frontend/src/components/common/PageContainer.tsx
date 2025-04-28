@@ -1,6 +1,6 @@
 // PageContainer.tsx
 import React, { ReactNode } from 'react';
-import { Box, Typography, Breadcrumbs, Link, Stack, styled, useTheme, alpha } from '@mui/material';
+import { Box, Typography, Breadcrumbs, Link, Stack, styled, useTheme, alpha, Paper } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { NavigateNext } from '@mui/icons-material';
@@ -13,40 +13,12 @@ interface PageContainerProps {
 }
 
 const PageHeader = styled(Box)(({ theme }) => ({
-  marginBottom: theme.spacing(4),
+  marginBottom: theme.spacing(3),
 }));
 
 const PageContent = styled(Box)(({ theme }) => ({
-  backgroundColor: alpha(
-    theme.palette.mode === 'dark' ? theme.palette.background.paper : '#ffffff',
-    theme.palette.mode === 'dark' ? 0.4 : 0.9
-  ),
-  borderRadius: '28px',
-  padding: theme.spacing(3),
-  boxShadow: theme.palette.mode === 'dark'
-    ? '0 8px 32px rgba(0,0,0,0.2)'
-    : '0 8px 32px rgba(0,0,0,0.08)',
-  backdropFilter: 'blur(20px)',
-  border: `1px solid ${alpha(
-    theme.palette.mode === 'dark' ? theme.palette.common.white : theme.palette.common.black,
-    0.05
-  )}`,
-  transition: 'all 0.3s ease',
-  position: 'relative',
-  '&::before': {
-    content: '""',
-    position: 'absolute',
-    inset: 0,
-    borderRadius: '28px',
-    padding: '2px',
-    background: theme.palette.mode === 'dark'
-      ? 'linear-gradient(135deg, rgba(63, 140, 255, 0.3), transparent)'
-      : 'linear-gradient(135deg, rgba(41, 98, 255, 0.2), transparent)',
-    WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-    WebkitMaskComposite: 'xor',
-    maskComposite: 'exclude',
-    pointerEvents: 'none',
-  }
+  width: '100%',
+  minHeight: 'calc(100vh - 180px)',
 }));
 
 const PageContainer = ({ title, breadcrumbs, actions, children }: PageContainerProps) => {
@@ -54,7 +26,7 @@ const PageContainer = ({ title, breadcrumbs, actions, children }: PageContainerP
   const theme = useTheme();
 
   return (
-    <Box sx={{ width: '100%', p: 3 }}>
+    <Box sx={{ width: '100%', p: { xs: 2, md: 3 } }}>
       <PageHeader>
         <Stack
           direction={{ xs: 'column', sm: 'row' }}
@@ -67,26 +39,9 @@ const PageContainer = ({ title, breadcrumbs, actions, children }: PageContainerP
             <Typography
               variant="h4"
               sx={{
-                fontWeight: 800,
-                background: theme.palette.mode === 'dark'
-                  ? 'linear-gradient(90deg, #3f8cff, #83b9ff)'
-                  : 'linear-gradient(90deg, #2962ff, #5686ff)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                letterSpacing: '-0.5px',
-                mb: 1,
-                position: 'relative',
-                display: 'inline-block',
-                '&::after': {
-                  content: '""',
-                  position: 'absolute',
-                  bottom: -8,
-                  left: 0,
-                  width: '40%',
-                  height: '4px',
-                  background: 'linear-gradient(90deg, #2962ff, transparent)',
-                  borderRadius: '4px',
-                }
+                fontWeight: 700,
+                color: theme.palette.primary.main,
+                mb: breadcrumbs ? 1 : 0
               }}
             >
               {title}
@@ -113,8 +68,6 @@ const PageContainer = ({ title, breadcrumbs, actions, children }: PageContainerP
                         fontWeight: isLast ? 600 : 400,
                         fontSize: '0.875rem',
                         color: isLast ? theme.palette.text.primary : alpha(theme.palette.text.primary, 0.7),
-                        position: 'relative',
-                        transition: 'all 0.2s',
                       }}
                     >
                       {crumb.text}
@@ -124,30 +77,14 @@ const PageContainer = ({ title, breadcrumbs, actions, children }: PageContainerP
                       key={index}
                       component={RouterLink}
                       to={crumb.link}
-                      underline="none"
+                      underline="hover"
                       sx={{
                         fontWeight: 400,
                         fontSize: '0.875rem',
                         color: alpha(theme.palette.text.primary, 0.7),
-                        position: 'relative',
-                        transition: 'all 0.2s',
                         '&:hover': {
                           color: theme.palette.primary.main,
                         },
-                        '&::after': {
-                          content: '""',
-                          position: 'absolute',
-                          bottom: -2,
-                          left: 0,
-                          width: '0%',
-                          height: '2px',
-                          background: theme.palette.primary.main,
-                          transition: 'width 0.2s',
-                          borderRadius: '2px',
-                        },
-                        '&:hover::after': {
-                          width: '100%',
-                        }
                       }}
                     >
                       {crumb.text}

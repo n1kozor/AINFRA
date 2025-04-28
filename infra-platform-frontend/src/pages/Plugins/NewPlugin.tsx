@@ -1,3 +1,4 @@
+// NewPlugin.tsx
 import React, { useState } from 'react';
 import {
   Box,
@@ -222,8 +223,8 @@ class MyCustomPlugin(BasePlugin):
         { text: t('plugins:addPlugin') },
       ]}
     >
-      <Paper sx={{ p: 3, mb: 3 }}>
-        <Typography variant="h6" gutterBottom>
+      <Paper elevation={0} sx={{ p: 3, mb: 3, border: `1px solid ${theme.palette.divider}` }}>
+        <Typography variant="h6" fontWeight={600} gutterBottom>
           {t('plugins:basicInfo')}
         </Typography>
         <Divider sx={{ my: 2 }} />
@@ -288,24 +289,24 @@ class MyCustomPlugin(BasePlugin):
       </Paper>
 
       <Paper
-        variant="outlined"
+        elevation={0}
         sx={{
           mb: 3,
-          borderRadius: 1,
           overflow: 'hidden',
+          border: `1px solid ${theme.palette.divider}`,
         }}
       >
         <Box
           sx={{
             p: 1.5,
-            bgcolor: alpha(theme.palette.background.default, 0.5),
+            bgcolor: theme.palette.background.default,
             borderBottom: `1px solid ${theme.palette.divider}`,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
           }}
         >
-          <Typography variant="subtitle1">
+          <Typography variant="subtitle1" fontWeight={600}>
             {t('plugins:pluginCode')}
           </Typography>
           <Typography variant="caption" color="text.secondary">
@@ -329,24 +330,24 @@ class MyCustomPlugin(BasePlugin):
       </Paper>
 
       <Paper
-        variant="outlined"
+        elevation={0}
         sx={{
           mb: 3,
-          borderRadius: 1,
           overflow: 'hidden',
+          border: `1px solid ${theme.palette.divider}`,
         }}
       >
         <Box
           sx={{
             p: 1.5,
-            bgcolor: alpha(theme.palette.background.default, 0.5),
+            bgcolor: theme.palette.background.default,
             borderBottom: `1px solid ${theme.palette.divider}`,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
           }}
         >
-          <Typography variant="subtitle1">
+          <Typography variant="subtitle1" fontWeight={600}>
             {t('plugins:uiSchema')}
           </Typography>
           <Typography variant="caption" color="text.secondary">
@@ -380,6 +381,8 @@ class MyCustomPlugin(BasePlugin):
           component={Link}
           to="/plugins"
           startIcon={<ArrowBackIcon />}
+          variant="outlined"
+          color="inherit"
         >
           {t('common:actions.cancel')}
         </Button>
@@ -396,18 +399,19 @@ class MyCustomPlugin(BasePlugin):
       </Box>
 
       {createPluginMutation.isError && (
-        <Box
+        <Paper
+          elevation={0}
           sx={{
             mt: 2,
             p: 2,
-            bgcolor: alpha(theme.palette.error.main, 0.1),
-            borderRadius: 1
+            color: theme.palette.error.main,
+            border: `1px solid ${alpha(theme.palette.error.main, 0.3)}`,
           }}
         >
-          <Typography color="error">
+          <Typography fontWeight={500}>
             {t('plugins:error.create')}
           </Typography>
-        </Box>
+        </Paper>
       )}
     </PageContainer>
   );

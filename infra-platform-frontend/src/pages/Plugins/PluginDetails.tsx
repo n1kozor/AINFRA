@@ -1,3 +1,4 @@
+// PluginDetails.tsx
 import React, { useState } from 'react';
 import {
   Box,
@@ -90,19 +91,21 @@ const PluginDetails = () => {
   if (error || !plugin) {
     return (
       <PageContainer title={t('plugins:error.title')}>
-        <Box sx={{ p: 3, bgcolor: alpha(theme.palette.error.main, 0.1), borderRadius: 1 }}>
-          <Typography color="error">
-            {t('plugins:pluginNotFound')}
-          </Typography>
-          <Button
-            component={Link}
-            to="/plugins"
-            startIcon={<ArrowBackIcon />}
-            sx={{ mt: 2 }}
-          >
-            {t('common:actions.back')}
-          </Button>
-        </Box>
+        <Paper sx={{ p: 3 }}>
+          <Box sx={{ p: 3, color: theme.palette.error.main }}>
+            <Typography variant="h6">
+              {t('plugins:pluginNotFound')}
+            </Typography>
+            <Button
+              component={Link}
+              to="/plugins"
+              startIcon={<ArrowBackIcon />}
+              sx={{ mt: 2 }}
+            >
+              {t('common:actions.back')}
+            </Button>
+          </Box>
+        </Paper>
       </PageContainer>
     );
   }
@@ -122,6 +125,7 @@ const PluginDetails = () => {
             startIcon={<EditIcon />}
             component={Link}
             to={`/plugins/${pluginId}/edit`}
+            sx={{ fontWeight: 500 }}
           >
             {t('common:actions.edit')}
           </Button>
@@ -130,13 +134,14 @@ const PluginDetails = () => {
             color="error"
             startIcon={<DeleteIcon />}
             onClick={handleDeleteClick}
+            sx={{ fontWeight: 500 }}
           >
             {t('common:actions.delete')}
           </Button>
         </Box>
       }
     >
-      <Paper sx={{ p: 3, mb: 3 }}>
+      <Paper elevation={0} sx={{ p: 3, mb: 3, border: `1px solid ${theme.palette.divider}` }}>
         <Box
           sx={{
             display: 'flex',
@@ -151,7 +156,7 @@ const PluginDetails = () => {
               sx={{
                 width: 48,
                 height: 48,
-                borderRadius: '50%',
+                borderRadius: '12px',
                 bgcolor: alpha(theme.palette.primary.main, 0.1),
                 display: 'flex',
                 alignItems: 'center',
@@ -163,7 +168,7 @@ const PluginDetails = () => {
               <CodeIcon fontSize="large" />
             </Box>
             <Box>
-              <Typography variant="h5">{plugin.name}</Typography>
+              <Typography variant="h5" fontWeight={600}>{plugin.name}</Typography>
               <Typography variant="body2" color="text.secondary">
                 v{plugin.version}
               </Typography>
@@ -174,6 +179,8 @@ const PluginDetails = () => {
             <Chip
               label={plugin.is_active ? t('plugins:active') : t('plugins:inactive')}
               color={plugin.is_active ? 'success' : 'default'}
+              variant="outlined"
+              sx={{ fontWeight: 500 }}
             />
           </Box>
         </Box>
@@ -183,7 +190,7 @@ const PluginDetails = () => {
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 2 }}>
           {plugin.author && (
             <Box>
-              <Typography variant="body2" color="text.secondary" gutterBottom>
+              <Typography variant="body2" color="text.secondary" fontWeight={500} gutterBottom>
                 {t('plugins:author')}
               </Typography>
               <Typography variant="body1">{plugin.author}</Typography>
@@ -191,7 +198,7 @@ const PluginDetails = () => {
           )}
 
           <Box>
-            <Typography variant="body2" color="text.secondary" gutterBottom>
+            <Typography variant="body2" color="text.secondary" fontWeight={500} gutterBottom>
               {t('plugins:createdAt')}
             </Typography>
             <Typography variant="body1">
@@ -200,7 +207,7 @@ const PluginDetails = () => {
           </Box>
 
           <Box>
-            <Typography variant="body2" color="text.secondary" gutterBottom>
+            <Typography variant="body2" color="text.secondary" fontWeight={500} gutterBottom>
               {t('plugins:updatedAt')}
             </Typography>
             <Typography variant="body1">
@@ -213,7 +220,7 @@ const PluginDetails = () => {
           <>
             <Divider sx={{ my: 2 }} />
             <Box>
-              <Typography variant="body2" color="text.secondary" gutterBottom>
+              <Typography variant="body2" color="text.secondary" fontWeight={500} gutterBottom>
                 {t('plugins:description')}
               </Typography>
               <Typography variant="body1">{plugin.description}</Typography>
@@ -222,11 +229,19 @@ const PluginDetails = () => {
         )}
       </Paper>
 
-      <Box sx={{ mb: 3 }}>
+      <Box sx={{ mb: 2, borderBottom: `1px solid ${theme.palette.divider}` }}>
         <Tabs
           value={tabValue}
           onChange={handleTabChange}
           aria-label="plugin tabs"
+          sx={{
+            '& .MuiTab-root': {
+              fontWeight: 500,
+              textTransform: 'none',
+              py: 1.5,
+              minHeight: 48
+            }
+          }}
         >
           <Tab
             icon={<CodeIcon fontSize="small" />}
@@ -243,23 +258,23 @@ const PluginDetails = () => {
 
       {tabValue === 0 && (
         <Paper
-          variant="outlined"
+          elevation={0}
           sx={{
-            borderRadius: 1,
-            overflow: 'hidden',
+            border: `1px solid ${theme.palette.divider}`,
+            overflow: 'hidden'
           }}
         >
           <Box
             sx={{
               p: 1.5,
-              bgcolor: alpha(theme.palette.background.default, 0.5),
+              bgcolor: theme.palette.background.default,
               borderBottom: `1px solid ${theme.palette.divider}`,
               display: 'flex',
               alignItems: 'center',
             }}
           >
             <CodeIcon fontSize="small" sx={{ mr: 1 }} />
-            <Typography variant="subtitle2">
+            <Typography variant="subtitle2" fontWeight={500}>
               {t('plugins:pluginCode')}
             </Typography>
           </Box>
@@ -282,23 +297,23 @@ const PluginDetails = () => {
 
       {tabValue === 1 && (
         <Paper
-          variant="outlined"
+          elevation={0}
           sx={{
-            borderRadius: 1,
-            overflow: 'hidden',
+            border: `1px solid ${theme.palette.divider}`,
+            overflow: 'hidden'
           }}
         >
           <Box
             sx={{
               p: 1.5,
-              bgcolor: alpha(theme.palette.background.default, 0.5),
+              bgcolor: theme.palette.background.default,
               borderBottom: `1px solid ${theme.palette.divider}`,
               display: 'flex',
               alignItems: 'center',
             }}
           >
             <SchemaIcon fontSize="small" sx={{ mr: 1 }} />
-            <Typography variant="subtitle2">
+            <Typography variant="subtitle2" fontWeight={500}>
               {t('plugins:uiSchema')}
             </Typography>
           </Box>
