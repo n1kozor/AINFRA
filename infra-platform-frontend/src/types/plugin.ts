@@ -37,3 +37,12 @@ export interface PluginOperation {
   params: string[];
 }
 
+export interface PluginTemplate {
+  id: string;
+  name: string;
+  description: string;
+  type: 'http' | 'ssh' | 'snmp' | 'mqtt' | 'custom';
+  code: string;
+  ui_schema: any;
+  icon: string;
+}

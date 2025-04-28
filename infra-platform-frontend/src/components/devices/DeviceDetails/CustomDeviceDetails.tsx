@@ -343,6 +343,156 @@ const CustomDeviceDetails: React.FC<CustomDeviceDetailsProps> = ({ device }) => 
     return systemInfo;
   };
 
+  // Új függvény - Általános művelet végrehajtó
+  const handleExecuteGenericAction = (actionId: string, rowData: any = {}) => {
+    // Ebben a funkcióban kezeljük az összes táblázaton belüli művelet végrehajtását
+    const params = {
+      ...device.custom_device?.connection_params,
+      ...rowData
+    };
+
+    operationMutation.mutate({
+      operationId: actionId,
+      params
+    });
+  };
+
+  // Új függvény - Gombokat generál táblázathoz
+  const generateTableActions = (tableData: any, tableKey: string) => {
+    // Ha van plugin UI schema és van benne műveletek az adott táblázathoz
+    if (plugin?.ui_schema?.components?.[tableKey]?.actions) {
+      const actions = plugin.ui_schema.components[tableKey].actions;
+
+      return actions.map((action: any) => ({
+        title: action.title,
+        action: action.action,
+        buttonType: action.buttonType || "primary",
+        enabledWhen: action.enabledWhen
+      }));
+    }
+
+    // Egyébként univerzális műveletek, mint pl a frissítés
+    return [
+      {
+        title: t('common:actions.refresh'),
+        action: 'refresh',
+        buttonType: 'primary'
+      }
+    ];
+  };
+
+  // Általános táblázat renderelő függvény - Ez a legfontosabb új funkció!
+  const renderDynamicTable = (key: string, data: any[]) => {
+    if (!data || data.length === 0) return null;
+
+    // Táblázat oszlopok generálása az első elemből
+    const columns = Object.keys(data[0])
+      .filter(colKey => typeof data[0][colKey] !== 'object') // Csak egyszerű típusok
+      .map(colKey => ({
+        key: colKey,
+        title: colKey.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+      }));
+
+    // Lehetséges műveletek a táblázathoz
+    const tableActions = generateTableActions(data, key);
+
+    // Táblanév generálása
+    const tableName = key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+
+    return (
+      <Grid item xs={12} key={key}>
+        <DashboardCard
+          title={tableName}
+          icon={<StorageIcon />}
+          color="info"
+          action={
+            <Button
+              size="small"
+              startIcon={<RefreshIcon />}
+              onClick={() => {
+                queryClient.invalidateQueries({ queryKey: ['deviceMetrics', device.id] });
+              }}
+            >
+              {t('common:actions.refresh')}
+            </Button>
+          }
+        >
+          <Box sx={{ p: 2 }}>
+            <TableContainer component={Paper}>
+              <Table size="small">
+                <TableHead>
+                  <TableRow>
+                    {columns.map(col => (
+                      <TableCell key={col.key}>
+                        {col.title}
+                      </TableCell>
+                    ))}
+                    {tableActions.length > 0 && <TableCell>Actions</TableCell>}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {data.map((row, rowIndex) => (
+                    <TableRow key={rowIndex}>
+                      {columns.map(col => (
+                        <TableCell key={col.key}>
+                          {typeof row[col.key] === 'boolean' ?
+                            (row[col.key] ? <CheckIcon color="success" /> : <CloseIcon color="error" />) :
+                            (col.key === 'status' ?
+                              <Chip
+                                size="small"
+                                label={row[col.key]}
+                                color={isPositiveStatus(row[col.key]) ? 'success' : 'default'}
+                              /> :
+                              row[col.key]
+                            )
+                          }
+                        </TableCell>
+                      ))}
+                      {tableActions.length > 0 && (
+                        <TableCell>
+                          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                            {tableActions.map((action, actionIndex) => {
+                              // Ellenőrizzük, hogy a gomb engedélyezett-e a jelenlegi sorban
+                              let isEnabled = true;
+                              if (action.enabledWhen) {
+                                try {
+                                  // Biztonságos értékelés - csak egyszerű feltételekre
+                                  isEnabled = eval(action.enabledWhen.replace(/row\./g, 'row["') + '"]');
+                                } catch (e) {
+                                  console.error('Error evaluating button condition:', e);
+                                  isEnabled = false;
+                                }
+                              }
+
+                              return isEnabled ? (
+                                <Button
+                                  key={actionIndex}
+                                  size="small"
+                                  variant="outlined"
+                                  color={action.buttonType === 'primary' ? 'primary' :
+                                         action.buttonType === 'success' ? 'success' :
+                                         action.buttonType === 'warning' ? 'warning' :
+                                         action.buttonType === 'error' ? 'error' : 'secondary'}
+                                  onClick={() => handleExecuteGenericAction(action.action, row)}
+                                >
+                                  {action.title}
+                                </Button>
+                              ) : null;
+                            })}
+                          </Box>
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
+        </DashboardCard>
+      </Grid>
+    );
+  };
+
   // Handle executing operation
   const handleExecuteOperation = () => {
     if (selectedOperation) {
@@ -366,17 +516,6 @@ const CustomDeviceDetails: React.FC<CustomDeviceDetailsProps> = ({ device }) => 
     setSelectedOperation(operation);
     setOperationParams({});
     setOperationModalOpen(true);
-  };
-
-  // Handle container operations
-  const handleContainerAction = (actionId: string, containerId: string) => {
-    operationMutation.mutate({
-      operationId: actionId,
-      params: {
-        ...device.custom_device?.connection_params,
-        container_id: containerId
-      }
-    });
   };
 
   // Loading and error states
@@ -418,6 +557,19 @@ const CustomDeviceDetails: React.FC<CustomDeviceDetailsProps> = ({ device }) => 
   // Main metrics and system info
   const mainMetrics = extractMainMetrics();
   const systemInfo = extractSystemInfo();
+
+  // Identify and collect all arrays that should be rendered as tables
+  const tableData = [];
+  if (metrics) {
+    for (const [key, value] of Object.entries(metrics)) {
+      if (Array.isArray(value) && value.length > 0 && typeof value[0] === 'object') {
+        tableData.push({
+          key,
+          data: value
+        });
+      }
+    }
+  }
 
   return (
     <Box>
@@ -495,115 +647,8 @@ const CustomDeviceDetails: React.FC<CustomDeviceDetailsProps> = ({ device }) => 
           </Grid>
         )}
 
-        {/* Containers List - Display containers if they exist in metrics */}
-        {metrics?.containers && metrics.containers.length > 0 && (
-          <Grid item xs={12}>
-            <DashboardCard
-              title={"Containers"}
-              icon={<StorageIcon />}
-              color="secondary"
-              action={
-                <Button
-                  size="small"
-                  startIcon={<RefreshIcon />}
-                  onClick={() => {
-                    queryClient.invalidateQueries({ queryKey: ['deviceMetrics', device.id] });
-                  }}
-                >
-                  {t('common:actions.refresh')}
-                </Button>
-              }
-            >
-              <Box sx={{ p: 2 }}>
-                <TableContainer component={Paper}>
-                  <Table size="small">
-                    <TableHead>
-                      <TableRow>
-                        {/* Dynamically create headers from first container object */}
-                        {Object.keys(metrics.containers[0])
-                          .filter(key => typeof metrics.containers[0][key] !== 'object')
-                          .map(key => (
-                            <TableCell key={key}>
-                              {key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
-                            </TableCell>
-                          ))}
-                        <TableCell>Actions</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {metrics.containers.map((container: any, index: number) => (
-                        <TableRow key={index}>
-                          {Object.entries(container)
-                            .filter(([key, value]) => typeof value !== 'object')
-                            .map(([key, value]) => (
-                              <TableCell key={key}>
-                                {key === 'status' ? (
-                                  <Chip
-                                    size="small"
-                                    label={value as string}
-                                    color={
-                                      typeof value === 'string' && value.toLowerCase().includes('up')
-                                        ? 'success'
-                                        : 'default'
-                                    }
-                                  />
-                                ) : (
-                                  value
-                                )}
-                              </TableCell>
-                            ))}
-                          <TableCell>
-                            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                              {/* Show appropriate buttons based on container status */}
-                              {container.status?.toLowerCase().includes('exited') && (
-                                <Button
-                                  size="small"
-                                  variant="outlined"
-                                  color="success"
-                                  onClick={() => handleContainerAction('start_container', container.container_id)}
-                                >
-                                  Start
-                                </Button>
-                              )}
-                              {container.status?.toLowerCase().includes('up') && (
-                                <>
-                                  <Button
-                                    size="small"
-                                    variant="outlined"
-                                    color="warning"
-                                    onClick={() => handleContainerAction('stop_container', container.container_id)}
-                                  >
-                                    Stop
-                                  </Button>
-                                  <Button
-                                    size="small"
-                                    variant="outlined"
-                                    color="info"
-                                    onClick={() => handleContainerAction('restart_container', container.container_id)}
-                                  >
-                                    Restart
-                                  </Button>
-                                </>
-                              )}
-                              <Button
-                                size="small"
-                                variant="outlined"
-                                color="secondary"
-                                onClick={() => handleContainerAction('view_logs', container.container_id)}
-                              >
-                                Logs
-                              </Button>
-                            </Box>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </Box>
-            </DashboardCard>
-          </Grid>
-        )}
+        {/* Minden táblázatos adat dinamikus megjelenítése */}
+        {tableData.map(table => renderDynamicTable(table.key, table.data))}
 
         {/* Available Operations */}
         {availableOperations.length > 0 && (
@@ -655,63 +700,6 @@ const CustomDeviceDetails: React.FC<CustomDeviceDetailsProps> = ({ device }) => 
             </DashboardCard>
           </Grid>
         )}
-
-        {/* Display other array data found in metrics */}
-        {metrics && Object.entries(metrics).map(([key, value]) => {
-          // Only process arrays of objects
-          if (Array.isArray(value) && value.length > 0 && typeof value[0] === 'object' && key !== 'containers') {
-            return (
-              <Grid item xs={12} key={key}>
-                <DashboardCard
-                  title={key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
-                  icon={<MetricsIcon />}
-                  color="info"
-                  action={
-                    <Button
-                      size="small"
-                      startIcon={<RefreshIcon />}
-                      onClick={() => {
-                        queryClient.invalidateQueries({ queryKey: ['deviceMetrics', device.id] });
-                      }}
-                    >
-                      {t('common:actions.refresh')}
-                    </Button>
-                  }
-                >
-                  <Box sx={{ p: 2 }}>
-                    <TableContainer component={Paper}>
-                      <Table size="small">
-                        <TableHead>
-                          <TableRow>
-                            {Object.keys(value[0])
-                              .filter(k => typeof value[0][k] !== 'object')
-                              .map(k => (
-                                <TableCell key={k}>
-                                  {k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
-                                </TableCell>
-                              ))}
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {value.map((item: any, idx: number) => (
-                            <TableRow key={idx}>
-                              {Object.entries(item)
-                                .filter(([k, v]) => typeof v !== 'object')
-                                .map(([k, v]) => (
-                                  <TableCell key={k}>{v as any}</TableCell>
-                                ))}
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  </Box>
-                </DashboardCard>
-              </Grid>
-            );
-          }
-          return null;
-        })}
       </Grid>
 
       {/* Operation Modal */}
