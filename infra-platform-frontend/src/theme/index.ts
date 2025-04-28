@@ -28,9 +28,9 @@ export const getTheme = (mode: PaletteMode) => {
               backgroundColor: mode === 'light' ? 'rgba(15, 23, 42, 0.25)' : 'rgba(241, 245, 249, 0.3)',
             },
             // Adding smooth animations globally
-            '& *': {
-              transition: 'background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease',
-            },
+                    '& *': {
+          transition: 'background-color 0.2s ease, border-color 0.2s ease',
+        },
             // Improved font rendering
             WebkitFontSmoothing: 'antialiased',
             MozOsxFontSmoothing: 'grayscale',
