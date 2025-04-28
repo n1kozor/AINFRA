@@ -44,9 +44,6 @@ class DeviceService:
                 device_id=device.id,
                 os_type=device_data.standard_device.os_type,
                 hostname=device_data.standard_device.hostname,
-                username=device_data.standard_device.username,
-                password=device_data.standard_device.password,
-                port=device_data.standard_device.port
             )
             db.add(std_device)
 
@@ -76,11 +73,9 @@ class DeviceService:
         db.commit()
         db.refresh(device)
 
-        # Ha custom device, akkor töltsük fel a plugin_name-et is
         if device.type == DeviceType.CUSTOM and device.custom_device:
             plugin = db.query(Plugin).filter(Plugin.id == device.custom_device.plugin_id).first()
             if plugin:
-                # Itt nem módosítjuk közvetlenül az adatbázist, csak a visszaadandó objektumot bővítjük
                 setattr(device.custom_device, "plugin_name", plugin.name)
 
         return device

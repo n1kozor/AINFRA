@@ -36,3 +36,4 @@ export interface PluginOperation {
   description: string;
   params: string[];
 }
+

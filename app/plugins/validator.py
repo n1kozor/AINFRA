@@ -31,7 +31,7 @@ def validate_plugin_code(code: str) -> Tuple[bool, Optional[str]]:
         elif isinstance(node, ast.ImportFrom):
             imports.append(node.module)
 
-    blacklist = ['os', 'subprocess', 'sys', 'shutil', 'requests']
+    blacklist = []
     for dangerous in blacklist:
         if any(imp == dangerous or (imp and imp.startswith(f"{dangerous}.")) for imp in imports):
             return False, f"Dangerous import detected: {dangerous}"

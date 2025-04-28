@@ -21,11 +21,7 @@ class DeviceBase(BaseModel):
 class StandardDeviceBase(BaseModel):
     os_type: OSType
     hostname: str
-    username: str
-    port: Optional[int] = 22
 
-class StandardDeviceCreate(StandardDeviceBase):
-    password: str
 
 class CustomDeviceBase(BaseModel):
     plugin_id: int
@@ -34,7 +30,7 @@ class CustomDeviceBase(BaseModel):
 # Create schemas
 class DeviceCreate(DeviceBase):
     type: DeviceType
-    standard_device: Optional[StandardDeviceCreate] = None
+    standard_device: Optional[StandardDeviceBase] = None
     custom_device: Optional[CustomDeviceBase] = None
 
 # Update schemas
@@ -47,9 +43,6 @@ class DeviceUpdate(BaseModel):
 class StandardDeviceUpdate(BaseModel):
     os_type: Optional[OSType] = None
     hostname: Optional[str] = None
-    username: Optional[str] = None
-    password: Optional[str] = None
-    port: Optional[int] = None
 
 class CustomDeviceUpdate(BaseModel):
     plugin_id: Optional[int] = None

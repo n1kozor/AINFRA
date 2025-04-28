@@ -41,9 +41,6 @@ class StandardDevice(Base):
     device_id = Column(Integer, ForeignKey("devices.id"), unique=True)
     os_type = Column(Enum(OSType), nullable=False)
     hostname = Column(String(255), nullable=False)
-    username = Column(String(255), nullable=False)
-    password = Column(String(255), nullable=False)
-    port = Column(Integer, default=22)
 
     device = relationship("Device", back_populates="standard_device")
 

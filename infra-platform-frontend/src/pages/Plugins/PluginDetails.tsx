@@ -5,7 +5,6 @@ import {
   Typography,
   Button,
   Chip,
-  Paper,
   Divider,
   CircularProgress,
   Tabs,
@@ -17,6 +16,7 @@ import {
   DialogActions,
   useTheme,
   alpha,
+  Grid,
 } from '@mui/material';
 import {
   Code as CodeIcon,
@@ -25,6 +25,10 @@ import {
   ArrowBack as ArrowBackIcon,
   Schema as SchemaIcon,
   Info as InfoIcon,
+  GitHub as GitHubIcon,
+  CalendarToday as CalendarIcon,
+  Update as UpdateIcon,
+  VerifiedUser as VerifiedIcon,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate, Link } from 'react-router-dom';
@@ -33,6 +37,7 @@ import { api } from '../../api';
 import PageContainer from '../../components/common/PageContainer';
 import { format } from 'date-fns';
 import Editor from '@monaco-editor/react';
+import DashboardCard from '../../components/dashboard/DashboardCard';
 
 const PluginDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -81,8 +86,8 @@ const PluginDetails = () => {
   if (isLoading) {
     return (
       <PageContainer title={t('plugins:loading')}>
-        <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-          <CircularProgress />
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 10 }}>
+          <CircularProgress size={50} thickness={4} sx={{ color: theme.palette.primary.main }} />
         </Box>
       </PageContainer>
     );
@@ -91,21 +96,36 @@ const PluginDetails = () => {
   if (error || !plugin) {
     return (
       <PageContainer title={t('plugins:error.title')}>
-        <Paper sx={{ p: 3 }}>
-          <Box sx={{ p: 3, color: theme.palette.error.main }}>
-            <Typography variant="h6">
+        <DashboardCard
+          title={t('plugins:error.title')}
+          icon={<InfoIcon />}
+          color="error"
+        >
+          <Box sx={{ p: 3, textAlign: 'center' }}>
+            <Typography variant="h6" gutterBottom>
               {t('plugins:pluginNotFound')}
             </Typography>
             <Button
               component={Link}
               to="/plugins"
               startIcon={<ArrowBackIcon />}
-              sx={{ mt: 2 }}
+              variant="contained"
+              color="primary"
+              sx={{
+                mt: 2,
+                px: 4,
+                py: 1.2,
+                borderRadius: '12px',
+                '&:hover': {
+                  transform: 'translateY(-2px)',
+                  boxShadow: theme.shadows[4],
+                }
+              }}
             >
               {t('common:actions.back')}
             </Button>
           </Box>
-        </Paper>
+        </DashboardCard>
       </PageContainer>
     );
   }
@@ -119,13 +139,24 @@ const PluginDetails = () => {
         { text: plugin.name },
       ]}
       actions={
-        <Box sx={{ display: 'flex', gap: 1 }}>
+        <Box sx={{ display: 'flex', gap: 2 }}>
           <Button
             variant="outlined"
             startIcon={<EditIcon />}
             component={Link}
             to={`/plugins/${pluginId}/edit`}
-            sx={{ fontWeight: 500 }}
+            sx={{
+              fontWeight: 600,
+              px: 3,
+              py: 1.2,
+              borderRadius: '12px',
+              borderWidth: '2px',
+              '&:hover': {
+                borderWidth: '2px',
+                transform: 'translateY(-2px)',
+                boxShadow: theme.shadows[2],
+              }
+            }}
           >
             {t('common:actions.edit')}
           </Button>
@@ -134,122 +165,197 @@ const PluginDetails = () => {
             color="error"
             startIcon={<DeleteIcon />}
             onClick={handleDeleteClick}
-            sx={{ fontWeight: 500 }}
+            sx={{
+              fontWeight: 600,
+              px: 3,
+              py: 1.2,
+              borderRadius: '12px',
+              borderWidth: '2px',
+              '&:hover': {
+                borderWidth: '2px',
+                transform: 'translateY(-2px)',
+                boxShadow: theme.shadows[2],
+              }
+            }}
           >
             {t('common:actions.delete')}
           </Button>
         </Box>
       }
     >
-      <Paper elevation={0} sx={{ p: 3, mb: 3, border: `1px solid ${theme.palette.divider}` }}>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: { xs: 'column', md: 'row' },
-            alignItems: { xs: 'flex-start', md: 'center' },
-            justifyContent: 'space-between',
-            mb: 2,
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: { xs: 2, md: 0 } }}>
-            <Box
-              sx={{
-                width: 48,
-                height: 48,
-                borderRadius: '12px',
-                bgcolor: alpha(theme.palette.primary.main, 0.1),
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                mr: 2,
-                color: theme.palette.primary.main,
-              }}
-            >
-              <CodeIcon fontSize="large" />
+      <DashboardCard
+        title={t('plugins:details')}
+        icon={<CodeIcon />}
+        color="primary"
+        subtitle={`v${plugin.version}`}
+      >
+        <Box sx={{ p: 3 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: { xs: 'column', md: 'row' },
+              alignItems: { xs: 'flex-start', md: 'center' },
+              justifyContent: 'space-between',
+              mb: 3,
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: { xs: 2, md: 0 } }}>
+              <Box
+                sx={{
+                  width: 56,
+                  height: 56,
+                  borderRadius: '14px',
+                  bgcolor: alpha(theme.palette.primary.main, 0.1),
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  mr: 2.5,
+                  color: theme.palette.primary.main,
+                  border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+                  boxShadow: `0 4px 12px ${alpha(theme.palette.primary.main, 0.1)}`,
+                  transition: 'all 0.2s',
+                  '&:hover': {
+                    transform: 'scale(1.05)',
+                    boxShadow: `0 6px 16px ${alpha(theme.palette.primary.main, 0.2)}`,
+                  }
+                }}
+              >
+                <CodeIcon sx={{ fontSize: 28 }} />
+              </Box>
+              <Box>
+                <Typography variant="h4" fontWeight={700}>{plugin.name}</Typography>
+                <Typography variant="body1" color="text.secondary">
+                  v{plugin.version}
+                </Typography>
+              </Box>
             </Box>
-            <Box>
-              <Typography variant="h5" fontWeight={600}>{plugin.name}</Typography>
-              <Typography variant="body2" color="text.secondary">
-                v{plugin.version}
-              </Typography>
+
+            <Box sx={{ display: 'flex', gap: 1.5 }}>
+              <Chip
+                label={plugin.is_active ? t('plugins:active') : t('plugins:inactive')}
+                color={plugin.is_active ? 'success' : 'default'}
+                sx={{
+                  fontWeight: 600,
+                  px: 1,
+                  height: 32,
+                  borderRadius: '8px',
+                  bgcolor: plugin.is_active ? alpha(theme.palette.success.main, 0.1) : alpha(theme.palette.grey[500], 0.1),
+                  color: plugin.is_active ? theme.palette.success.dark : theme.palette.grey[600],
+                  border: `1px solid ${plugin.is_active ? alpha(theme.palette.success.main, 0.3) : alpha(theme.palette.grey[500], 0.2)}`,
+                }}
+              />
             </Box>
           </Box>
 
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Chip
-              label={plugin.is_active ? t('plugins:active') : t('plugins:inactive')}
-              color={plugin.is_active ? 'success' : 'default'}
-              variant="outlined"
-              sx={{ fontWeight: 500 }}
-            />
-          </Box>
-        </Box>
+          <Divider sx={{ my: 3, opacity: 0.6 }} />
 
-        <Divider sx={{ my: 2 }} />
+          <Grid container spacing={3}>
+            {plugin.author && (
+              <Grid item xs={12} sm={4}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <GitHubIcon sx={{
+                    color: alpha(theme.palette.text.secondary, 0.8),
+                    fontSize: 20,
+                    mr: 1.5,
+                  }} />
+                  <Box>
+                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                      {t('plugins:author')}
+                    </Typography>
+                    <Typography variant="body1" fontWeight={600}>
+                      {plugin.author}
+                    </Typography>
+                  </Box>
+                </Box>
+              </Grid>
+            )}
 
-        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 2 }}>
-          {plugin.author && (
-            <Box>
-              <Typography variant="body2" color="text.secondary" fontWeight={500} gutterBottom>
-                {t('plugins:author')}
-              </Typography>
-              <Typography variant="body1">{plugin.author}</Typography>
-            </Box>
+            <Grid item xs={12} sm={4}>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <CalendarIcon sx={{
+                  color: alpha(theme.palette.text.secondary, 0.8),
+                  fontSize: 20,
+                  mr: 1.5,
+                }} />
+                <Box>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>
+                    {t('plugins:createdAt')}
+                  </Typography>
+                  <Typography variant="body1" fontWeight={600}>
+                    {format(new Date(plugin.created_at), 'PPP')}
+                  </Typography>
+                </Box>
+              </Box>
+            </Grid>
+
+            <Grid item xs={12} sm={4}>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <UpdateIcon sx={{
+                  color: alpha(theme.palette.text.secondary, 0.8),
+                  fontSize: 20,
+                  mr: 1.5,
+                }} />
+                <Box>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>
+                    {t('plugins:updatedAt')}
+                  </Typography>
+                  <Typography variant="body1" fontWeight={600}>
+                    {format(new Date(plugin.updated_at), 'PPP')}
+                  </Typography>
+                </Box>
+              </Box>
+            </Grid>
+          </Grid>
+
+          {plugin.description && (
+            <>
+              <Divider sx={{ my: 3, opacity: 0.6 }} />
+              <Box>
+                <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+                  {t('plugins:description')}
+                </Typography>
+                <Typography variant="body1" sx={{ py: 1 }}>
+                  {plugin.description}
+                </Typography>
+              </Box>
+            </>
           )}
-
-          <Box>
-            <Typography variant="body2" color="text.secondary" fontWeight={500} gutterBottom>
-              {t('plugins:createdAt')}
-            </Typography>
-            <Typography variant="body1">
-              {format(new Date(plugin.created_at), 'PPP')}
-            </Typography>
-          </Box>
-
-          <Box>
-            <Typography variant="body2" color="text.secondary" fontWeight={500} gutterBottom>
-              {t('plugins:updatedAt')}
-            </Typography>
-            <Typography variant="body1">
-              {format(new Date(plugin.updated_at), 'PPP')}
-            </Typography>
-          </Box>
         </Box>
+      </DashboardCard>
 
-        {plugin.description && (
-          <>
-            <Divider sx={{ my: 2 }} />
-            <Box>
-              <Typography variant="body2" color="text.secondary" fontWeight={500} gutterBottom>
-                {t('plugins:description')}
-              </Typography>
-              <Typography variant="body1">{plugin.description}</Typography>
-            </Box>
-          </>
-        )}
-      </Paper>
-
-      <Box sx={{ mb: 2, borderBottom: `1px solid ${theme.palette.divider}` }}>
+      <Box sx={{ mt: 3, mb: 2 }}>
         <Tabs
           value={tabValue}
           onChange={handleTabChange}
           aria-label="plugin tabs"
           sx={{
             '& .MuiTab-root': {
-              fontWeight: 500,
+              fontWeight: 600,
               textTransform: 'none',
-              py: 1.5,
-              minHeight: 48
-            }
+              py: 2,
+              transition: 'all 0.2s',
+              borderRadius: '10px 10px 0 0',
+              '&:hover': {
+                bgcolor: alpha(theme.palette.primary.main, 0.05),
+              },
+            },
+            '& .Mui-selected': {
+              color: theme.palette.primary.main,
+              bgcolor: alpha(theme.palette.primary.main, 0.08),
+            },
+            '& .MuiTabs-indicator': {
+              height: 3,
+              borderRadius: '2px 2px 0 0',
+            },
           }}
         >
           <Tab
-            icon={<CodeIcon fontSize="small" />}
+            icon={<CodeIcon sx={{ fontSize: '1.1rem' }} />}
             iconPosition="start"
             label={t('plugins:tabs.code')}
           />
           <Tab
-            icon={<SchemaIcon fontSize="small" />}
+            icon={<SchemaIcon sx={{ fontSize: '1.1rem' }} />}
             iconPosition="start"
             label={t('plugins:tabs.uiSchema')}
           />
@@ -257,24 +363,30 @@ const PluginDetails = () => {
       </Box>
 
       {tabValue === 0 && (
-        <Paper
-          elevation={0}
-          sx={{
-            border: `1px solid ${theme.palette.divider}`,
-            overflow: 'hidden'
-          }}
-        >
+        <DashboardCard noPadding>
           <Box
             sx={{
-              p: 1.5,
-              bgcolor: theme.palette.background.default,
-              borderBottom: `1px solid ${theme.palette.divider}`,
+              p: 2,
               display: 'flex',
               alignItems: 'center',
+              borderBottom: `1px solid ${alpha(theme.palette.divider, 0.8)}`
             }}
           >
-            <CodeIcon fontSize="small" sx={{ mr: 1 }} />
-            <Typography variant="subtitle2" fontWeight={500}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: 32,
+                height: 32,
+                borderRadius: '8px',
+                backgroundColor: alpha(theme.palette.info.main, 0.1),
+                mr: 2
+              }}
+            >
+              <CodeIcon fontSize="small" sx={{ color: theme.palette.info.main }} />
+            </Box>
+            <Typography variant="subtitle1" fontWeight={600}>
               {t('plugins:pluginCode')}
             </Typography>
           </Box>
@@ -292,28 +404,34 @@ const PluginDetails = () => {
               wordWrap: 'on',
             }}
           />
-        </Paper>
+        </DashboardCard>
       )}
 
       {tabValue === 1 && (
-        <Paper
-          elevation={0}
-          sx={{
-            border: `1px solid ${theme.palette.divider}`,
-            overflow: 'hidden'
-          }}
-        >
+        <DashboardCard noPadding>
           <Box
             sx={{
-              p: 1.5,
-              bgcolor: theme.palette.background.default,
-              borderBottom: `1px solid ${theme.palette.divider}`,
+              p: 2,
               display: 'flex',
               alignItems: 'center',
+              borderBottom: `1px solid ${alpha(theme.palette.divider, 0.8)}`
             }}
           >
-            <SchemaIcon fontSize="small" sx={{ mr: 1 }} />
-            <Typography variant="subtitle2" fontWeight={500}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: 32,
+                height: 32,
+                borderRadius: '8px',
+                backgroundColor: alpha(theme.palette.warning.main, 0.1),
+                mr: 2
+              }}
+            >
+              <SchemaIcon fontSize="small" sx={{ color: theme.palette.warning.main }} />
+            </Box>
+            <Typography variant="subtitle1" fontWeight={600}>
               {t('plugins:uiSchema')}
             </Typography>
           </Box>
@@ -335,7 +453,7 @@ const PluginDetails = () => {
           ) : (
             <Box
               sx={{
-                p: 4,
+                p: 6,
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -343,14 +461,24 @@ const PluginDetails = () => {
               }}
             >
               <InfoIcon
-                sx={{ fontSize: 48, color: alpha(theme.palette.text.secondary, 0.3), mb: 2 }}
+                sx={{
+                  fontSize: 64,
+                  color: alpha(theme.palette.text.secondary, 0.2),
+                  mb: 2,
+                  p: 1,
+                  borderRadius: '50%',
+                  backgroundColor: alpha(theme.palette.text.secondary, 0.05),
+                }}
               />
-              <Typography variant="body1" color="text.secondary">
+              <Typography variant="h6" color="text.secondary" fontWeight={500}>
                 {t('plugins:noUiSchema')}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                {t('plugins:noUiSchemaDescription')}
               </Typography>
             </Box>
           )}
-        </Paper>
+        </DashboardCard>
       )}
 
       {/* Delete Dialog */}
@@ -359,20 +487,59 @@ const PluginDetails = () => {
         onClose={handleDeleteCancel}
         aria-labelledby="delete-dialog-title"
         aria-describedby="delete-dialog-description"
+        PaperProps={{
+          sx: {
+            borderRadius: '16px',
+            boxShadow: theme.shadows[10],
+            width: '100%',
+            maxWidth: 480,
+          }
+        }}
       >
-        <DialogTitle id="delete-dialog-title">
-          {t('plugins:deletePlugin.title')}
+        <DialogTitle id="delete-dialog-title" sx={{ pb: 1, pt: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <DeleteIcon sx={{ color: theme.palette.error.main, mr: 1.5 }} />
+            <Typography variant="h5" component="span" fontWeight={600}>
+              {t('plugins:deletePlugin.title')}
+            </Typography>
+          </Box>
         </DialogTitle>
         <DialogContent>
-          <DialogContentText id="delete-dialog-description">
+          <DialogContentText id="delete-dialog-description" sx={{ mb: 2 }}>
             {t('plugins:deletePlugin.confirmation', { name: plugin.name })}
           </DialogContentText>
-          <DialogContentText sx={{ mt: 2, color: 'error.main' }}>
-            {t('plugins:deletePlugin.warning')}
-          </DialogContentText>
+          <Box
+            sx={{
+              p: 2,
+              borderRadius: '12px',
+              bgcolor: alpha(theme.palette.error.main, 0.08),
+              border: `1px solid ${alpha(theme.palette.error.main, 0.2)}`,
+              display: 'flex',
+              alignItems: 'center'
+            }}
+          >
+            <VerifiedIcon sx={{ color: theme.palette.error.main, mr: 1.5 }} />
+            <DialogContentText sx={{ color: theme.palette.error.main, m: 0 }}>
+              {t('plugins:deletePlugin.warning')}
+            </DialogContentText>
+          </Box>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDeleteCancel} color="inherit">
+        <DialogActions sx={{ px: 3, pb: 3, pt: 1 }}>
+          <Button
+            onClick={handleDeleteCancel}
+            color="inherit"
+            variant="outlined"
+            sx={{
+              borderRadius: '10px',
+              px: 3,
+              py: 1,
+              fontWeight: 600,
+              borderWidth: '2px',
+              '&:hover': {
+                borderWidth: '2px',
+              }
+            }}
+          >
             {t('common:actions.cancel')}
           </Button>
           <Button
@@ -387,6 +554,17 @@ const PluginDetails = () => {
               )
             }
             disabled={deleteMutation.isPending}
+            sx={{
+              borderRadius: '10px',
+              px: 3,
+              py: 1,
+              fontWeight: 600,
+              boxShadow: theme.shadows[5],
+              '&:hover': {
+                boxShadow: theme.shadows[8],
+                transform: 'translateY(-2px)',
+              }
+            }}
           >
             {t('common:actions.delete')}
           </Button>

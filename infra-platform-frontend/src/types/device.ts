@@ -5,8 +5,6 @@ export interface StandardDeviceData {
   id: number;
   os_type: OSType;
   hostname: string;
-  username: string;
-  port: number;
 }
 
 export interface CustomDeviceData {
@@ -32,9 +30,6 @@ export interface Device {
 export interface StandardDeviceCreate {
   os_type: OSType;
   hostname: string;
-  username: string;
-  password: string;
-  port?: number;
 }
 
 export interface CustomDeviceCreate {

@@ -1,6 +1,7 @@
 {
   "appName": "Infrastructure Platform",
   "navigation": {
+    "main": "Main",
     "dashboard": "Dashboard",
     "devices": "Devices",
     "standardDevices": "Standard Devices",
@@ -42,5 +43,10 @@
     "saveFailed": "Failed to save data",
     "deleteFailed": "Failed to delete",
     "notFound": "Not found"
+  },
+  "sidebar": {
+    "needHelp": "Need Help?",
+    "supportDesc": "Having trouble? Our support team is here to help.",
+    "contactSupport": "Contact Support"
   }
 }

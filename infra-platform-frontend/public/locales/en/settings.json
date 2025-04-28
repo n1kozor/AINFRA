@@ -1,0 +1,21 @@
+{
+  "appearance": {
+    "title": "Appearance",
+    "currentTheme": "Current Theme",
+    "darkMode": "Dark Mode",
+    "lightMode": "Light Mode",
+    "toggleTheme": "Toggle Theme",
+    "toggleDescription": "Switch between light and dark modes"
+  },
+  "language": {
+    "title": "Language",
+    "current": "Current Language",
+    "english": "English",
+    "hungarian": "Hungarian",
+    "select": "Select Language"
+  },
+  "buttons": {
+    "savePreferences": "Save Preferences",
+    "saveLanguage": "Save Language"
+  }
+}

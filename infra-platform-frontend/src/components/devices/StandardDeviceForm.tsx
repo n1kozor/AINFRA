@@ -25,7 +25,6 @@ const StandardDeviceForm: React.FC<StandardDeviceFormProps> = ({
   onChange,
 }) => {
   const { t } = useTranslation(['devices', 'common']);
-  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -38,9 +37,7 @@ const StandardDeviceForm: React.FC<StandardDeviceFormProps> = ({
     onChange({ ...standardDeviceData, [name]: value });
   };
 
-  const handleClickShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
+
 
   const osTypeOptions: { value: OSType; label: string }[] = [
     { value: 'linux', label: t('devices:osTypes.linux') },
@@ -90,68 +87,6 @@ const StandardDeviceForm: React.FC<StandardDeviceFormProps> = ({
                 ? t('common:errors.required')
                 : ''
             }
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6}>
-          <TextField
-            name="username"
-            label={t('devices:username')}
-            value={standardDeviceData.username || ''}
-            onChange={handleChange}
-            fullWidth
-            required
-            error={!standardDeviceData.username && standardDeviceData.username !== undefined}
-            helperText={
-              !standardDeviceData.username && standardDeviceData.username !== undefined
-                ? t('common:errors.required')
-                : ''
-            }
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6}>
-          <TextField
-            name="password"
-            label={t('devices:password')}
-            type={showPassword ? 'text' : 'password'}
-            value={standardDeviceData.password || ''}
-            onChange={handleChange}
-            fullWidth
-            required
-            error={!standardDeviceData.password && standardDeviceData.password !== undefined}
-            helperText={
-              !standardDeviceData.password && standardDeviceData.password !== undefined
-                ? t('common:errors.required')
-                : ''
-            }
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={handleClickShowPassword}
-                    edge="end"
-                  >
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6}>
-          <TextField
-            name="port"
-            label={t('devices:port')}
-            type="number"
-            value={standardDeviceData.port || 22}
-            onChange={handleChange}
-            fullWidth
-            InputProps={{
-              inputProps: { min: 1, max: 65535 },
-            }}
           />
         </Grid>
       </Grid>

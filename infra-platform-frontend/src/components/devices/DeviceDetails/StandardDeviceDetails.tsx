@@ -4,30 +4,25 @@ import {
   Typography,
   Grid,
   Paper,
+  Divider,
   CircularProgress,
   useTheme,
   alpha,
   LinearProgress,
-  Divider,
-  Chip,
-  Tabs,
-  Tab,
+  Button,
 } from '@mui/material';
 import {
   Memory as CpuIcon,
   Storage as MemoryIcon,
   Save as DiskIcon,
   NetworkCheck as NetworkIcon,
-  Info as InfoIcon,
-  Whatshot as TempIcon,
-  Bolt as PerformanceIcon,
+  Warning as WarningIcon,
+  Cached as CacheIcon,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
-import { Device, DeviceStats } from '../../../types/device';
+import { Device } from '../../../types/device';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../../api';
-import MetricsPanel from './MetricsPanel';
-import DashboardCard from '../../dashboard/DashboardCard';
 import { formatBytes } from '../../../utils/formatters';
 
 interface StandardDeviceDetailsProps {
@@ -37,21 +32,24 @@ interface StandardDeviceDetailsProps {
 const StandardDeviceDetails: React.FC<StandardDeviceDetailsProps> = ({ device }) => {
   const { t } = useTranslation(['devices', 'common']);
   const theme = useTheme();
-  const [tabValue, setTabValue] = React.useState(0);
 
-  const { data: stats, isLoading, error } = useQuery({
+  // Fetch device stats
+  const { data: stats, isLoading, error, refetch } = useQuery({
     queryKey: ['deviceStats', device.id],
     queryFn: () => api.standardDevices.getStats(device.id),
     refetchInterval: 30000, // Refresh every 30 seconds
   });
 
-  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
-    setTabValue(newValue);
+  // Helper function for color determination
+  const getColorByUsage = (usage: number) => {
+    if (usage > 80) return theme.palette.error.main;
+    if (usage > 60) return theme.palette.warning.main;
+    return theme.palette.success.main;
   };
 
   if (isLoading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" p={4}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
         <CircularProgress />
       </Box>
     );
@@ -59,755 +57,340 @@ const StandardDeviceDetails: React.FC<StandardDeviceDetailsProps> = ({ device })
 
   if (error || !stats) {
     return (
-      <Box p={3} bgcolor={alpha(theme.palette.error.main, 0.1)} borderRadius={1}>
-        <Typography color="error">
+      <Paper sx={{ p: 3, textAlign: 'center' }}>
+        <WarningIcon color="error" sx={{ fontSize: 40, mb: 2 }} />
+        <Typography color="error" variant="h6" gutterBottom>
           {t('devices:errors.failedToLoadStats')}
         </Typography>
-        <Typography variant="body2">
+        <Typography variant="body2" color="text.secondary" paragraph>
           {error instanceof Error ? error.message : t('devices:errors.unknownError')}
         </Typography>
-      </Box>
+        <Button
+          startIcon={<CacheIcon />}
+          variant="contained"
+          onClick={() => refetch()}
+          sx={{ mt: 1 }}
+        >
+          {t('devices:retry')}
+        </Button>
+      </Paper>
     );
   }
 
   // If Glances returned an error
   if (stats.error) {
     return (
-      <Box p={3} bgcolor={alpha(theme.palette.error.main, 0.1)} borderRadius={1}>
-        <Typography color="error">
+      <Paper sx={{ p: 3, textAlign: 'center' }}>
+        <WarningIcon color="error" sx={{ fontSize: 40, mb: 2 }} />
+        <Typography color="error" variant="h6" gutterBottom>
           {t('devices:errors.glancesError')}
         </Typography>
-        <Typography variant="body2">{stats.error}</Typography>
-      </Box>
+        <Typography variant="body2" color="text.secondary" paragraph>
+          {stats.error}
+        </Typography>
+        <Button
+          startIcon={<CacheIcon />}
+          variant="contained"
+          onClick={() => refetch()}
+          sx={{ mt: 1 }}
+        >
+          {t('devices:retry')}
+        </Button>
+      </Paper>
     );
   }
 
   return (
-    <Box>
-      <Box sx={{ mb: 3 }}>
-        <Tabs
-          value={tabValue}
-          onChange={handleTabChange}
-          aria-label="device metrics tabs"
-          centered
-        >
-          <Tab
-            icon={<PerformanceIcon fontSize="small" />}
-            iconPosition="start"
-            label={t('devices:tabs.overview')}
-          />
-          <Tab
-            icon={<CpuIcon fontSize="small" />}
-            iconPosition="start"
-            label={t('devices:tabs.system')}
-          />
-          <Tab
-            icon={<DiskIcon fontSize="small" />}
-            iconPosition="start"
-            label={t('devices:tabs.storage')}
-          />
-          <Tab
-            icon={<NetworkIcon fontSize="small" />}
-            iconPosition="start"
-            label={t('devices:tabs.network')}
-          />
-        </Tabs>
-      </Box>
+    <Grid container spacing={3}>
+      {/* System Overview */}
+      <Grid item xs={12}>
+        <Paper sx={{ p: 3 }}>
+          <Typography variant="h6" gutterBottom>
+            {t('devices:cards.systemInfo')}
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
 
-      {/* Overview Tab */}
-      {tabValue === 0 && (
-        <Grid container spacing={3}>
-          {/* System Info */}
-          <Grid item xs={12} lg={6}>
-            <DashboardCard
-              title={t('devices:cards.systemInfo')}
-              icon={<InfoIcon />}
-              color="info"
-            >
-              <Box sx={{ p: 1 }}>
-                {stats.system && (
-                  <Box>
-                    <Box sx={{ mb: 2 }}>
-                      <Typography variant="subtitle2" gutterBottom>
-                        {t('devices:systemInfo.hostname')}
-                      </Typography>
-                      <Typography variant="body1">
-                        {stats.system.hostname}
-                      </Typography>
-                    </Box>
-
-                    <Box sx={{ mb: 2 }}>
-                      <Typography variant="subtitle2" gutterBottom>
-                        {t('devices:systemInfo.os')}
-                      </Typography>
-                      <Typography variant="body1">
-                        {stats.system.os_name} {stats.system.os_version}
-                      </Typography>
-                    </Box>
-
-                    <Box>
-                      <Typography variant="subtitle2" gutterBottom>
-                        {t('devices:systemInfo.uptime')}
-                      </Typography>
-                      <Typography variant="body1">
-                        {stats.system.uptime}
-                      </Typography>
-                    </Box>
-                  </Box>
-                )}
-              </Box>
-            </DashboardCard>
-          </Grid>
-
-          {/* CPU Usage */}
-          <Grid item xs={12} sm={6} lg={3}>
-            <DashboardCard
-              title={t('devices:cards.cpuUsage')}
-              icon={<CpuIcon />}
-              color="primary"
-            >
-              <Box
-                sx={{
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  p: 2,
-                }}
+          <Grid container spacing={3}>
+            {/* System Basic Info */}
+            <Grid item xs={12} md={4}>
+              <Paper
+                variant="outlined"
+                sx={{ p: 2, height: '100%' }}
               >
-                {stats.cpu && (
-                  <>
-                    <Box
-                      sx={{
-                        position: 'relative',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        mb: 2,
-                      }}
-                    >
-                      <CircularProgress
-                        variant="determinate"
-                        value={stats.cpu.usage}
-                        size={120}
-                        thickness={4}
-                        sx={{
-                          color: (theme) =>
-                            stats.cpu.usage > 80
-                              ? theme.palette.error.main
-                              : stats.cpu.usage > 60
-                              ? theme.palette.warning.main
-                              : theme.palette.primary.main,
-                        }}
-                      />
-                      <Box
-                        sx={{
-                          position: 'absolute',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                        }}
-                      >
-                        <Typography variant="h4" component="div">
-                          {Math.round(stats.cpu.usage)}%
-                        </Typography>
-                      </Box>
-                    </Box>
-                    <Typography variant="body2" color="textSecondary">
-                      {stats.cpu.cores.length} {t('devices:cpuInfo.cores')}
-                    </Typography>
-                  </>
-                )}
-              </Box>
-            </DashboardCard>
-          </Grid>
-
-          {/* Memory Usage */}
-          <Grid item xs={12} sm={6} lg={3}>
-            <DashboardCard
-              title={t('devices:cards.memoryUsage')}
-              icon={<MemoryIcon />}
-              color="secondary"
-            >
-              <Box
-                sx={{
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  p: 2,
-                }}
-              >
-                {stats.memory && (
-                  <>
-                    <Box
-                      sx={{
-                        position: 'relative',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        mb: 2,
-                      }}
-                    >
-                      <CircularProgress
-                        variant="determinate"
-                        value={stats.memory.percent}
-                        size={120}
-                        thickness={4}
-                        sx={{
-                          color: (theme) =>
-                            stats.memory.percent > 80
-                              ? theme.palette.error.main
-                              : stats.memory.percent > 60
-                              ? theme.palette.warning.main
-                              : theme.palette.success.main,
-                        }}
-                      />
-                      <Box
-                        sx={{
-                          position: 'absolute',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                        }}
-                      >
-                        <Typography variant="h4" component="div">
-                          {Math.round(stats.memory.percent)}%
-                        </Typography>
-                      </Box>
-                    </Box>
-                    <Typography variant="body2" color="textSecondary">
-                      {formatBytes(stats.memory.used)} / {formatBytes(stats.memory.total)}
-                    </Typography>
-                  </>
-                )}
-              </Box>
-            </DashboardCard>
-          </Grid>
-
-          {/* Disk Usage */}
-          {stats.disk && stats.disk.length > 0 && (
-            <Grid item xs={12}>
-              <DashboardCard
-                title={t('devices:cards.diskUsage')}
-                icon={<DiskIcon />}
-                color="success"
-              >
-                <Grid container spacing={2}>
-                  {stats.disk.map((disk, index) => (
-                    <Grid item xs={12} md={6} lg={4} key={index}>
-                      <Paper
-                        sx={{
-                          p: 2,
-                          borderRadius: 1,
-                          backgroundColor: alpha(
-                            theme.palette.background.paper,
-                            0.6
-                          ),
-                        }}
-                      >
-                        <Box
-                          sx={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            mb: 1,
-                          }}
-                        >
-                          <Typography variant="subtitle2" noWrap>
-                            {disk.mountpoint}
-                          </Typography>
-                          <Chip
-                            label={`${Math.round(disk.percent)}%`}
-                            size="small"
-                            color={
-                              disk.percent > 80
-                                ? 'error'
-                                : disk.percent > 60
-                                ? 'warning'
-                                : 'success'
-                            }
-                          />
-                        </Box>
-                        <LinearProgress
-                          variant="determinate"
-                          value={disk.percent}
-                          sx={{ height: 8, borderRadius: 1, mb: 1 }}
-                          color={
-                            disk.percent > 80
-                              ? 'error'
-                              : disk.percent > 60
-                              ? 'warning'
-                              : 'success'
-                          }
-                        />
-                        <Typography variant="body2" color="textSecondary">
-                          {formatBytes(disk.used)} / {formatBytes(disk.total)}
-                        </Typography>
-                      </Paper>
-                    </Grid>
-                  ))}
-                </Grid>
-              </DashboardCard>
-            </Grid>
-          )}
-        </Grid>
-      )}
-
-      {/* System Tab */}
-      {tabValue === 1 && (
-        <Grid container spacing={3}>
-          {/* CPU Details */}
-          <Grid item xs={12} md={6}>
-            <DashboardCard
-              title={t('devices:cards.cpuDetails')}
-              icon={<CpuIcon />}
-              color="primary"
-            >
-              {stats.cpu && (
-                <Box>
-                  {/* Overall CPU Usage */}
-                  <Box sx={{ mb: 3 }}>
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        mb: 1,
-                      }}
-                    >
-                      <Typography variant="subtitle2">
-                        {t('devices:cpuInfo.overall')}
-                      </Typography>
-                      <Typography variant="body2" color="textSecondary">
-                        {Math.round(stats.cpu.usage)}%
-                      </Typography>
-                    </Box>
-                    <LinearProgress
-                      variant="determinate"
-                      value={stats.cpu.usage}
-                      sx={{ height: 10, borderRadius: 1 }}
-                      color={
-                        stats.cpu.usage > 80
-                          ? 'error'
-                          : stats.cpu.usage > 60
-                          ? 'warning'
-                          : 'primary'
-                      }
-                    />
-                  </Box>
-
-                  <Divider sx={{ my: 2 }} />
-
-                  {/* CPU Cores */}
-                  <Typography variant="subtitle1" gutterBottom>
-                    {t('devices:cpuInfo.cores')}
+                <Typography variant="subtitle2" gutterBottom>
+                  {t('devices:systemInfo.hostInfo')}
+                </Typography>
+                <Box sx={{ mt: 1 }}>
+                  <Typography variant="h6">
+                    {stats.system?.hostname || 'N/A'}
                   </Typography>
-
-                  <Grid container spacing={2}>
-                    {stats.cpu.cores.map((core) => (
-                      <Grid item xs={12} sm={6} key={core.core}>
-                        <Box
-                          sx={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            mb: 1,
-                          }}
-                        >
-                          <Typography variant="subtitle2">
-                            {t('devices:cpuInfo.core')} {core.core}
-                          </Typography>
-                          <Typography variant="body2" color="textSecondary">
-                            {Math.round(core.usage)}%
-                          </Typography>
-                        </Box>
-                        <LinearProgress
-                          variant="determinate"
-                          value={core.usage}
-                          sx={{ height: 8, borderRadius: 1 }}
-                          color={
-                            core.usage > 80
-                              ? 'error'
-                              : core.usage > 60
-                              ? 'warning'
-                              : 'primary'
-                          }
-                        />
-                      </Grid>
-                    ))}
-                  </Grid>
+                  <Typography variant="body2" color="text.secondary">
+                    {stats.system?.os_name} {stats.system?.os_version}
+                  </Typography>
+                  <Typography variant="body2" sx={{ mt: 1 }}>
+                    {t('devices:systemInfo.uptime')}: {stats.system?.uptime || 'N/A'}
+                  </Typography>
                 </Box>
-              )}
-            </DashboardCard>
-          </Grid>
+              </Paper>
+            </Grid>
 
-          {/* Process Information */}
-          <Grid item xs={12} md={6}>
-            <DashboardCard
-              title={t('devices:cards.processes')}
-              icon={<InfoIcon />}
-              color="info"
-            >
-              {stats.processes && (
-                <Box sx={{ p: 2 }}>
-                  <Box
+            {/* CPU Usage */}
+            <Grid item xs={12} md={4}>
+              <Paper
+                variant="outlined"
+                sx={{ p: 2, height: '100%' }}
+              >
+                <Typography variant="subtitle2" gutterBottom display="flex" alignItems="center">
+                  <CpuIcon fontSize="small" sx={{ mr: 1 }} />
+                  {t('devices:cpuInfo.usage')}
+                </Typography>
+
+                <Box sx={{ position: 'relative', mt: 2 }}>
+                  <LinearProgress
+                    variant="determinate"
+                    value={stats.cpu?.usage || 0}
                     sx={{
-                      display: 'grid',
-                      gridTemplateColumns: '1fr 1fr',
-                      gap: 2,
+                      height: 16,
+                      borderRadius: 1,
+                      bgcolor: alpha(getColorByUsage(stats.cpu?.usage || 0), 0.1),
+                      '& .MuiLinearProgress-bar': {
+                        bgcolor: getColorByUsage(stats.cpu?.usage || 0),
+                      }
                     }}
+                  />
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mt: 0.5, textAlign: 'right' }}
                   >
-                    <Paper
-                      elevation={0}
-                      sx={{
-                        p: 2,
-                        textAlign: 'center',
-                        borderRadius: 2,
-                        bgcolor: alpha(theme.palette.primary.main, 0.1),
-                      }}
-                    >
-                      <Typography variant="h5" color="primary">
-                        {stats.processes.total}
-                      </Typography>
-                      <Typography variant="subtitle2">
-                        {t('devices:processInfo.total')}
-                      </Typography>
-                    </Paper>
-
-                    <Paper
-                      elevation={0}
-                      sx={{
-                        p: 2,
-                        textAlign: 'center',
-                        borderRadius: 2,
-                        bgcolor: alpha(theme.palette.success.main, 0.1),
-                      }}
-                    >
-                      <Typography variant="h5" color="success">
-                        {stats.processes.running}
-                      </Typography>
-                      <Typography variant="subtitle2">
-                        {t('devices:processInfo.running')}
-                      </Typography>
-                    </Paper>
-
-                    <Paper
-                      elevation={0}
-                      sx={{
-                        p: 2,
-                        textAlign: 'center',
-                        borderRadius: 2,
-                        bgcolor: alpha(theme.palette.info.main, 0.1),
-                      }}
-                    >
-                      <Typography variant="h5" color="info">
-                        {stats.processes.sleeping}
-                      </Typography>
-                      <Typography variant="subtitle2">
-                        {t('devices:processInfo.sleeping')}
-                      </Typography>
-                    </Paper>
-
-                    <Paper
-                      elevation={0}
-                      sx={{
-                        p: 2,
-                        textAlign: 'center',
-                        borderRadius: 2,
-                        bgcolor: alpha(theme.palette.warning.main, 0.1),
-                      }}
-                    >
-                      <Typography variant="h5" color="warning">
-                        {stats.processes.thread}
-                      </Typography>
-                      <Typography variant="subtitle2">
-                        {t('devices:processInfo.threads')}
-                      </Typography>
-                    </Paper>
-                  </Box>
+                    {Math.round(stats.cpu?.usage || 0)}%
+                  </Typography>
                 </Box>
-              )}
-            </DashboardCard>
-          </Grid>
 
-          {/* Temperature Information (if available) */}
-          {stats.cpu && stats.cpu.temperature && stats.cpu.temperature.length > 0 && (
-            <Grid item xs={12}>
-              <DashboardCard
-                title={t('devices:cards.temperature')}
-                icon={<TempIcon />}
-                color="error"
-              >
-                <Grid container spacing={2} sx={{ p: 2 }}>
-                  {stats.cpu.temperature.map((temp, index) => (
-                    <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
-                      <Paper
-                        elevation={0}
-                        sx={{
-                          p: 2,
-                          borderRadius: 2,
-                          bgcolor: alpha(
-                            temp.value > 80
-                              ? theme.palette.error.main
-                              : temp.value > 60
-                              ? theme.palette.warning.main
-                              : theme.palette.success.main,
-                            0.1
-                          ),
-                        }}
-                      >
-                        <Typography
-                          variant="subtitle2"
-                          gutterBottom
-                          noWrap
-                          title={temp.label}
-                        >
-                          {temp.label}
-                        </Typography>
-                        <Typography
-                          variant="h5"
-                          color={
-                            temp.value > 80
-                              ? 'error'
-                              : temp.value > 60
-                              ? 'warning'
-                              : 'success'
-                          }
-                        >
-                          {temp.value}°C
-                        </Typography>
-                      </Paper>
-                    </Grid>
-                  ))}
-                </Grid>
-              </DashboardCard>
+                <Typography variant="body2" sx={{ mt: 1 }}>
+                  {t('devices:cpuInfo.cores')}: {stats.cpu?.cores.length || 0}
+                </Typography>
+              </Paper>
             </Grid>
+
+            {/* Memory Usage */}
+            <Grid item xs={12} md={4}>
+              <Paper
+                variant="outlined"
+                sx={{ p: 2, height: '100%' }}
+              >
+                <Typography variant="subtitle2" gutterBottom display="flex" alignItems="center">
+                  <MemoryIcon fontSize="small" sx={{ mr: 1 }} />
+                  {t('devices:memoryInfo.usage')}
+                </Typography>
+
+                <Box sx={{ position: 'relative', mt: 2 }}>
+                  <LinearProgress
+                    variant="determinate"
+                    value={stats.memory?.percent || 0}
+                    sx={{
+                      height: 16,
+                      borderRadius: 1,
+                      bgcolor: alpha(getColorByUsage(stats.memory?.percent || 0), 0.1),
+                      '& .MuiLinearProgress-bar': {
+                        bgcolor: getColorByUsage(stats.memory?.percent || 0),
+                      }
+                    }}
+                  />
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mt: 0.5, textAlign: 'right' }}
+                  >
+                    {Math.round(stats.memory?.percent || 0)}%
+                  </Typography>
+                </Box>
+
+                <Typography variant="body2" sx={{ mt: 1 }}>
+                  {formatBytes(stats.memory?.used || 0)} / {formatBytes(stats.memory?.total || 0)}
+                </Typography>
+              </Paper>
+            </Grid>
+          </Grid>
+        </Paper>
+      </Grid>
+
+      {/* Storage Information */}
+      <Grid item xs={12}>
+        <Paper sx={{ p: 3 }}>
+          <Typography variant="h6" gutterBottom display="flex" alignItems="center">
+            <DiskIcon sx={{ mr: 1 }} />
+            {t('devices:cards.diskDetails')}
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
+
+          {stats.disk && stats.disk.length > 0 ? (
+            <Grid container spacing={2}>
+              {stats.disk.map((disk, index) => (
+                <Grid item xs={12} md={6} key={index}>
+                  <Paper variant="outlined" sx={{ p: 2 }}>
+                    <Typography variant="subtitle2" gutterBottom>
+                      {disk.device} ({disk.mountpoint})
+                    </Typography>
+
+                    <Box sx={{ mt: 2, mb: 1 }}>
+                      <LinearProgress
+                        variant="determinate"
+                        value={disk.percent}
+                        sx={{
+                          height: 10,
+                          borderRadius: 1,
+                          bgcolor: alpha(getColorByUsage(disk.percent), 0.1),
+                          '& .MuiLinearProgress-bar': {
+                            bgcolor: getColorByUsage(disk.percent),
+                          }
+                        }}
+                      />
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.5 }}>
+                        <Typography variant="body2" color="text.secondary">
+                          {formatBytes(disk.used)} {t('devices:diskInfo.used')}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {disk.percent}%
+                        </Typography>
+                      </Box>
+                    </Box>
+
+                    <Typography variant="body2" color="success.main">
+                      {formatBytes(disk.free)} {t('devices:diskInfo.free')}
+                      {' '}({formatBytes(disk.total)} {t('devices:diskInfo.total')})
+                    </Typography>
+                  </Paper>
+                </Grid>
+              ))}
+            </Grid>
+          ) : (
+            <Typography color="text.secondary" sx={{ textAlign: 'center', py: 2 }}>
+              {t('devices:diskInfo.noData')}
+            </Typography>
           )}
-        </Grid>
-      )}
+        </Paper>
+      </Grid>
 
-      {/* Storage Tab */}
-      {tabValue === 2 && (
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <DashboardCard
-              title={t('devices:cards.diskDetails')}
-              icon={<DiskIcon />}
-              color="success"
-            >
-              {stats.disk && stats.disk.length > 0 ? (
-                <Box sx={{ p: 2 }}>
-                  <Grid container spacing={3}>
-                    {stats.disk.map((disk, index) => (
-                      <Grid item xs={12} key={index}>
-                        <Paper
-                          elevation={0}
-                          sx={{
-                            p: 2,
-                            borderRadius: 2,
-                            bgcolor: alpha(theme.palette.background.paper, 0.6),
-                          }}
-                        >
-                          <Typography variant="h6" gutterBottom>
-                            {disk.device} ({disk.mountpoint})
-                          </Typography>
+      {/* Network Information */}
+      <Grid item xs={12}>
+        <Paper sx={{ p: 3 }}>
+          <Typography variant="h6" gutterBottom display="flex" alignItems="center">
+            <NetworkIcon sx={{ mr: 1 }} />
+            {t('devices:cards.networkInterfaces')}
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
 
-                          <Box sx={{ mb: 2 }}>
-                            <Box
-                              sx={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                mb: 1,
-                              }}
-                            >
-                              <Typography variant="body2">
-                                {t('devices:diskInfo.usage')}
-                              </Typography>
-                              <Typography variant="body2" color="textSecondary">
-                                {disk.percent.toFixed(1)}%
-                              </Typography>
-                            </Box>
-                            <LinearProgress
-                              variant="determinate"
-                              value={disk.percent}
-                              sx={{ height: 10, borderRadius: 1 }}
-                              color={
-                                disk.percent > 80
-                                  ? 'error'
-                                  : disk.percent > 60
-                                  ? 'warning'
-                                  : 'success'
-                              }
-                            />
-                          </Box>
+          {stats.network && stats.network.length > 0 ? (
+            <Grid container spacing={2}>
+              {stats.network.map((iface, index) => (
+                <Grid item xs={12} md={6} key={index}>
+                  <Paper variant="outlined" sx={{ p: 2 }}>
+                    <Typography variant="subtitle2" gutterBottom>
+                      {iface.interface}
+                    </Typography>
 
-                          <Grid container spacing={2}>
-                            <Grid item xs={12} sm={4}>
-                              <Paper
-                                elevation={0}
-                                sx={{
-                                  p: 2,
-                                  textAlign: 'center',
-                                  borderRadius: 2,
-                                  bgcolor: alpha(theme.palette.primary.main, 0.1),
-                                }}
-                              >
-                                <Typography variant="h6" color="primary">
-                                  {formatBytes(disk.total)}
-                                </Typography>
-                                <Typography variant="subtitle2">
-                                  {t('devices:diskInfo.total')}
-                                </Typography>
-                              </Paper>
-                            </Grid>
-
-                            <Grid item xs={12} sm={4}>
-                              <Paper
-                                elevation={0}
-                                sx={{
-                                  p: 2,
-                                  textAlign: 'center',
-                                  borderRadius: 2,
-                                  bgcolor: alpha(theme.palette.error.main, 0.1),
-                                }}
-                              >
-                                <Typography variant="h6" color="error">
-                                  {formatBytes(disk.used)}
-                                </Typography>
-                                <Typography variant="subtitle2">
-                                  {t('devices:diskInfo.used')}
-                                </Typography>
-                              </Paper>
-                            </Grid>
-
-                            <Grid item xs={12} sm={4}>
-                              <Paper
-                                elevation={0}
-                                sx={{
-                                  p: 2,
-                                  textAlign: 'center',
-                                  borderRadius: 2,
-                                  bgcolor: alpha(theme.palette.success.main, 0.1),
-                                }}
-                              >
-                                <Typography variant="h6" color="success">
-                                  {formatBytes(disk.free)}
-                                </Typography>
-                                <Typography variant="subtitle2">
-                                  {t('devices:diskInfo.free')}
-                                </Typography>
-                              </Paper>
-                            </Grid>
-                          </Grid>
-                        </Paper>
+                    <Grid container spacing={2} sx={{ mt: 0.5 }}>
+                      <Grid item xs={6}>
+                        <Typography variant="body2" color="text.secondary">
+                          {t('devices:networkInfo.received')}
+                        </Typography>
+                        <Typography variant="body1">
+                          {formatBytes(iface.rx)}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {iface.rx_packets.toLocaleString()} {t('devices:networkInfo.packets')}
+                        </Typography>
                       </Grid>
-                    ))}
-                  </Grid>
-                </Box>
-              ) : (
-                <Box sx={{ p: 3, textAlign: 'center' }}>
-                  <Typography color="textSecondary">
-                    {t('devices:diskInfo.noData')}
-                  </Typography>
-                </Box>
-              )}
-            </DashboardCard>
-          </Grid>
-        </Grid>
-      )}
-
-      {/* Network Tab */}
-      {tabValue === 3 && (
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <DashboardCard
-              title={t('devices:cards.networkInterfaces')}
-              icon={<NetworkIcon />}
-              color="info"
-            >
-              {stats.network && stats.network.length > 0 ? (
-                <Box sx={{ p: 2 }}>
-                  <Grid container spacing={3}>
-                    {stats.network.map((iface, index) => (
-                      <Grid item xs={12} md={6} key={index}>
-                        <Paper
-                          elevation={0}
-                          sx={{
-                            p: 2,
-                            borderRadius: 2,
-                            bgcolor: alpha(theme.palette.background.paper, 0.6),
-                          }}
-                        >
-                          <Typography variant="h6" gutterBottom>
-                            {iface.interface}
-                          </Typography>
-
-                          <Grid container spacing={2}>
-                            <Grid item xs={12} sm={6}>
-                              <Paper
-                                elevation={0}
-                                sx={{
-                                  p: 2,
-                                  borderRadius: 2,
-                                  bgcolor: alpha(theme.palette.primary.main, 0.1),
-                                }}
-                              >
-                                <Typography variant="subtitle2" gutterBottom>
-                                  {t('devices:networkInfo.received')}
-                                </Typography>
-                                <Typography variant="h6" color="primary">
-                                  {formatBytes(iface.rx)}
-                                </Typography>
-                                <Typography variant="body2" color="textSecondary">
-                                  {iface.rx_packets} {t('devices:networkInfo.packets')}
-                                </Typography>
-                              </Paper>
-                            </Grid>
-
-                            <Grid item xs={12} sm={6}>
-                              <Paper
-                                elevation={0}
-                                sx={{
-                                  p: 2,
-                                  borderRadius: 2,
-                                  bgcolor: alpha(theme.palette.secondary.main, 0.1),
-                                }}
-                              >
-                                <Typography variant="subtitle2" gutterBottom>
-                                  {t('devices:networkInfo.sent')}
-                                </Typography>
-                                <Typography variant="h6" color="secondary">
-                                  {formatBytes(iface.tx)}
-                                </Typography>
-                                <Typography variant="body2" color="textSecondary">
-                                  {iface.tx_packets} {t('devices:networkInfo.packets')}
-                                </Typography>
-                              </Paper>
-                            </Grid>
-                          </Grid>
-                        </Paper>
+                      <Grid item xs={6}>
+                        <Typography variant="body2" color="text.secondary">
+                          {t('devices:networkInfo.sent')}
+                        </Typography>
+                        <Typography variant="body1">
+                          {formatBytes(iface.tx)}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {iface.tx_packets.toLocaleString()} {t('devices:networkInfo.packets')}
+                        </Typography>
                       </Grid>
-                    ))}
-                  </Grid>
-                </Box>
-              ) : (
-                <Box sx={{ p: 3, textAlign: 'center' }}>
-                  <Typography color="textSecondary">
-                    {t('devices:networkInfo.noData')}
-                  </Typography>
-                </Box>
-              )}
-            </DashboardCard>
+                    </Grid>
+                  </Paper>
+                </Grid>
+              ))}
+            </Grid>
+          ) : (
+            <Typography color="text.secondary" sx={{ textAlign: 'center', py: 2 }}>
+              {t('devices:networkInfo.noData')}
+            </Typography>
+          )}
+        </Paper>
+      </Grid>
+
+      {/* Process Information */}
+      <Grid item xs={12}>
+        <Paper sx={{ p: 3 }}>
+          <Typography variant="h6" gutterBottom>
+            {t('devices:processInfo.title')}
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
+
+          <Grid container spacing={2}>
+            <Grid item xs={6} sm={3}>
+              <Paper
+                variant="outlined"
+                sx={{ p: 2, textAlign: 'center' }}
+              >
+                <Typography variant="h4">
+                  {stats.processes?.total || 0}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {t('devices:processInfo.total')}
+                </Typography>
+              </Paper>
+            </Grid>
+            <Grid item xs={6} sm={3}>
+              <Paper
+                variant="outlined"
+                sx={{ p: 2, textAlign: 'center', bgcolor: alpha(theme.palette.success.main, 0.05) }}
+              >
+                <Typography variant="h4" color="success.main">
+                  {stats.processes?.running || 0}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {t('devices:processInfo.running')}
+                </Typography>
+              </Paper>
+            </Grid>
+            <Grid item xs={6} sm={3}>
+              <Paper
+                variant="outlined"
+                sx={{ p: 2, textAlign: 'center', bgcolor: alpha(theme.palette.info.main, 0.05) }}
+              >
+                <Typography variant="h4" color="info.main">
+                  {stats.processes?.sleeping || 0}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {t('devices:processInfo.sleeping')}
+                </Typography>
+              </Paper>
+            </Grid>
+            <Grid item xs={6} sm={3}>
+              <Paper
+                variant="outlined"
+                sx={{ p: 2, textAlign: 'center', bgcolor: alpha(theme.palette.warning.main, 0.05) }}
+              >
+                <Typography variant="h4" color="warning.main">
+                  {stats.processes?.thread || 0}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {t('devices:processInfo.threads')}
+                </Typography>
+              </Paper>
+            </Grid>
           </Grid>
-        </Grid>
-      )}
-    </Box>
+        </Paper>
+      </Grid>
+    </Grid>
   );
 };
 
