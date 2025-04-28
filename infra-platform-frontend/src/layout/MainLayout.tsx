@@ -1,9 +1,9 @@
-// MainLayout.tsx
-import React, { ReactNode } from 'react';
-import { Box, CssBaseline, Toolbar } from '@mui/material';
+import React, { ReactNode, useEffect } from 'react';
+import { Box, CssBaseline, Toolbar, alpha, useTheme } from '@mui/material';
 import Header from '../components/common/Header';
 import Sidebar from '../components/common/Sidebar';
 import { useAppContext } from '../context/AppContext';
+import { motion } from 'framer-motion';
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -11,21 +11,68 @@ interface MainLayoutProps {
 
 const MainLayout = ({ children }: MainLayoutProps) => {
   const { sidebarOpen } = useAppContext();
+  const theme = useTheme();
+
+  // Apply smooth scrolling to the document
+  useEffect(() => {
+    document.documentElement.style.scrollBehavior = 'smooth';
+
+    return () => {
+      document.documentElement.style.scrollBehavior = '';
+    };
+  }, []);
 
   return (
     <Box sx={{
       display: 'flex',
       minHeight: '100vh',
-      background: theme => theme.palette.mode === 'dark'
-        ? 'linear-gradient(135deg, #0a1929 0%, #132f4c 100%)'
-        : 'linear-gradient(135deg, #f0f4f8 0%, #d7e3fc 100%)',
-      overflow: 'hidden'
+      background: theme.palette.mode === 'dark'
+        ? `linear-gradient(135deg, ${alpha('#06101f', 0.92)} 0%, ${alpha('#0f172a', 0.95)} 100%)`
+        : `linear-gradient(135deg, ${alpha('#f8fafc', 0.92)} 0%, ${alpha('#eef2f7', 0.95)} 100%)`,
+      overflow: 'hidden',
+      position: 'relative',
     }}>
       <CssBaseline />
+
+      {/* Decorative elements for visual interest */}
+      <Box
+        sx={{
+          position: 'fixed',
+          top: '10%',
+          right: '5%',
+          width: '300px',
+          height: '300px',
+          background: `radial-gradient(circle, ${alpha(theme.palette.primary.main, 0.15)}, transparent 70%)`,
+          borderRadius: '50%',
+          filter: 'blur(60px)',
+          opacity: 0.6,
+          zIndex: 0,
+        }}
+      />
+
+      <Box
+        sx={{
+          position: 'fixed',
+          bottom: '15%',
+          left: '10%',
+          width: '250px',
+          height: '250px',
+          background: `radial-gradient(circle, ${alpha(theme.palette.secondary.main, 0.15)}, transparent 70%)`,
+          borderRadius: '50%',
+          filter: 'blur(60px)',
+          opacity: 0.5,
+          zIndex: 0,
+        }}
+      />
+
       <Header />
       <Sidebar />
+
       <Box
-        component="main"
+        component={motion.main}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4 }}
         sx={{
           flexGrow: 1,
           p: 0,
@@ -36,9 +83,11 @@ const MainLayout = ({ children }: MainLayoutProps) => {
             duration: theme.transitions.duration.standard,
           }),
           overflowX: 'hidden',
+          position: 'relative',
+          zIndex: 1, // Position above decorative elements
         }}
       >
-        <Toolbar /> {/* This adds spacing below the app bar */}
+        <Toolbar />
         {children}
       </Box>
     </Box>
