@@ -134,5 +134,13 @@
     "parameters": "Parameters"
   },
   "noDataAvailable": "No data available",
-  "noUiSchema": "This plugin does not define a UI schema"
+  "noUiSchema": "This plugin does not define a UI schema",
+  "advancedFilters": "Advanced Filters",
+  "sortBy": "Sort By",
+  "sortOptions": {
+    "name": "Name",
+    "created": "Creation Date",
+    "type": "Type",
+    "status": "Status"
+  }
 }

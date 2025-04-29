@@ -32,6 +32,9 @@ import { motion } from 'framer-motion';
 
 const DRAWER_WIDTH = 280;
 
+
+
+
 const Sidebar = () => {
   const { sidebarOpen, toggleSidebar } = useAppContext();
   const { t } = useTranslation();
@@ -39,12 +42,19 @@ const Sidebar = () => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('lg'));
 
+    const [hasAnimated, setHasAnimated] = useState(false);
+
+useEffect(() => {
+  setHasAnimated(true);
+}, []);
+
   const isActive = (path: string) => {
     return location.pathname === path;
   };
 
   const MotionListItem = motion(ListItem);
   const MotionListItemIcon = motion(ListItemIcon);
+
 
   const navItems = [
     {
@@ -163,13 +173,13 @@ const Sidebar = () => {
       <List sx={{ px: 1.5, py: 0 }}>
         {navItems.map((item) => (
           <MotionListItem
-            key={item.id}
-            disablePadding
-            sx={{ mb: 0.5 }}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2 }}
-          >
+              key={item.id}
+              disablePadding
+              sx={{ mb: 0.5 }}
+              initial={!hasAnimated ? { opacity: 0, y: 10 } : false}
+              animate={!hasAnimated ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.2 }}
+            >
             <ListItemButton
               component={Link}
               to={item.path}

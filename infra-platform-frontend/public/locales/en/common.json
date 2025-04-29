@@ -18,7 +18,11 @@
     "confirm": "Confirm",
     "back": "Back",
     "refresh": "Refresh",
-    "search": "Search"
+    "search": "Search",
+    "more": "More",
+    "share": "Share",
+    "favorite": "Favorite",
+    "view": "View"
   },
   "status": {
     "online": "Online",
@@ -61,5 +65,23 @@
     "needHelp": "Need Help?",
     "supportDesc": "Having trouble? Our support team is here to help.",
     "contactSupport": "Contact Support"
+  },
+  "tooltip": {
+    "apps": "Applications",
+    "darkMode": "Toggle Dark Mode",
+    "changeLanguage": "Change Language",
+    "notifications": "Notifications"
+  },
+  "user": {
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "viewAll": "View All"
+  },
+  "apps": {
+    "title": "Applications"
   }
 }

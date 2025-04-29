@@ -7,14 +7,21 @@
 
   "sections": {
     "overview": "System Overview",
-    "details": "Detailed Analytics"
+    "details": "Detailed Analytics",
+    "monitoring": "Monitoring"
   },
 
   "stats": {
     "totalDevices": "Total Devices",
+    "totalDevicesShort": "Total Devices",
     "standardDevices": "Standard Devices",
     "customDevices": "Custom Devices",
-    "plugins": "Plugins Available"
+    "plugins": "Plugins Available",
+    "available": "Available",
+    "availableShort": "Available",
+    "unavailable": "Unavailable",
+    "unavailableShort": "Unavailable",
+    "uptimePercent": "Uptime %"
   },
 
   "osTypes": {
@@ -33,6 +40,8 @@
     "title": "Device Availability",
     "subtitle": "Real-time monitoring of device uptime",
     "selectDevice": "Select a device",
+    "selectDeviceHint": "Select a device to see details",
+    "showAll": "Show All",
     "tabs": {
       "day": "Day",
       "week": "Week",
@@ -51,7 +60,16 @@
     "status": "Status",
     "responseTime": "Response Time",
     "cloud": "Cloud Services",
-    "alerts": "Alerts"
+    "alerts": "Alerts",
+    "checkInProgress": "Check in Progress",
+    "updatingNow": "Updating Now"
+  },
+
+  "chartTypes": {
+    "status": "Status",
+    "statusDescription": "Device Status",
+    "uptime": "Uptime",
+    "response": "Response"
   },
 
   "osDistribution": {
@@ -60,6 +78,16 @@
     "devices": "devices",
     "noDevices": "No devices found",
     "addDevices": "Add your first device to see OS distribution"
+  },
+
+  "overview": {
+    "available": "Available",
+    "unavailable": "Unavailable",
+    "summaryTitle": "Summary",
+    "availabilityRate": "Availability Rate",
+    "deviceCount": "Device Count",
+    "availableCount": "Available Count",
+    "unavailableCount": "Unavailable Count"
   },
 
   "systemHealth": {

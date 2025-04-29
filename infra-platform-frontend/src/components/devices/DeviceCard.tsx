@@ -1,53 +1,68 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   CardContent,
   Typography,
   Box,
   Chip,
-  IconButton,
-  Tooltip,
-  CardActionArea,
   useTheme,
   alpha,
-  Badge,
-  Stack,
   Avatar,
   Divider,
   ButtonBase,
+  Skeleton,
 } from '@mui/material';
 import {
   ComputerRounded as StandardIcon,
   SmartToyRounded as CustomIcon,
-  EditRounded as EditIcon,
-  DeleteRounded as DeleteIcon,
   VisibilityRounded as ViewIcon,
-  ArrowForwardRounded as ArrowIcon,
   CheckCircleRounded as OnlineIcon,
   ErrorRounded as OfflineIcon,
   StorageRounded as StorageIcon,
   ExtensionRounded as PluginIcon,
-  AccessTimeRounded as TimeIcon,
+  LaptopMacRounded as MacOSIcon,
+  LaptopWindowsRounded as WindowsIcon,
+  LaptopRounded as LinuxIcon,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Device } from '../../types/device';
-import { format, formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow } from 'date-fns';
 import { motion } from 'framer-motion';
+import { availabilityApi } from '../../api/availability';
 
 interface DeviceCardProps {
   device: Device;
-  onDelete?: (id: number) => void;
 }
 
-const DeviceCard: React.FC<DeviceCardProps> = ({ device, onDelete }) => {
+/**
+ * DeviceCard component displays a device as a card
+ * Shows real-time availability status by checking the device every 5 seconds
+ * All cards have consistent dimensions
+ */
+const DeviceCard: React.FC<DeviceCardProps> = ({ device }) => {
   const { t } = useTranslation(['devices', 'common']);
   const navigate = useNavigate();
   const theme = useTheme();
+  const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const isStandard = device.type === 'standard';
-  const DeviceIcon = isStandard ? StandardIcon : CustomIcon;
 
+  // Select the appropriate icon based on device type and OS
+  const getDeviceIcon = () => {
+    if (isStandard && device.standard_device) {
+      const osType = device.standard_device.os_type;
+      if (osType === 'windows') return WindowsIcon;
+      if (osType === 'macos') return MacOSIcon;
+      if (osType === 'linux') return LinuxIcon;
+    }
+    return isStandard ? StandardIcon : CustomIcon;
+  };
+
+  const DeviceIcon = getDeviceIcon();
+
+  // Get device type label for display
   const getDeviceTypeLabel = () => {
     if (isStandard && device.standard_device) {
       return t(`devices:osTypes.${device.standard_device.os_type}`);
@@ -58,21 +73,39 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ device, onDelete }) => {
     }
   };
 
+  // Navigate to device details
   const handleCardClick = () => {
     navigate(`/devices/${device.id}`);
   };
 
-  const handleEditClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    navigate(`/devices/${device.id}/edit`);
-  };
+  // Check device availability every 5 seconds
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
 
-  const handleDeleteClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (onDelete) {
-      onDelete(device.id);
-    }
-  };
+    const checkAvailability = async () => {
+      setIsLoading(true);
+      try {
+        const result = await availabilityApi.checkDevice(device.id);
+        setIsAvailable(result.is_available);
+      } catch (error) {
+        setIsAvailable(false);
+        console.error(`Failed to check availability for device ${device.id}:`, error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    // Check immediately on mount
+    checkAvailability();
+
+    // Set up interval for regular checks
+    intervalId = setInterval(checkAvailability, 5000);
+
+    // Clean up interval on unmount
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [device.id]);
 
   // Get color scheme based on device type
   const getColorScheme = () => {
@@ -93,6 +126,56 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ device, onDelete }) => {
 
   const colorScheme = getColorScheme();
 
+  // Common card styles with fixed dimensions
+  const cardStyles = {
+    height: 340, // Fixed height for all cards
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    borderRadius: '20px',
+    overflow: 'hidden',
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    backgroundImage: 'none',
+    position: 'relative',
+  };
+
+  // Render loading skeleton when availability status is being checked
+  if (isLoading && isAvailable === null) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <Card
+          elevation={0}
+          sx={{
+            ...cardStyles,
+            border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+            p: 3,
+          }}
+        >
+          <Box sx={{ display: 'flex', mb: 2 }}>
+            <Skeleton variant="rounded" width={50} height={50} sx={{ borderRadius: '16px' }} />
+            <Box sx={{ ml: 2, width: '100%' }}>
+              <Skeleton variant="text" width="70%" height={30} />
+              <Skeleton variant="text" width="40%" height={20} />
+            </Box>
+          </Box>
+          <Skeleton variant="rounded" width="40%" height={30} sx={{ mb: 2 }} />
+          <Skeleton variant="text" width="100%" height={20} sx={{ mb: 1 }} />
+          <Skeleton variant="text" width="90%" height={20} sx={{ mb: 1 }} />
+          <Box sx={{ flexGrow: 1 }} />
+          <Skeleton variant="text" width="60%" height={16} sx={{ mt: 2 }} />
+          <Divider sx={{ my: 2, opacity: 0.1 }} />
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Skeleton variant="rounded" width={120} height={36} />
+          </Box>
+        </Card>
+      </motion.div>
+    );
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -102,53 +185,15 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ device, onDelete }) => {
       <Card
         elevation={0}
         sx={{
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          borderRadius: '20px',
-          overflow: 'hidden',
-          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-          backgroundImage: 'none',
+          ...cardStyles,
           border: `1px solid ${alpha(colorScheme.main, 0.15)}`,
           '&:hover': {
             transform: 'translateY(-5px)',
             boxShadow: `0 8px 25px ${alpha(colorScheme.main, 0.2)}`,
             borderColor: alpha(colorScheme.main, 0.3),
           },
-          position: 'relative',
         }}
       >
-        {/* Status indicator */}
-        <Badge
-          variant="dot"
-          overlap="circular"
-          color={device.is_active ? 'success' : 'error'}
-          sx={{
-            position: 'absolute',
-            top: 12,
-            right: 12,
-            '& .MuiBadge-badge': {
-              width: 12,
-              height: 12,
-              borderRadius: '50%',
-              border: `2px solid ${theme.palette.background.paper}`,
-              boxShadow: `0 0 0 ${device.is_active ? '2px' : '0px'} ${alpha(theme.palette.success.main, 0.3)}`,
-              animation: device.is_active ? 'pulse 2s infinite' : 'none',
-              '@keyframes pulse': {
-                '0%': {
-                  boxShadow: `0 0 0 0 ${alpha(theme.palette.success.main, 0.7)}`,
-                },
-                '70%': {
-                  boxShadow: `0 0 0 5px ${alpha(theme.palette.success.main, 0)}`,
-                },
-                '100%': {
-                  boxShadow: `0 0 0 0 ${alpha(theme.palette.success.main, 0)}`,
-                },
-              },
-            },
-          }}
-        />
-
         {/* Header section */}
         <Box
           sx={{
@@ -182,7 +227,11 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ device, onDelete }) => {
                 fontWeight: 700,
                 fontSize: '1.1rem',
                 lineHeight: 1.2,
-                mb: 0.5
+                mb: 0.5,
+                // Limit to 1 line with ellipsis
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
               }}
             >
               {device.name}
@@ -196,9 +245,13 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ device, onDelete }) => {
                 alignItems: 'center',
                 gap: 0.5,
                 fontSize: '0.85rem',
+                // Limit to 1 line with ellipsis
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
               }}
             >
-              <StorageIcon sx={{ fontSize: '0.95rem', opacity: 0.7 }} />
+              <StorageIcon sx={{ fontSize: '0.95rem', opacity: 0.7, flexShrink: 0 }} />
               {device.ip_address}
             </Typography>
           </Box>
@@ -216,6 +269,7 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ device, onDelete }) => {
         >
           {/* Status chip */}
           <Box sx={{ mb: 2, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+            {/* Device type chip */}
             <Chip
               size="small"
               label={getDeviceTypeLabel()}
@@ -227,28 +281,33 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ device, onDelete }) => {
                 fontWeight: 600,
                 fontSize: '0.75rem',
               }}
-              icon={isStandard ? <StandardIcon sx={{ fontSize: '1rem !important' }} /> : <PluginIcon sx={{ fontSize: '1rem !important' }} />}
+              icon={isStandard ? <DeviceIcon sx={{ fontSize: '1rem !important' }} /> : <PluginIcon sx={{ fontSize: '1rem !important' }} />}
             />
 
-            <Chip
-              size="small"
-              label={device.is_active ? t('devices:status.active') : t('devices:status.inactive')}
-              sx={{
-                borderRadius: '8px',
-                bgcolor: alpha(device.is_active ? theme.palette.success.main : theme.palette.error.main, 0.1),
-                color: device.is_active ? theme.palette.success.main : theme.palette.error.main,
-                border: `1px solid ${alpha(device.is_active ? theme.palette.success.main : theme.palette.error.main, 0.2)}`,
-                fontWeight: 600,
-                fontSize: '0.75rem',
-              }}
-              icon={device.is_active ?
-                <OnlineIcon sx={{ fontSize: '1rem !important' }} /> :
-                <OfflineIcon sx={{ fontSize: '1rem !important' }} />
-              }
-            />
+            {/* Availability status chip */}
+            {isLoading ? (
+              <Skeleton variant="rounded" width={100} height={24} sx={{ borderRadius: '8px' }} />
+            ) : (
+              <Chip
+                size="small"
+                label={isAvailable ? t('devices:status.online') : t('devices:status.offline')}
+                sx={{
+                  borderRadius: '8px',
+                  bgcolor: alpha(isAvailable ? theme.palette.success.main : theme.palette.error.main, 0.1),
+                  color: isAvailable ? theme.palette.success.main : theme.palette.error.main,
+                  border: `1px solid ${alpha(isAvailable ? theme.palette.success.main : theme.palette.error.main, 0.2)}`,
+                  fontWeight: 600,
+                  fontSize: '0.75rem',
+                }}
+                icon={isAvailable ?
+                  <OnlineIcon sx={{ fontSize: '1rem !important' }} /> :
+                  <OfflineIcon sx={{ fontSize: '1rem !important' }} />
+                }
+              />
+            )}
           </Box>
 
-          {/* Description */}
+          {/* Description - limited to 2 lines */}
           {device.description && (
             <Typography
               variant="body2"
@@ -259,12 +318,35 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ device, onDelete }) => {
                 WebkitBoxOrient: 'vertical',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
+                maxHeight: '40px', // Approximately 2 lines
                 mb: 2,
                 fontSize: '0.85rem',
                 lineHeight: 1.6,
               }}
             >
               {device.description}
+            </Typography>
+          )}
+
+          {/* Plugin information for custom devices */}
+          {!isStandard && device.custom_device && (
+            <Typography
+              variant="body2"
+              sx={{
+                color: alpha(theme.palette.text.secondary, 0.8),
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.5,
+                fontSize: '0.85rem',
+                mb: 1,
+                // Limit to 1 line with ellipsis
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              <PluginIcon fontSize="small" sx={{ flexShrink: 0 }} />
+              {t('devices:pluginConnection')}: {device.custom_device.plugin_name}
             </Typography>
           )}
 
@@ -282,15 +364,14 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ device, onDelete }) => {
               mt: 2,
             }}
           >
-            <TimeIcon fontSize="inherit" />
             {t('devices:added')}: {formatDistanceToNow(new Date(device.created_at), { addSuffix: true })}
           </Typography>
         </CardContent>
 
         <Divider sx={{ opacity: 0.1 }} />
 
-        {/* Actions */}
-        <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between' }}>
+        {/* Actions - only View button */}
+        <Box sx={{ p: 2, display: 'flex', justifyContent: 'center' }}>
           <ButtonBase
             onClick={handleCardClick}
             sx={{
@@ -316,49 +397,6 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ device, onDelete }) => {
             <ViewIcon fontSize="small" />
             {t('common:actions.view')}
           </ButtonBase>
-
-          <Box>
-            <Tooltip title={t('common:actions.edit')}>
-              <IconButton
-                size="small"
-                onClick={handleEditClick}
-                sx={{
-                  color: theme.palette.info.main,
-                  bgcolor: alpha(theme.palette.info.main, 0.1),
-                  border: `1px solid ${alpha(theme.palette.info.main, 0.2)}`,
-                  borderRadius: '8px',
-                  mr: 1,
-                  '&:hover': {
-                    bgcolor: alpha(theme.palette.info.main, 0.2),
-                    transform: 'translateY(-2px)',
-                  },
-                  transition: 'all 0.2s',
-                }}
-              >
-                <EditIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-
-            <Tooltip title={t('common:actions.delete')}>
-              <IconButton
-                size="small"
-                onClick={handleDeleteClick}
-                sx={{
-                  color: theme.palette.error.main,
-                  bgcolor: alpha(theme.palette.error.main, 0.1),
-                  border: `1px solid ${alpha(theme.palette.error.main, 0.2)}`,
-                  borderRadius: '8px',
-                  '&:hover': {
-                    bgcolor: alpha(theme.palette.error.main, 0.2),
-                    transform: 'translateY(-2px)',
-                  },
-                  transition: 'all 0.2s',
-                }}
-              >
-                <DeleteIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-          </Box>
         </Box>
       </Card>
     </motion.div>

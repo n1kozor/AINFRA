@@ -1,5 +1,13 @@
 {
   "title": "Plugins",
+  "subtitle": "Manage and configure system plugins",
+  "refresh": "Refresh Plugins",
+  "filter": "Filter",
+  "sort": "Sort",
+  "status": "Status",
+  "loadingPlugins": "Loading plugins...",
+  "sortOptions": "Sort Options",
+  "resetFilters": "Reset Filters",
   "addPlugin": "Add Plugin",
   "addFirstPlugin": "Add First Plugin",
   "pluginCount": "{{count}} plugins found",
@@ -37,5 +45,57 @@
     "code": "Code",
     "uiSchema": "UI Schema"
   },
-  "noUiSchema": "This plugin doesn't define a UI schema"
+  "noUiSchema": "This plugin doesn't define a UI schema",
+  "viewModes": {
+    "grid": "Grid View",
+    "list": "List View"
+  },
+  "sortOptions": {
+    "name": "Name",
+    "updated": "Last Updated",
+    "created": "Created Date"
+  },
+  "statusOptions": {
+    "all": "All Plugins",
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "installPlugin": "Install Plugin",
+  "uploadPlugin": "Upload Plugin",
+  "settings": "Plugin Settings",
+  "developer": "Developer",
+  "lastUpdated": "Last Updated",
+  "pluginStatus": {
+    "active": "Active",
+    "inactive": "Inactive",
+    "error": "Error",
+    "updating": "Updating"
+  },
+  "actions": {
+    "enable": "Enable",
+    "disable": "Disable",
+    "delete": "Delete",
+    "update": "Update",
+    "configure": "Configure"
+  },
+  "deleteConfirmation": {
+    "title": "Delete Plugin",
+    "message": "Are you sure you want to delete this plugin? This action cannot be undone.",
+    "dependencyWarning": "This plugin is used by {{count}} devices. Deleting it may cause those devices to malfunction."
+  },
+  "errors": {
+    "failedToLoad": "Failed to load plugins",
+    "failedToEnable": "Failed to enable plugin",
+    "failedToDisable": "Failed to disable plugin",
+    "failedToDelete": "Failed to delete plugin",
+    "failedToUpdate": "Failed to update plugin",
+    "notCompatible": "Plugin is not compatible with current system"
+  },
+  "pluginDetails": {
+    "capabilities": "Capabilities",
+    "dependencies": "Dependencies",
+    "configuration": "Configuration",
+    "documentation": "Documentation",
+    "usedBy": "Used by {{count}} devices"
+  }
 }
