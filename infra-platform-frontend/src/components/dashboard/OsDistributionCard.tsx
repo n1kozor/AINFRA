@@ -4,21 +4,17 @@ import {
   Typography,
   useTheme,
   alpha,
-  Divider,
+  Paper,
+  Stack,
+  IconButton,
+  Tooltip,
   Chip,
-  Button,
-  Stack
+  Divider,
 } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { StorageRounded as StorageIcon, RefreshRounded as RefreshIcon } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
-import {
-  StorageRounded as StorageIcon,
-  HelpOutlineRounded as HelpIcon,
-  AddRounded as AddIcon
-} from '@mui/icons-material';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts';
 import { OsDistribution } from '../../types/dashboard';
-import DashboardCard from './DashboardCard';
 
 interface OsDistributionCardProps {
   data: OsDistribution[];
@@ -30,126 +26,136 @@ const OsDistributionCard: React.FC<OsDistributionCardProps> = ({ data, onRefresh
   const { t } = useTranslation(['dashboard', 'common']);
 
   return (
-    <DashboardCard
-      title={t('dashboard:osDistribution.title')}
-      subtitle={t('dashboard:osDistribution.subtitle')}
-      icon={<StorageIcon />}
-      color="warning"
-      variant="glass"
-      fullHeight
-      onRefresh={onRefresh}
+    <Paper
+      elevation={0}
+      sx={{
+        borderRadius: 3,
+        overflow: 'hidden',
+        background: `linear-gradient(135deg, ${alpha(theme.palette.background.paper, 0.95)}, ${alpha(theme.palette.background.paper, 0.85)})`,
+        backdropFilter: 'blur(10px)',
+        boxShadow: theme.palette.mode === 'dark'
+          ? `0 8px 32px ${alpha(theme.palette.common.black, 0.25)}`
+          : `0 8px 32px ${alpha(theme.palette.common.black, 0.1)}`,
+      }}
     >
+      {/* Header */}
       <Box
         sx={{
-          height: 300,
-          p: 2,
+          p: 3,
           display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          borderBottom: `1px solid ${alpha(theme.palette.divider, 0.1)}`
         }}
       >
-        {data.length > 0 ? (
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={data}
-                cx="50%"
-                cy="50%"
-                innerRadius={60}
-                outerRadius={90}
-                paddingAngle={5}
-                dataKey="value"
-                labelLine={false}
-                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-              >
-                {data.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={entry.color}
-                    stroke={theme.palette.background.paper}
-                    strokeWidth={2}
-                  />
-                ))}
-              </Pie>
-              <RechartsTooltip
-                formatter={(value: number, name: string) => [
-                  `${value} ${t('dashboard:osDistribution.devices')}`,
-                  name
-                ]}
-                contentStyle={{
-                  background: alpha(theme.palette.background.paper, 0.9),
-                  border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-                  borderRadius: '10px',
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-                }}
-              />
-            </PieChart>
-          </ResponsiveContainer>
-        ) : (
-          <Box sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            height: '100%',
-            p: 3
-          }}>
-            <Box
-              sx={{
-                width: 70,
-                height: 70,
-                borderRadius: '50%',
-                bgcolor: alpha(theme.palette.warning.main, 0.1),
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                mb: 2,
-                border: `1px solid ${alpha(theme.palette.warning.main, 0.2)}`,
-              }}
-            >
-              <HelpIcon fontSize="large" sx={{ color: theme.palette.warning.main }} />
-            </Box>
-            <Typography align="center" color="textSecondary" variant="subtitle1" fontWeight={500}>
-              {t('dashboard:osDistribution.noDevices')}
-            </Typography>
-            <Typography align="center" color="textSecondary" sx={{ mt: 1, fontSize: '0.85rem' }}>
-              {t('dashboard:osDistribution.addDevices')}
-            </Typography>
-            <Button
-              component={Link}
-              to="/devices/new"
-              variant="outlined"
-              color="warning"
-              size="small"
-              startIcon={<AddIcon />}
-              sx={{ mt: 2, borderRadius: '12px' }}
-            >
-              {t('dashboard:addDevice')}
-            </Button>
-          </Box>
-        )}
+        <Box display="flex" alignItems="center">
+          <StorageIcon sx={{ color: theme.palette.warning.main, mr: 1 }} />
+          <Typography variant="h6" fontWeight={700}>
+            {t('dashboard:osDistribution.title')}
+          </Typography>
+        </Box>
+        <Tooltip title={t('dashboard:refresh')} arrow>
+          <IconButton
+            onClick={onRefresh}
+            size="small"
+            sx={{
+              borderRadius: 2,
+              bgcolor: alpha(theme.palette.primary.main, 0.1)
+            }}
+          >
+            <RefreshIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
       </Box>
 
+      {/* Chart and Legend */}
       <Box p={2}>
-        <Divider sx={{ opacity: 0.4, my: 1 }} />
-        <Stack direction="row" spacing={1} mt={1} justifyContent="center">
-          {data.map((os, index) => (
-            <Chip
-              key={index}
-              label={os.name}
+        <Box height={250}>
+          {data.length > 0 ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={data}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={90}
+                  paddingAngle={5}
+                  dataKey="value"
+                  labelLine={false}
+                >
+                  {data.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={entry.color}
+                      stroke={theme.palette.background.paper}
+                      strokeWidth={2}
+                    />
+                  ))}
+                </Pie>
+                <RechartsTooltip
+                  formatter={(value: number, name: string) => [
+                    `${value} ${t('dashboard:osDistribution.devices')}`,
+                    name
+                  ]}
+                  contentStyle={{
+                    background: alpha(theme.palette.background.paper, 0.9),
+                    border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+                    borderRadius: '10px',
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+                  }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <Box
               sx={{
-                bgcolor: alpha(os.color, 0.1),
-                color: os.color,
-                fontWeight: 600,
-                borderRadius: '10px',
-                border: `1px solid ${alpha(os.color, 0.2)}`,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100%',
+                flexDirection: 'column'
               }}
-              size="small"
-            />
-          ))}
-        </Stack>
+            >
+              <Typography variant="body1" color="text.secondary" align="center">
+                {t('dashboard:osDistribution.noDevices')}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" align="center" mt={1}>
+                {t('dashboard:osDistribution.addDevices')}
+              </Typography>
+            </Box>
+          )}
+        </Box>
+
+        {data.length > 0 && (
+          <>
+            <Divider sx={{ my: 2, opacity: 0.6 }} />
+
+            <Stack
+              direction="row"
+              flexWrap="wrap"
+              gap={1}
+              justifyContent="center"
+            >
+              {data.map((os, index) => (
+                <Chip
+                  key={index}
+                  label={`${os.name} (${os.value})`}
+                  sx={{
+                    bgcolor: alpha(os.color, 0.1),
+                    color: os.color,
+                    fontWeight: 600,
+                    borderRadius: '10px',
+                    border: `1px solid ${alpha(os.color, 0.2)}`,
+                  }}
+                  size="small"
+                />
+              ))}
+            </Stack>
+          </>
+        )}
       </Box>
-    </DashboardCard>
+    </Paper>
   );
 };
 

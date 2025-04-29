@@ -8,14 +8,14 @@ import MainLayout from './layout/MainLayout';
 
 // Pages
 import Dashboard from './pages/Dashboard';
-import StandardDevices from './pages/Devices/StandardDevices';
-import CustomDevices from './pages/Devices/CustomDevices';
 import DeviceDetails from './pages/Devices/DeviceDetails';
 import NewDevice from './pages/Devices/NewDevice';
 import Plugins from './pages/Plugins';
 import PluginDetails from './pages/Plugins/PluginDetails';
 import NewPlugin from './pages/Plugins/NewPlugin';
 import Settings from './pages/Settings';
+import DevicesPage from './pages/Devices/DevicesPage';
+
 
 // Create React Query client
 const queryClient = new QueryClient({
@@ -40,8 +40,7 @@ const App = () => {
               <Routes>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/devices">
-                  <Route path="standard" element={<StandardDevices />} />
-                  <Route path="custom" element={<CustomDevices />} />
+                <Route path="/devices" element={<DevicesPage />} />
                   <Route path="new" element={<NewDevice />} />
                   <Route path=":id" element={<DeviceDetails />} />
                 </Route>

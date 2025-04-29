@@ -53,16 +53,16 @@
     }
   },
   "dashboard": {
+    "refresh": "Refresh",
     "systemHealth": {
       "title": "System Health",
+      "status": "Status",
       "critical": "Critical",
       "excellent": "Excellent",
-      "status": "Status",
       "acceptable": "Acceptable",
       "sufferingSoulMessage": "Your system needs attention",
       "happySoulMessage": "Your system is running smoothly",
       "troubledSoulMessage": "Your system is having some issues"
-
     }
   },
   "errors": {

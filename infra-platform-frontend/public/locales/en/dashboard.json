@@ -12,6 +12,8 @@
   },
 
   "stats": {
+    "active": "Active",
+    "inactive": "Inactive",
     "totalDevices": "Total Devices",
     "totalDevicesShort": "Total Devices",
     "standardDevices": "Standard Devices",
@@ -81,6 +83,7 @@
   },
 
   "overview": {
+    "networkStatus": "Network Status",
     "available": "Available",
     "unavailable": "Unavailable",
     "summaryTitle": "Summary",
@@ -98,16 +101,14 @@
     "memory": "Memory Usage",
     "storage": "Storage Usage",
     "overallStatus": "Overall System Status",
-    "status": {
-      "excellent": "Excellent",
-      "good": "Good",
-      "critical": "Critical"
-    },
-    "messages": {
-      "excellent": "Your system is running optimally",
-      "good": "Your system is running well with minor issues",
-      "critical": "Your system needs immediate attention"
-    }
+    "status": "Status",
+    "excellent": "Excellent",
+    "good": "Good",
+    "critical": "Critical",
+    "acceptable": "Acceptable",
+    "happySoulMessage": "Your system is running smoothly",
+    "troubledSoulMessage": "Your system is having some issues",
+    "sufferingSoulMessage": "Your system needs attention"
   },
 
   "recentDevices": {
@@ -118,11 +119,84 @@
   },
 
   "actions": {
+    "add": "Add",
     "edit": "Edit",
     "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "back": "Back",
     "refresh": "Refresh",
+    "search": "Search",
     "more": "More Options",
     "share": "Share",
     "favorite": "Add to Favorites"
+  },
+
+  "appName": "Infrastructure Platform",
+  "navigation": {
+    "main": "Main",
+    "dashboard": "Dashboard",
+    "devices": "Devices",
+    "standardDevices": "Standard Devices",
+    "customDevices": "Custom Devices",
+    "plugins": "Plugins",
+    "settings": "Settings"
+  },
+
+  "status": {
+    "online": "Online",
+    "offline": "Offline",
+    "warning": "Warning",
+    "error": "Error",
+    "loading": "Loading..."
+  },
+
+  "theme": {
+    "light": "Light Mode",
+    "dark": "Dark Mode"
+  },
+
+  "language": {
+    "en": "English",
+    "hu": "Hungarian"
+  },
+
+  "errors": {
+    "required": "This field is required",
+    "invalidIP": "Invalid IP address",
+    "connectionFailed": "Connection failed",
+    "loadFailed": "Failed to load data",
+    "saveFailed": "Failed to save data",
+    "deleteFailed": "Failed to delete",
+    "notFound": "Not found"
+  },
+
+  "sidebar": {
+    "needHelp": "Need Help?",
+    "supportDesc": "Having trouble? Our support team is here to help.",
+    "contactSupport": "Contact Support"
+  },
+
+  "tooltip": {
+    "apps": "Applications",
+    "darkMode": "Toggle Dark Mode",
+    "changeLanguage": "Change Language",
+    "notifications": "Notifications"
+  },
+
+  "user": {
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+
+  "notifications": {
+    "title": "Notifications",
+    "viewAll": "View All"
+  },
+
+  "apps": {
+    "title": "Applications"
   }
 }

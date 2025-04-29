@@ -1,14 +1,9 @@
+// CustomDeviceForm.tsx
 import React, { useState, useEffect } from 'react';
 import {
   Box,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Grid,
   Typography,
-  Button,
   Paper,
   useTheme,
   alpha,
@@ -20,24 +15,22 @@ import {
   Avatar,
   Tab,
   Tabs,
-  Badge,
   Alert,
+  Button,
+  TextField,
+  InputAdornment,
 } from '@mui/material';
 import {
   CodeRounded as CodeIcon,
-  AddRounded as AddIcon,
-  DeleteRounded as DeleteIcon,
-  ExtensionRounded as PluginIcon,
-  CloudRounded as CloudIcon,
-  SettingsRounded as SettingsIcon,
   DataObjectRounded as JsonIcon,
   InfoOutlined as InfoIcon,
-  DownloadRounded as DownloadIcon,
   HelpOutlineRounded as HelpIcon,
   VerifiedUserRounded as VerifiedIcon,
   WarningAmberRounded as WarningIcon,
-  UpdateRounded as UpdateIcon,
   AutorenewRounded as RefreshIcon,
+  ExtensionRounded as PluginIcon,
+  TuneRounded as TuneIcon,
+  SecurityRounded as SecurityIcon,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { CustomDeviceCreate } from '../../types/device';
@@ -64,6 +57,7 @@ const CustomDeviceForm: React.FC<CustomDeviceFormProps> = ({
   const [jsonError, setJsonError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState(0);
   const [editorHeight, setEditorHeight] = useState('300px');
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Update selected plugin when plugin_id changes
   useEffect(() => {
@@ -89,10 +83,8 @@ const CustomDeviceForm: React.FC<CustomDeviceFormProps> = ({
     }
   }, [customDeviceData.connection_params]);
 
-  const handlePluginChange = (e: React.ChangeEvent<{ name?: string; value: unknown }>) => {
-    const pluginId = e.target.value as number;
+  const handlePluginChange = (pluginId: number) => {
     const plugin = plugins.find((p) => p.id === pluginId);
-
     setSelectedPlugin(plugin || null);
 
     // Initialize connection params from UI schema if available
@@ -135,6 +127,19 @@ const CustomDeviceForm: React.FC<CustomDeviceFormProps> = ({
     setActiveTab(newValue);
   };
 
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
+
+  // Filter plugins based on search term
+  const filteredPlugins = searchTerm
+    ? plugins.filter(plugin => 
+        plugin.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        plugin.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        plugin.category?.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : plugins;
+
   // Helper to generate form fields from plugin UI schema
   const generateFormFields = () => {
     if (!selectedPlugin || !selectedPlugin.ui_schema?.properties?.connection?.properties) {
@@ -173,9 +178,12 @@ const CustomDeviceForm: React.FC<CustomDeviceFormProps> = ({
               multiline={prop.format === 'textarea'}
               rows={prop.format === 'textarea' ? 4 : 1}
               InputProps={{
-                sx: {
-                  borderRadius: '12px',
-                }
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <TuneIcon sx={{ color: theme.palette.secondary.main }} />
+                  </InputAdornment>
+                ),
+                sx: { borderRadius: '12px' }
               }}
             />
           </Grid>
@@ -185,42 +193,62 @@ const CustomDeviceForm: React.FC<CustomDeviceFormProps> = ({
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-    >
-      <Paper
-        elevation={0}
-        sx={{
-          p: 3,
-          borderRadius: '24px',
-          bgcolor: alpha(theme.palette.background.paper, 0.8),
-          backdropFilter: 'blur(10px)',
-          border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-          mb: 4,
-        }}
-      >
-        <Typography
-          variant="h6"
-          sx={{
-            mb: 3,
-            fontWeight: 700,
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        >
-          <PluginIcon sx={{ mr: 1 }} />
-          {t('devices:selectPlugin')}
-          <Tooltip title={t('devices:pluginDescription')} arrow>
-            <IconButton size="small" sx={{ ml: 1, color: theme.palette.text.secondary }}>
-              <HelpIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        </Typography>
+    <Box>
+      <Typography variant="h6" sx={{ mb: 3, fontWeight: 700 }}>
+        {t('devices:configureCustomDevice')}
+      </Typography>
 
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
+      {!selectedPlugin ? (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              borderRadius: '16px',
+              bgcolor: alpha(theme.palette.background.paper, 0.5),
+              border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+              mb: 3,
+            }}
+          >
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+              <Typography 
+                variant="subtitle1" 
+                sx={{ 
+                  fontWeight: 700, 
+                  display: 'flex', 
+                  alignItems: 'center' 
+                }}
+              >
+                <PluginIcon sx={{ mr: 1, color: theme.palette.secondary.main }} />
+                {t('devices:selectPlugin')}
+              </Typography>
+
+              <Tooltip title={t('devices:pluginDescription')}>
+                <IconButton size="small" sx={{ color: alpha(theme.palette.text.primary, 0.6) }}>
+                  <HelpIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </Box>
+
+            <TextField
+              fullWidth
+              placeholder={t('devices:searchPlugins')}
+              value={searchTerm}
+              onChange={handleSearchChange}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+                sx: { borderRadius: '12px', mb: 3 }
+              }}
+            />
+
             <Box
               sx={{
                 display: 'grid',
@@ -228,21 +256,21 @@ const CustomDeviceForm: React.FC<CustomDeviceFormProps> = ({
                 gap: 2,
               }}
             >
-              {plugins.map((plugin) => (
+              {filteredPlugins.map((plugin) => (
                 <Paper
                   key={plugin.id}
                   component={motion.div}
-                  whileHover={{ y: -5, boxShadow: theme.shadows[5] }}
+                  whileHover={{ y: -5, boxShadow: theme.shadows[4] }}
                   whileTap={{ scale: 0.98 }}
                   elevation={0}
-                  onClick={() => handlePluginChange({ target: { value: plugin.id } } as any)}
+                  onClick={() => handlePluginChange(plugin.id)}
                   sx={{
-                    p: 3,
+                    p: 2.5,
                     borderRadius: '16px',
                     cursor: 'pointer',
                     bgcolor: customDeviceData.plugin_id === plugin.id
                       ? alpha(theme.palette.secondary.main, 0.1)
-                      : alpha(theme.palette.background.paper, 0.5),
+                      : alpha(theme.palette.background.paper, 0.8),
                     border: `2px solid ${customDeviceData.plugin_id === plugin.id
                       ? theme.palette.secondary.main
                       : alpha(theme.palette.divider, 0.1)}`,
@@ -250,6 +278,9 @@ const CustomDeviceForm: React.FC<CustomDeviceFormProps> = ({
                     display: 'flex',
                     flexDirection: 'column',
                     height: '100%',
+                    boxShadow: customDeviceData.plugin_id === plugin.id 
+                      ? `0 4px 12px ${alpha(theme.palette.secondary.main, 0.25)}`
+                      : 'none',
                   }}
                 >
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
@@ -258,18 +289,26 @@ const CustomDeviceForm: React.FC<CustomDeviceFormProps> = ({
                       sx={{
                         bgcolor: alpha(theme.palette.secondary.main, 0.1),
                         color: theme.palette.secondary.main,
-                        borderRadius: '12px',
-                        width: 48,
-                        height: 48,
+                        borderRadius: '10px',
+                        width: 40,
+                        height: 40,
                       }}
                     >
                       <PluginIcon />
                     </Avatar>
-                    <Box sx={{ ml: 2 }}>
-                      <Typography variant="subtitle1" fontWeight={600} noWrap>
+                    <Box sx={{ ml: 1.5, overflow: 'hidden' }}>
+                      <Typography 
+                        variant="subtitle2" 
+                        fontWeight={600} 
+                        noWrap 
+                        sx={{ color: customDeviceData.plugin_id === plugin.id 
+                          ? theme.palette.secondary.main
+                          : theme.palette.text.primary 
+                        }}
+                      >
                         {plugin.name}
                       </Typography>
-                      <Typography variant="caption" color="text.secondary">
+                      <Typography variant="caption" color="text.secondary" noWrap>
                         v{plugin.version}
                       </Typography>
                     </Box>
@@ -280,7 +319,7 @@ const CustomDeviceForm: React.FC<CustomDeviceFormProps> = ({
                           sx={{
                             ml: 'auto',
                             color: theme.palette.success.main,
-                            fontSize: '1.2rem'
+                            fontSize: '1.1rem'
                           }}
                         />
                       </Tooltip>
@@ -298,26 +337,29 @@ const CustomDeviceForm: React.FC<CustomDeviceFormProps> = ({
                       WebkitLineClamp: 2,
                       WebkitBoxOrient: 'vertical',
                       flexGrow: 1,
+                      fontSize: '0.8rem',
                     }}
                   >
                     {plugin.description || t('devices:noDescription')}
                   </Typography>
 
                   <Box sx={{ mt: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Chip
-                      size="small"
-                      label={plugin.category || t('devices:uncategorized')}
-                      sx={{
-                        borderRadius: '8px',
-                        bgcolor: alpha(theme.palette.info.main, 0.1),
-                        color: theme.palette.info.main,
-                        fontSize: '0.7rem',
-                        height: '24px',
-                      }}
-                    />
+                    {plugin.category && (
+                      <Chip
+                        size="small"
+                        label={plugin.category}
+                        sx={{
+                          borderRadius: '8px',
+                          bgcolor: alpha(theme.palette.info.main, 0.1),
+                          color: theme.palette.info.main,
+                          fontSize: '0.65rem',
+                          height: '20px',
+                        }}
+                      />
+                    )}
 
                     {plugin.author && (
-                      <Typography variant="caption" color="text.secondary">
+                      <Typography variant="caption" color="text.secondary" noWrap sx={{ fontSize: '0.65rem', ml: 1 }}>
                         {plugin.author}
                       </Typography>
                     )}
@@ -325,42 +367,56 @@ const CustomDeviceForm: React.FC<CustomDeviceFormProps> = ({
                 </Paper>
               ))}
             </Box>
-          </Grid>
-        </Grid>
-      </Paper>
 
-      {selectedPlugin && (
+            {filteredPlugins.length === 0 && (
+              <Box
+                sx={{
+                  p: 3,
+                  textAlign: 'center',
+                  bgcolor: alpha(theme.palette.background.paper, 0.5),
+                  borderRadius: '12px',
+                  border: `1px dashed ${alpha(theme.palette.divider, 0.3)}`,
+                }}
+              >
+                <Typography variant="body1" color="text.secondary">
+                  {t('devices:noPluginsFound')}
+                </Typography>
+              </Box>
+            )}
+          </Paper>
+        </motion.div>
+      ) : (
         <AnimatePresence>
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.2 }}
           >
             <Paper
               elevation={0}
               sx={{
                 p: 3,
-                borderRadius: '24px',
-                bgcolor: alpha(theme.palette.background.paper, 0.8),
-                backdropFilter: 'blur(10px)',
+                borderRadius: '16px',
+                bgcolor: alpha(theme.palette.background.paper, 0.5),
                 border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+                mb: 3,
               }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                 <Avatar
                   variant="rounded"
                   sx={{
-                    width: 56,
-                    height: 56,
+                    width: 48,
+                    height: 48,
                     bgcolor: alpha(theme.palette.secondary.main, 0.1),
                     color: theme.palette.secondary.main,
-                    borderRadius: '16px',
-                    boxShadow: `0 8px 16px ${alpha(theme.palette.secondary.main, 0.2)}`,
+                    borderRadius: '12px',
+                    boxShadow: `0 4px 12px ${alpha(theme.palette.secondary.main, 0.2)}`,
                     border: `1px solid ${alpha(theme.palette.secondary.main, 0.2)}`,
                     mr: 2,
                   }}
                 >
-                  <PluginIcon sx={{ fontSize: '2rem' }} />
+                  <PluginIcon sx={{ fontSize: '1.5rem' }} />
                 </Avatar>
 
                 <Box sx={{ flexGrow: 1 }}>
@@ -374,8 +430,8 @@ const CustomDeviceForm: React.FC<CustomDeviceFormProps> = ({
                       sx={{
                         ml: 1,
                         borderRadius: '8px',
-                        bgcolor: alpha(theme.palette.primary.main, 0.1),
-                        color: theme.palette.primary.main,
+                        bgcolor: alpha(theme.palette.secondary.main, 0.1),
+                        color: theme.palette.secondary.main,
                         fontWeight: 600,
                       }}
                     />
@@ -407,23 +463,21 @@ const CustomDeviceForm: React.FC<CustomDeviceFormProps> = ({
                   )}
                 </Box>
 
-                <Box>
-                  <Button
-                    variant="outlined"
-                    color="secondary"
-                    startIcon={<DownloadIcon />}
-                    size="small"
-                    onClick={() => {}}
-                    sx={{ borderRadius: '10px', mr: 1 }}
-                  >
-                    {t('devices:docmentation')}
-                  </Button>
-                </Box>
+                <Button
+                  variant="outlined"
+                  color="inherit"
+                  size="small"
+                  onClick={() => setSelectedPlugin(null)}
+                  sx={{ borderRadius: '10px', mr: 1 }}
+                >
+                  {t('devices:changePlugin')}
+                </Button>
               </Box>
 
               <Tabs
                 value={activeTab}
                 onChange={handleTabChange}
+                variant="fullWidth"
                 sx={{
                   mb: 3,
                   '& .MuiTabs-indicator': {
@@ -434,6 +488,11 @@ const CustomDeviceForm: React.FC<CustomDeviceFormProps> = ({
                     textTransform: 'none',
                     fontWeight: 600,
                     fontSize: '0.95rem',
+                    minHeight: '54px',
+                    borderRadius: '12px 12px 0 0',
+                    '&:hover': {
+                      backgroundColor: alpha(theme.palette.secondary.main, 0.05),
+                    },
                     '&.Mui-selected': {
                       color: theme.palette.secondary.main,
                     },
@@ -443,7 +502,7 @@ const CustomDeviceForm: React.FC<CustomDeviceFormProps> = ({
                 <Tab
                   label={
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <SettingsIcon sx={{ mr: 1, fontSize: '1.2rem' }} />
+                      <TuneIcon sx={{ mr: 1 }} />
                       {t('devices:tabs.parameters')}
                     </Box>
                   }
@@ -451,7 +510,7 @@ const CustomDeviceForm: React.FC<CustomDeviceFormProps> = ({
                 <Tab
                   label={
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <JsonIcon sx={{ mr: 1, fontSize: '1.2rem' }} />
+                      <JsonIcon sx={{ mr: 1 }} />
                       {t('devices:tabs.jsonEditor')}
                     </Box>
                   }
@@ -459,7 +518,7 @@ const CustomDeviceForm: React.FC<CustomDeviceFormProps> = ({
                 <Tab
                   label={
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <InfoIcon sx={{ mr: 1, fontSize: '1.2rem' }} />
+                      <InfoIcon sx={{ mr: 1 }} />
                       {t('devices:tabs.details')}
                     </Box>
                   }
@@ -467,9 +526,30 @@ const CustomDeviceForm: React.FC<CustomDeviceFormProps> = ({
               </Tabs>
 
               {activeTab === 0 && (
-                <Box>
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
                   {selectedPlugin.ui_schema?.properties?.connection ? (
                     <Box>
+                      <Box
+                        sx={{
+                          p: 2.5,
+                          borderRadius: '12px',
+                          bgcolor: alpha(theme.palette.secondary.main, 0.05),
+                          border: `1px solid ${alpha(theme.palette.secondary.main, 0.1)}`,
+                          display: 'flex',
+                          alignItems: 'flex-start',
+                          mb: 3,
+                        }}
+                      >
+                        <InfoIcon sx={{ color: theme.palette.secondary.main, mr: 2, mt: 0.3 }} />
+                        <Typography variant="body2">
+                          {t('devices:connectionParamsDescription')}
+                        </Typography>
+                      </Box>
+
                       <Typography
                         variant="subtitle1"
                         sx={{
@@ -479,16 +559,42 @@ const CustomDeviceForm: React.FC<CustomDeviceFormProps> = ({
                           alignItems: 'center'
                         }}
                       >
+                        <SecurityIcon sx={{ mr: 1, color: theme.palette.secondary.main }} />
                         {t('devices:connectionParams')}
-                        <InfoIcon
-                          sx={{
-                            ml: 1,
-                            color: alpha(theme.palette.text.primary, 0.6),
-                            fontSize: '1rem'
-                          }}
-                        />
                       </Typography>
+                      
                       {generateFormFields()}
+
+                      <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
+                        <Button
+                          variant="outlined"
+                          color="secondary"
+                          startIcon={<RefreshIcon />}
+                          sx={{
+                            borderRadius: '12px',
+                          }}
+                          onClick={() => {
+                            // Reset to defaults
+                            if (selectedPlugin?.ui_schema?.properties?.connection?.properties) {
+                              const props = selectedPlugin.ui_schema.properties.connection.properties;
+                              // CustomDeviceForm.tsx (folytatás)
+                              const initialParams = Object.keys(props).reduce((acc, key) => {
+                                if (props[key].default !== undefined) {
+                                  acc[key] = props[key].default;
+                                }
+                                return acc;
+                              }, {} as Record<string, any>);
+
+                              onChange({
+                                ...customDeviceData,
+                                connection_params: initialParams,
+                              });
+                            }
+                          }}
+                        >
+                          {t('devices:resetToDefaults')}
+                        </Button>
+                      </Box>
                     </Box>
                   ) : (
                     <Alert
@@ -503,42 +609,15 @@ const CustomDeviceForm: React.FC<CustomDeviceFormProps> = ({
                       {t('devices:noUiSchema')}
                     </Alert>
                   )}
-
-                  <Box sx={{ mt: 3 }}>
-                    <Button
-                      variant="contained"
-                      color="secondary"
-                      startIcon={<RefreshIcon />}
-                      sx={{
-                        borderRadius: '12px',
-                        boxShadow: `0 4px 14px ${alpha(theme.palette.secondary.main, 0.3)}`,
-                      }}
-                      onClick={() => {
-                        // Reset to defaults
-                        if (selectedPlugin?.ui_schema?.properties?.connection?.properties) {
-                          const props = selectedPlugin.ui_schema.properties.connection.properties;
-                          const initialParams = Object.keys(props).reduce((acc, key) => {
-                            if (props[key].default !== undefined) {
-                              acc[key] = props[key].default;
-                            }
-                            return acc;
-                          }, {} as Record<string, any>);
-
-                          onChange({
-                            ...customDeviceData,
-                            connection_params: initialParams,
-                          });
-                        }
-                      }}
-                    >
-                      {t('devices:resetToDefaults')}
-                    </Button>
-                  </Box>
-                </Box>
+                </motion.div>
               )}
 
               {activeTab === 1 && (
-                <Box>
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                     <Typography
                       variant="subtitle1"
@@ -548,14 +627,8 @@ const CustomDeviceForm: React.FC<CustomDeviceFormProps> = ({
                         alignItems: 'center'
                       }}
                     >
+                      <JsonIcon sx={{ mr: 1, color: theme.palette.secondary.main }} />
                       {t('devices:jsonEditor')}
-                      <InfoIcon
-                        sx={{
-                          ml: 1,
-                          color: alpha(theme.palette.text.primary, 0.6),
-                          fontSize: '1rem'
-                        }}
-                      />
                     </Typography>
 
                     <Stack direction="row" spacing={1}>
@@ -586,6 +659,23 @@ const CustomDeviceForm: React.FC<CustomDeviceFormProps> = ({
                         {t('devices:formatJson')}
                       </Button>
                     </Stack>
+                  </Box>
+
+                  <Box
+                    sx={{
+                      p: 2.5,
+                      borderRadius: '12px',
+                      bgcolor: alpha(theme.palette.info.main, 0.05),
+                      border: `1px solid ${alpha(theme.palette.info.main, 0.1)}`,
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      mb: 3,
+                    }}
+                  >
+                    <InfoIcon sx={{ color: theme.palette.info.main, mr: 2, mt: 0.3 }} />
+                    <Typography variant="body2">
+                      {t('devices:jsonEditorDescription')}
+                    </Typography>
                   </Box>
 
                   <motion.div
@@ -633,11 +723,15 @@ const CustomDeviceForm: React.FC<CustomDeviceFormProps> = ({
                       {jsonError}
                     </Typography>
                   )}
-                </Box>
+                </motion.div>
               )}
 
               {activeTab === 2 && (
-                <Box>
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
                   <Grid container spacing={3}>
                     <Grid item xs={12} md={6}>
                       <Paper
@@ -645,7 +739,7 @@ const CustomDeviceForm: React.FC<CustomDeviceFormProps> = ({
                         sx={{
                           p: 3,
                           borderRadius: '16px',
-                          bgcolor: alpha(theme.palette.background.paper, 0.5),
+                          bgcolor: alpha(theme.palette.background.paper, 0.3),
                           border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
                           height: '100%',
                         }}
@@ -715,7 +809,7 @@ const CustomDeviceForm: React.FC<CustomDeviceFormProps> = ({
                         sx={{
                           p: 3,
                           borderRadius: '16px',
-                          bgcolor: alpha(theme.palette.background.paper, 0.5),
+                          bgcolor: alpha(theme.palette.background.paper, 0.3),
                           border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
                           height: '100%',
                         }}
@@ -789,13 +883,26 @@ const CustomDeviceForm: React.FC<CustomDeviceFormProps> = ({
                       </Paper>
                     </Grid>
                   </Grid>
-                </Box>
+                </motion.div>
               )}
             </Paper>
           </motion.div>
         </AnimatePresence>
       )}
-    </motion.div>
+    </Box>
+  );
+};
+
+// Hiányzó SearchIcon import
+const SearchIcon = () => {
+  const theme = useTheme();
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M15.5 14H14.71L14.43 13.73C15.41 12.59 16 11.11 16 9.5C16 5.91 13.09 3 9.5 3C5.91 3 3 5.91 3 9.5C3 13.09 5.91 16 9.5 16C11.11 16 12.59 15.41 13.73 14.43L14 14.71V15.5L19 20.49L20.49 19L15.5 14ZM9.5 14C7.01 14 5 11.99 5 9.5C5 7.01 7.01 5 9.5 5C11.99 5 14 7.01 14 9.5C14 11.99 11.99 14 9.5 14Z"
+        fill={theme.palette.text.secondary}
+      />
+    </svg>
   );
 };
 

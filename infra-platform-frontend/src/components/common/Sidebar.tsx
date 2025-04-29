@@ -18,6 +18,7 @@ import {
 } from '@mui/material';
 import {
   SpeedRounded as DashboardIcon,
+  DevicesRounded as DevicesIcon,
   ComputerRounded as StandardDeviceIcon,
   SmartToyRounded as CustomDeviceIcon,
   ExtensionRounded as PluginIcon,
@@ -64,18 +65,11 @@ useEffect(() => {
       path: '/',
     },
     {
-      id: 'standard-devices',
-      text: t('navigation.standardDevices'),
-      icon: <StandardDeviceIcon />,
-      path: '/devices/standard',
-    },
-    {
-      id: 'custom-devices',
-      text: t('navigation.customDevices'),
-      icon: <CustomDeviceIcon />,
-      path: '/devices/custom',
-
-    },
+    id: 'devices',
+    text: t('navigation.devices'),
+    icon: <DevicesIcon />,
+    path: '/devices',
+  },
     {
       id: 'plugins',
       text: t('navigation.plugins'),

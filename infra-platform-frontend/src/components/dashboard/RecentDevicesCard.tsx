@@ -4,13 +4,15 @@ import {
   Typography,
   useTheme,
   alpha,
+  Paper,
   Divider,
   Button,
   ButtonBase,
   Avatar,
   IconButton,
   Tooltip,
-  Chip
+  Chip,
+  Stack,
 } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -19,13 +21,12 @@ import {
   SmartToyRounded as CustomIcon,
   ArrowForwardRounded as ArrowForwardIcon,
   StorageRounded as StorageIcon,
-  HelpOutlineRounded as HelpIcon,
   AddRounded as AddIcon,
-  VisibilityRounded as VisibilityIcon
+  VisibilityRounded as VisibilityIcon,
+  RefreshRounded as RefreshIcon,
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { Device } from '../../types/device';
-import DashboardCard from './DashboardCard';
 
 interface RecentDevicesCardProps {
   devices: Device[];
@@ -37,54 +38,112 @@ const RecentDevicesCard: React.FC<RecentDevicesCardProps> = ({ devices, onRefres
   const { t } = useTranslation(['dashboard', 'common']);
   const navigate = useNavigate();
 
-  return (
-    <DashboardCard
-      title={t('dashboard:recentDevices.title')}
-      subtitle={t('dashboard:recentDevices.subtitle')}
-      icon={<StandardIcon />}
-      color="primary"
-      variant="glass"
-      action={
-        <Button
-          component={Link}
-          to="/devices"
-          size="small"
-          color="primary"
-          endIcon={<ArrowForwardIcon />}
-          sx={{
-            fontWeight: 600,
-            borderRadius: '10px',
-            px: 2,
-          }}
-        >
-          {t('dashboard:viewAll')}
-        </Button>
+  // Animation variants for list
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
       }
-      onRefresh={onRefresh}
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 }
+  };
+
+  return (
+    <Paper
+      elevation={0}
+      sx={{
+        borderRadius: 3,
+        overflow: 'hidden',
+        background: `linear-gradient(135deg, ${alpha(theme.palette.background.paper, 0.95)}, ${alpha(theme.palette.background.paper, 0.85)})`,
+        backdropFilter: 'blur(10px)',
+        boxShadow: theme.palette.mode === 'dark'
+          ? `0 8px 32px ${alpha(theme.palette.common.black, 0.25)}`
+          : `0 8px 32px ${alpha(theme.palette.common.black, 0.1)}`,
+      }}
     >
+      {/* Header */}
+      <Box
+        sx={{
+          p: 3,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          borderBottom: `1px solid ${alpha(theme.palette.divider, 0.1)}`
+        }}
+      >
+        <Stack direction="row" alignItems="center" spacing={1}>
+          <StorageIcon sx={{ color: theme.palette.info.main }} />
+          <Box>
+            <Typography variant="h6" fontWeight={700}>
+              {t('dashboard:recentDevices.title')}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {t('dashboard:recentDevices.subtitle')}
+            </Typography>
+          </Box>
+        </Stack>
+        <Stack direction="row" spacing={1}>
+          <Tooltip title={t('dashboard:refresh')} arrow>
+            <IconButton
+              onClick={onRefresh}
+              size="small"
+              sx={{
+                borderRadius: 2,
+                bgcolor: alpha(theme.palette.primary.main, 0.1)
+              }}
+            >
+              <RefreshIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Button
+            component={Link}
+            to="/devices"
+            size="small"
+            color="primary"
+            endIcon={<ArrowForwardIcon />}
+            sx={{
+              fontWeight: 600,
+              borderRadius: 2,
+            }}
+          >
+            {t('dashboard:viewAll')}
+          </Button>
+        </Stack>
+      </Box>
+
+      {/* Device List */}
       <Box>
         {devices.length > 0 ? (
-          devices.map((device, index) => (
-            <React.Fragment key={device.id}>
-              <ButtonBase
-                component={Link}
-                to={`/devices/${device.id}`}
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  width: '100%',
-                  textAlign: 'left',
-                  py: 2,
-                  px: 3,
-                  transition: 'all 0.2s',
-                  borderRadius: '8px',
-                  '&:hover': {
-                    bgcolor: alpha(theme.palette.primary.main, 0.06),
-                    transform: 'translateY(-2px)',
-                  }
-                }}
-              >
-                <Box>
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            {devices.map((device, index) => (
+              <motion.div key={device.id} variants={itemVariants}>
+                <ButtonBase
+                  component={Link}
+                  to={`/devices/${device.id}`}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    width: '100%',
+                    textAlign: 'left',
+                    py: 2,
+                    px: 3,
+                    transition: 'all 0.2s',
+                    borderRadius: '0px',
+                    '&:hover': {
+                      bgcolor: alpha(theme.palette.primary.main, 0.06),
+                    }
+                  }}
+                >
                   <Avatar
                     sx={{
                       width: 48,
@@ -104,31 +163,23 @@ const RecentDevicesCard: React.FC<RecentDevicesCardProps> = ({ devices, onRefres
                           : theme.palette.secondary.main,
                         0.2
                       )}`,
-                      boxShadow: `0 4px 12px ${alpha(
-                        device.type === 'standard'
-                          ? theme.palette.primary.main
-                          : theme.palette.secondary.main,
-                        0.15
-                      )}`,
                     }}
                   >
                     {device.type === 'standard' ? <StandardIcon /> : <CustomIcon />}
                   </Avatar>
-                </Box>
 
-                <Box sx={{ ml: 2, flexGrow: 1 }}>
-                  <Typography
-                    variant="subtitle1"
-                    noWrap
-                    sx={{
-                      fontWeight: 600,
-                      display: 'flex',
-                      alignItems: 'center',
-                    }}
-                  >
-                    {device.name}
-                    {device.is_active ? (
-                      <Tooltip title={t('dashboard:deviceStatus.active')} arrow placement="top">
+                  <Box sx={{ ml: 2, flexGrow: 1 }}>
+                    <Typography
+                      variant="subtitle1"
+                      noWrap
+                      sx={{
+                        fontWeight: 600,
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
+                    >
+                      {device.name}
+                      {device.is_active ? (
                         <Box
                           component={motion.div}
                           animate={{ scale: [1, 1.2, 1] }}
@@ -143,9 +194,7 @@ const RecentDevicesCard: React.FC<RecentDevicesCardProps> = ({ devices, onRefres
                             boxShadow: `0 0 0 3px ${alpha(theme.palette.success.main, 0.2)}`,
                           }}
                         />
-                      </Tooltip>
-                    ) : (
-                      <Tooltip title={t('dashboard:deviceStatus.inactive')} arrow placement="top">
+                      ) : (
                         <Box
                           sx={{
                             width: 8,
@@ -156,26 +205,24 @@ const RecentDevicesCard: React.FC<RecentDevicesCardProps> = ({ devices, onRefres
                             display: 'inline-block',
                           }}
                         />
-                      </Tooltip>
-                    )}
-                  </Typography>
-
-                  <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5, flexWrap: 'wrap' }}>
-                    <Typography
-                      variant="body2"
-                      color="textSecondary"
-                      noWrap
-                      sx={{
-                        fontSize: '0.85rem',
-                        display: 'flex',
-                        alignItems: 'center',
-                      }}
-                    >
-                      <StorageIcon sx={{ fontSize: 16, mr: 0.5, opacity: 0.6 }} />
-                      {device.ip_address}
+                      )}
                     </Typography>
 
-                    <Box sx={{ display: 'flex', ml: 2, flexWrap: 'wrap' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        noWrap
+                        sx={{
+                          fontSize: '0.85rem',
+                          display: 'flex',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <StorageIcon sx={{ fontSize: 16, mr: 0.5, opacity: 0.6 }} />
+                        {device.ip_address}
+                      </Typography>
+
                       <Chip
                         size="small"
                         label={
@@ -187,6 +234,7 @@ const RecentDevicesCard: React.FC<RecentDevicesCardProps> = ({ devices, onRefres
                           height: 22,
                           fontSize: '0.7rem',
                           fontWeight: 600,
+                          ml: 2,
                           bgcolor: alpha(
                             device.type === 'standard'
                               ? theme.palette.info.main
@@ -202,22 +250,17 @@ const RecentDevicesCard: React.FC<RecentDevicesCardProps> = ({ devices, onRefres
                               : theme.palette.secondary.main,
                             0.2
                           )}`,
-                          ml: { xs: 0, sm: 0 },
-                          mt: { xs: 0.5, sm: 0 },
                         }}
                       />
                     </Box>
                   </Box>
-                </Box>
 
-                <Box sx={{ ml: 1 }}>
                   <IconButton
                     color="primary"
                     size="small"
                     sx={{
                       borderRadius: '10px',
                       bgcolor: alpha(theme.palette.primary.main, 0.1),
-                      border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
                       '&:hover': {
                         bgcolor: alpha(theme.palette.primary.main, 0.2),
                       }
@@ -229,13 +272,13 @@ const RecentDevicesCard: React.FC<RecentDevicesCardProps> = ({ devices, onRefres
                   >
                     <VisibilityIcon fontSize="small" />
                   </IconButton>
-                </Box>
-              </ButtonBase>
-              {index < devices.length - 1 && (
-                <Divider sx={{ opacity: 0.3 }} />
-              )}
-            </React.Fragment>
-          ))
+                </ButtonBase>
+                {index < devices.length - 1 && (
+                  <Divider sx={{ opacity: 0.3 }} />
+                )}
+              </motion.div>
+            ))}
+          </motion.div>
         ) : (
           <Box sx={{ p: 4, textAlign: 'center' }}>
             <Box
@@ -252,7 +295,7 @@ const RecentDevicesCard: React.FC<RecentDevicesCardProps> = ({ devices, onRefres
                 border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
               }}
             >
-              <HelpIcon fontSize="large" sx={{ color: theme.palette.primary.main }} />
+              <StandardIcon fontSize="large" sx={{ color: theme.palette.primary.main }} />
             </Box>
             <Typography color="textSecondary" variant="subtitle1" fontWeight={500}>
               {t('dashboard:recentDevices.noDevices')}
@@ -273,7 +316,7 @@ const RecentDevicesCard: React.FC<RecentDevicesCardProps> = ({ devices, onRefres
           </Box>
         )}
       </Box>
-    </DashboardCard>
+    </Paper>
   );
 };
 

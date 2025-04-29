@@ -1,4 +1,3 @@
-// Dashboard.tsx - teljesen átdolgozott elrendezés
 import React, { useState, useEffect } from 'react';
 import {
   Grid,
@@ -12,23 +11,18 @@ import {
   CircularProgress,
   Stack,
   Paper,
-  Divider,
-  Chip,
 } from '@mui/material';
 import {
-  ComputerRounded as StandardIcon,
-  SmartToyRounded as CustomIcon,
-  ExtensionRounded as PluginIcon,
   SpeedRounded as SpeedIcon,
   RefreshRounded as RefreshIcon,
-  HealthAndSafetyRounded as HealthIcon,
+  AddRounded as AddIcon,
   SignalCellularAltRounded as SignalIcon,
-  ViewDayRounded as ViewDayIcon,
+  HealthAndSafetyRounded as HealthIcon,
+  StorageRounded as StorageIcon,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import AddIcon from '@mui/icons-material/Add';
 
 // Custom hooks
 import { useDashboardData } from '../hooks/useDashboardData';
@@ -36,19 +30,11 @@ import { useAvailability } from '../hooks/useAvailability';
 
 // Components
 import PageContainer from '../components/common/PageContainer';
-import StatsCard from '../components/dashboard/StatsCard';
+import StatsSummary from '../components/dashboard/StatsSummary';
 import DeviceAvailabilityCard from '../components/dashboard/DeviceAvailabilityCard';
 import OsDistributionCard from '../components/dashboard/OsDistributionCard';
 import SystemHealthCard from '../components/dashboard/SystemHealthCard';
 import RecentDevicesCard from '../components/dashboard/RecentDevicesCard';
-
-// Empty availability stats as initial value
-const emptyStats = {
-  totalDevices: 0,
-  availableDevices: 0,
-  unavailableDevices: 0,
-  uptimePercent: 0
-};
 
 const Dashboard = () => {
   const { t } = useTranslation(['dashboard', 'common']);
@@ -206,7 +192,7 @@ const Dashboard = () => {
             exit={{ opacity: 0 }}
             style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}
           >
-            {/* Dashboard Summary Section */}
+            {/* Stats Summary Section */}
             <Paper
               elevation={0}
               sx={{
@@ -219,180 +205,45 @@ const Dashboard = () => {
                   : `0 8px 32px ${alpha(theme.palette.common.black, 0.1)}`,
               }}
             >
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: { xs: 'column', md: 'row' },
-                  alignItems: { xs: 'flex-start', md: 'center' },
-                  justifyContent: 'space-between',
-                  mb: 3,
-                }}
+              <Stack
+                direction="row"
+                alignItems="center"
+                spacing={2}
+                mb={3}
               >
-                <Box display="flex" alignItems="center" gap={2} mb={{ xs: 2, md: 0 }}>
-                  <ViewDayIcon sx={{ fontSize: 24, color: theme.palette.primary.main }} />
-                  <Typography variant="h5" fontWeight={700}>
-                    {t('dashboard:sections.overview')}
-                  </Typography>
-                </Box>
+                <SignalIcon sx={{ fontSize: 26, color: theme.palette.primary.main }} />
+                <Typography variant="h5" fontWeight={700}>
+                  {t('dashboard:overview.networkStatus')}
+                </Typography>
+              </Stack>
 
-                {/* Mobile device counts */}
-                <Box
-                  sx={{
-                    display: { xs: 'flex', md: 'none' },
-                    gap: 2,
-                    flexWrap: 'wrap'
-                  }}
-                >
-                  <Chip
-                    label={`${stats?.totalDevices || 0} ${t('dashboard:stats.totalDevicesShort')}`}
-                    color="primary"
-                    sx={{ fontWeight: 600 }}
-                  />
-                  <Chip
-                    label={`${availabilityStats.availableDevices || 0} ${t('dashboard:stats.availableShort')}`}
-                    color="success"
-                    sx={{ fontWeight: 600 }}
-                  />
-                  <Chip
-                    label={`${availabilityStats.unavailableDevices || 0} ${t('dashboard:stats.unavailableShort')}`}
-                    color="error"
-                    sx={{ fontWeight: 600 }}
-                  />
-                </Box>
-
-                {/* Desktop detailed stats */}
-                <Box
-                  sx={{
-                    display: { xs: 'none', md: 'flex' },
-                    gap: 3,
-                  }}
-                >
-                  <Box textAlign="center">
-                    <Typography variant="h5" fontWeight={700} color={theme.palette.primary.main}>
-                      {stats?.totalDevices || 0}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {t('dashboard:stats.totalDevices')}
-                    </Typography>
-                  </Box>
-
-                  <Divider orientation="vertical" flexItem />
-
-                  <Box textAlign="center">
-                    <Typography variant="h5" fontWeight={700} color={theme.palette.success.main}>
-                      {availabilityStats.availableDevices || 0}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {t('dashboard:stats.available')}
-                    </Typography>
-                  </Box>
-
-                  <Divider orientation="vertical" flexItem />
-
-                  <Box textAlign="center">
-                    <Typography variant="h5" fontWeight={700} color={theme.palette.error.main}>
-                      {availabilityStats.unavailableDevices || 0}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {t('dashboard:stats.unavailable')}
-                    </Typography>
-                  </Box>
-
-                  <Divider orientation="vertical" flexItem />
-
-                  <Box textAlign="center">
-                    <Typography variant="h5" fontWeight={700} color={theme.palette.info.main}>
-                      {availabilityStats.uptimePercent || 0}%
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {t('dashboard:stats.uptimePercent')}
-                    </Typography>
-                  </Box>
-                </Box>
-              </Box>
-
-              <Grid container spacing={3}>
-                <Grid item xs={12} sm={6} lg={3}>
-                  <StatsCard
-                    title={t('dashboard:stats.totalDevices')}
-                    value={stats?.totalDevices || 0}
-                    icon={<SpeedIcon />}
-                    color="primary"
-                    trend={10}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6} lg={3}>
-                  <StatsCard
-                    title={t('dashboard:stats.standardDevices')}
-                    value={stats?.standardDevices || 0}
-                    icon={<StandardIcon />}
-                    color="info"
-                    trend={5}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6} lg={3}>
-                  <StatsCard
-                    title={t('dashboard:stats.customDevices')}
-                    value={stats?.customDevices || 0}
-                    icon={<CustomIcon />}
-                    color="secondary"
-                    trend={-2}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6} lg={3}>
-                  <StatsCard
-                    title={t('dashboard:stats.plugins')}
-                    value={plugins?.length || 0}
-                    icon={<PluginIcon />}
-                    color="success"
-                    trend={8}
-                  />
-                </Grid>
-              </Grid>
+              <StatsSummary
+                stats={stats}
+                availabilityStats={availabilityStats}
+              />
             </Paper>
 
             {/* Main Content Area */}
-            <Box>
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 2,
-                  mb: 3,
-                }}
-              >
-                <SignalIcon sx={{ fontSize: 24, color: theme.palette.info.main }} />
-                <Typography variant="h5" fontWeight={700}>
-                  {t('dashboard:sections.monitoring')}
-                </Typography>
-              </Box>
+            <Grid container spacing={3}>
+              {/* Main Column */}
+              <Grid item xs={12} lg={8}>
+                <DeviceAvailabilityCard
+                  devices={devices}
+                  availabilityStats={availabilityStats}
+                  selectedDevice={selectedDevice}
+                  onSelectDevice={setSelectedDevice}
+                  chartData={deviceChartData}
+                  isLoadingChartData={isLoadingDeviceChart}
+                  isLoadingAvailability={isLoadingLatestAvailability || isLoadingStreamingResults}
+                  onRefresh={handleRefresh}
+                  checkStatus={checkStatus}
+                />
+              </Grid>
 
-              <Grid container spacing={3}>
-                {/* Device Availability Card - Main column */}
-                <Grid item xs={12} lg={8} sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                  <DeviceAvailabilityCard
-                    devices={devices}
-                    availabilityStats={availabilityStats}
-                    selectedDevice={selectedDevice}
-                    onSelectDevice={setSelectedDevice}
-                    chartData={deviceChartData}
-                    isLoadingChartData={isLoadingDeviceChart}
-                    isLoadingAvailability={isLoadingLatestAvailability && isLoadingStreamingResults}
-                    onRefresh={handleRefresh}
-                    checkStatus={checkStatus}
-                  />
-
-                  {/* Recent Devices - Below availability card */}
-                  <RecentDevicesCard
-                    devices={recentDevices}
-                    onRefresh={handleRefresh}
-                  />
-                </Grid>
-
-                {/* Right sidebar column */}
-                <Grid item xs={12} lg={4} sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              {/* Side Column */}
+              <Grid item xs={12} lg={4}>
+                <Stack spacing={3}>
                   <SystemHealthCard
-                    data={systemHealthData}
                     healthScore={stats?.healthScore || 0}
                     onRefresh={handleRefresh}
                   />
@@ -401,8 +252,28 @@ const Dashboard = () => {
                     data={osDistributionData}
                     onRefresh={handleRefresh}
                   />
-                </Grid>
+                </Stack>
               </Grid>
+            </Grid>
+
+            {/* Recent Devices Section */}
+            <Box>
+              <Stack
+                direction="row"
+                alignItems="center"
+                spacing={2}
+                mb={3}
+              >
+                <StorageIcon sx={{ fontSize: 26, color: theme.palette.info.main }} />
+                <Typography variant="h5" fontWeight={700}>
+                  {t('dashboard:recentDevices.title')}
+                </Typography>
+              </Stack>
+
+              <RecentDevicesCard
+                devices={recentDevices}
+                onRefresh={handleRefresh}
+              />
             </Box>
           </motion.div>
         )}

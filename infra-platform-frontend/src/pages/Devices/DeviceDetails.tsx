@@ -5,7 +5,6 @@ import {
   Chip,
   Typography,
   Grid,
-  Paper,
   Divider,
   CircularProgress,
   Dialog,
@@ -15,6 +14,9 @@ import {
   DialogActions,
   useTheme,
   alpha,
+  Tooltip,
+  IconButton,
+  Paper,
 } from '@mui/material';
 import {
   Delete as DeleteIcon,
@@ -23,6 +25,7 @@ import {
   Computer as StandardIcon,
   SmartToy as CustomIcon,
   PowerSettingsNew as PowerIcon,
+  Refresh as RefreshIcon,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate, Link } from 'react-router-dom';
@@ -34,7 +37,7 @@ import CustomDeviceDetails from '../../components/devices/DeviceDetails/CustomDe
 import { format } from 'date-fns';
 
 const DeviceDetails = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams();
   const deviceId = parseInt(id || '0', 10);
   const navigate = useNavigate();
   const { t } = useTranslation(['devices', 'common']);
@@ -44,7 +47,7 @@ const DeviceDetails = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   // Fetch device data
-  const { data: device, isLoading, error } = useQuery({
+  const { data: device, isLoading, error, refetch } = useQuery({
     queryKey: ['device', deviceId],
     queryFn: () => api.devices.getById(deviceId),
     enabled: !!deviceId,
@@ -52,7 +55,7 @@ const DeviceDetails = () => {
 
   // Delete mutation
   const deleteMutation = useMutation({
-    mutationFn: (id: number) => api.devices.delete(id),
+    mutationFn: (id) => api.devices.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['devices'] });
       navigate('/devices');
@@ -75,8 +78,15 @@ const DeviceDetails = () => {
   if (isLoading) {
     return (
       <PageContainer title={t('devices:loading')}>
-        <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-          <CircularProgress />
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '60vh'
+          }}
+        >
+          <CircularProgress size={36} />
         </Box>
       </PageContainer>
     );
@@ -85,19 +95,33 @@ const DeviceDetails = () => {
   if (error || !device) {
     return (
       <PageContainer title={t('devices:error')}>
-        <Box sx={{ p: 3, bgcolor: alpha(theme.palette.error.main, 0.1), borderRadius: 1 }}>
-          <Typography color="error">
+        <Paper
+          sx={{
+            p: 4,
+            borderRadius: 2,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center',
+          }}
+        >
+          <Typography variant="h5" color="error.main" gutterBottom>
             {t('devices:deviceNotFound')}
           </Typography>
+
+          <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+            {error instanceof Error ? error.message : t('devices:errors.deviceMayHaveBeenRemoved')}
+          </Typography>
+
           <Button
             component={Link}
             to="/devices"
             startIcon={<ArrowBackIcon />}
-            sx={{ mt: 2 }}
+            variant="contained"
           >
             {t('common:actions.back')}
           </Button>
-        </Box>
+        </Paper>
       </PageContainer>
     );
   }
@@ -121,6 +145,11 @@ const DeviceDetails = () => {
       ]}
       actions={
         <Box sx={{ display: 'flex', gap: 1 }}>
+          <Tooltip title={t('common:actions.refresh')}>
+            <IconButton onClick={() => refetch()} color="default">
+              <RefreshIcon />
+            </IconButton>
+          </Tooltip>
           <Button
             variant="outlined"
             startIcon={<EditIcon />}
@@ -140,172 +169,158 @@ const DeviceDetails = () => {
         </Box>
       }
     >
-      <Grid container spacing={3}>
-        {/* Device Info */}
-        <Grid item xs={12}>
-          <Paper
-            sx={{
-              p: 3,
-              mb: 3,
-              borderRadius: theme.shape.borderRadius,
-              boxShadow: theme.shadows[1],
-            }}
-          >
+      {/* Device Header Section */}
+      <Paper sx={{ p: 3, mb: 3, borderRadius: 2 }}>
+        <Grid container spacing={2} alignItems="center">
+          <Grid item>
             <Box
               sx={{
+                width: 56,
+                height: 56,
+                borderRadius: 2,
                 display: 'flex',
-                flexDirection: { xs: 'column', sm: 'row' },
-                alignItems: { xs: 'flex-start', sm: 'center' },
-                justifyContent: 'space-between',
-                mb: 2,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: isStandard
+                  ? alpha(theme.palette.primary.main, 0.1)
+                  : alpha(theme.palette.secondary.main, 0.1),
               }}
             >
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: { xs: 2, sm: 0 } }}>
-                <Box
-                  sx={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: '50%',
-                    bgcolor: alpha(
-                      isStandard
-                        ? theme.palette.primary.main
-                        : theme.palette.secondary.main,
-                      0.1
-                    ),
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    mr: 2,
-                    color: isStandard
-                      ? theme.palette.primary.main
-                      : theme.palette.secondary.main,
-                  }}
-                >
-                  <DeviceIcon fontSize="large" />
-                </Box>
-                <Box>
-                  <Typography variant="h5">{device.name}</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {device.ip_address}
-                  </Typography>
-                </Box>
-              </Box>
-
-              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                <Chip
-                  label={
-                    isStandard
-                      ? t('devices:deviceTypes.standard')
-                      : t('devices:deviceTypes.custom')
-                  }
-                  color={isStandard ? 'primary' : 'secondary'}
-                />
-                <Chip
-                  icon={<PowerIcon />}
-                  label={
-                    device.is_active
-                      ? t('devices:status.active')
-                      : t('devices:status.inactive')
-                  }
-                  color={device.is_active ? 'success' : 'error'}
-                  variant="outlined"
-                />
-              </Box>
+              <DeviceIcon
+                sx={{
+                  fontSize: 32,
+                  color: isStandard ? theme.palette.primary.main : theme.palette.secondary.main
+                }}
+              />
             </Box>
+          </Grid>
 
-            <Divider sx={{ my: 2 }} />
+          <Grid item xs>
+            <Typography variant="h5" fontWeight={600}>
+              {device.name}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {device.ip_address}
+            </Typography>
+          </Grid>
 
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
+          <Grid item>
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <Chip
+                label={isStandard
+                  ? t('devices:deviceTypes.standard')
+                  : t('devices:deviceTypes.custom')
+                }
+                color={isStandard ? 'primary' : 'secondary'}
+                size="small"
+              />
+              <Chip
+                icon={<PowerIcon fontSize="small" />}
+                label={device.is_active
+                  ? t('devices:status.active')
+                  : t('devices:status.inactive')
+                }
+                color={device.is_active ? 'success' : 'error'}
+                size="small"
+                variant="outlined"
+              />
+            </Box>
+          </Grid>
+        </Grid>
+
+        <Divider sx={{ my: 2 }} />
+
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={7}>
+            <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+              {t('devices:description')}
+            </Typography>
+            <Typography variant="body2">
+              {device.description || t('devices:noDescription')}
+            </Typography>
+          </Grid>
+
+          <Grid item xs={12} md={5}>
+            <Grid container spacing={2}>
+              {isStandard && device.standard_device ? (
+                <>
+                  <Grid item xs={6}>
+                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                      {t('devices:osType')}
+                    </Typography>
+                    <Typography variant="body2">
+                      {t(`devices:osTypes.${device.standard_device.os_type}`)}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                      {t('devices:hostname')}
+                    </Typography>
+                    <Typography variant="body2">
+                      {device.standard_device.hostname}
+                    </Typography>
+                  </Grid>
+                </>
+              ) : device.custom_device && (
+                <Grid item xs={6}>
+                  <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                    {t('devices:plugin')}
+                  </Typography>
+                  <Typography variant="body2">
+                    {device.custom_device.plugin_name}
+                  </Typography>
+                </Grid>
+              )}
+
+              <Grid item xs={6}>
                 <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                  {t('devices:description')}
+                  {t('devices:created')}
                 </Typography>
-                <Typography>
-                  {device.description || t('devices:noDescription')}
+                <Typography variant="body2">
+                  {format(new Date(device.created_at), 'PPP')}
                 </Typography>
               </Grid>
 
-              <Grid item xs={12} md={6}>
+              <Grid item xs={6}>
                 <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                  {t('devices:details')}
+                  {t('devices:lastUpdated')}
                 </Typography>
-                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-                  {isStandard && device.standard_device ? (
-                    <>
-                      <Box>
-                        <Typography variant="body2" color="text.secondary">
-                          {t('devices:osType')}
-                        </Typography>
-                        <Typography>
-                          {t(`devices:osTypes.${device.standard_device.os_type}`)}
-                        </Typography>
-                      </Box>
-                      <Box>
-                        <Typography variant="body2" color="text.secondary">
-                          {t('devices:hostname')}
-                        </Typography>
-                        <Typography>{device.standard_device.hostname}</Typography>
-                      </Box>
-                    </>
-                  ) : (
-                    device.custom_device && (
-                      <Box>
-                        <Typography variant="body2" color="text.secondary">
-                          {t('devices:plugin')}
-                        </Typography>
-                        <Typography>{device.custom_device.plugin_name}</Typography>
-                      </Box>
-                    )
-                  )}
-                  <Box>
-                    <Typography variant="body2" color="text.secondary">
-                      {t('devices:added')}
-                    </Typography>
-                    <Typography>
-                      {format(new Date(device.created_at), 'PPP')}
-                    </Typography>
-                  </Box>
-                  <Box>
-                    <Typography variant="body2" color="text.secondary">
-                      {t('devices:lastUpdated')}
-                    </Typography>
-                    <Typography>
-                      {format(new Date(device.updated_at), 'PPP')}
-                    </Typography>
-                  </Box>
-                </Box>
+                <Typography variant="body2">
+                  {format(new Date(device.updated_at), 'PPP')}
+                </Typography>
               </Grid>
             </Grid>
-          </Paper>
+          </Grid>
         </Grid>
+      </Paper>
 
-        {/* Device Type Specific Details */}
-        <Grid item xs={12}>
-          {isStandard ? (
-            <StandardDeviceDetails device={device} />
-          ) : (
-            <CustomDeviceDetails device={device} />
-          )}
-        </Grid>
-      </Grid>
+      {/* Device Specific Details */}
+      {isStandard ? (
+        <StandardDeviceDetails device={device} />
+      ) : (
+        <CustomDeviceDetails device={device} />
+      )}
 
       {/* Delete Confirmation Dialog */}
       <Dialog
         open={deleteDialogOpen}
         onClose={handleDeleteCancel}
-        aria-labelledby="delete-dialog-title"
-        aria-describedby="delete-dialog-description"
       >
-        <DialogTitle id="delete-dialog-title">
+        <DialogTitle>
           {t('devices:deleteDevice.title')}
         </DialogTitle>
+
         <DialogContent>
-          <DialogContentText id="delete-dialog-description">
+          <DialogContentText>
             {t('devices:deleteDevice.confirmation', { name: device.name })}
           </DialogContentText>
         </DialogContent>
+
         <DialogActions>
-          <Button onClick={handleDeleteCancel} color="inherit">
+          <Button
+            onClick={handleDeleteCancel}
+            color="inherit"
+          >
             {t('common:actions.cancel')}
           </Button>
           <Button

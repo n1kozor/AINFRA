@@ -5,17 +5,11 @@ import {
   useTheme,
   alpha,
   Grid,
-  CircularProgress
+  CircularProgress,
+  Chip,
 } from '@mui/material';
-import {
-  CheckCircleRounded as CheckIcon,
-  ErrorRounded as ErrorIcon,
-  CloudRounded as CloudIcon,
-  AlarmRounded as AlarmIcon,
-} from '@mui/icons-material';
-import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
 import CountUp from 'react-countup';
+import { useTranslation } from 'react-i18next';
 import { DeviceAvailabilityStats } from '../../types/availabilityApi';
 
 interface AvailabilityStatusProps {
@@ -39,154 +33,109 @@ const AvailabilityStatus: React.FC<AvailabilityStatusProps> = ({
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          height: '100%',
-          py: 4
+          p: 2
         }}
       >
-        <CircularProgress size={32} color="primary" />
+        <CircularProgress size={24} color="primary" />
       </Box>
     );
   }
 
   return (
-    <Box position="relative">
-      {/* Indikátor az ellenőrzési folyamatról */}
+    <Box>
+      {/* Check in progress indicator */}
       {checkInProgress && (
         <Box
           sx={{
-            position: 'absolute',
-            top: -12,
-            right: 0,
-            p: 1,
             display: 'flex',
             alignItems: 'center',
-            gap: 1,
-            typography: 'caption',
-            color: 'text.secondary',
-            fontSize: '0.75rem',
+            justifyContent: 'center',
+            mb: 2
           }}
         >
-          <CircularProgress size={12} thickness={6} color="inherit" />
-          {t('dashboard:deviceStatus.checkInProgress')}
+          <Chip
+            icon={<CircularProgress size={16} color="inherit" />}
+            label={t('dashboard:deviceStatus.checkInProgress')}
+            size="small"
+            color="info"
+            variant="outlined"
+          />
         </Box>
       )}
 
-      <Grid container spacing={2} mt={1}>
-        <Grid item xs={6} sm={3}>
+      {/* Status grid with condensed design */}
+      <Grid container spacing={2}>
+        <Grid item xs={6} md={3}>
           <Box
             sx={{
-              bgcolor: alpha(theme.palette.success.main, 0.1),
               p: 2,
-              borderRadius: '16px',
-              textAlign: 'center',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: '100%',
+              borderRadius: 2,
+              bgcolor: alpha(theme.palette.success.main, 0.05),
               border: `1px solid ${alpha(theme.palette.success.main, 0.1)}`,
-              transition: 'all 0.3s',
-              '&:hover': {
-                transform: 'translateY(-4px)',
-                boxShadow: `0 8px 16px ${alpha(theme.palette.success.main, 0.15)}`,
-              }
+              textAlign: 'center'
             }}
           >
-            <CheckIcon sx={{ color: theme.palette.success.main, mb: 1, fontSize: 32 }} />
-            <Typography variant="h5" color="success.main" sx={{ fontWeight: 700, mb: 0.5, lineHeight: 1 }}>
-              <CountUp end={stats.availableDevices} duration={1.5} />
+            <Typography variant="h6" fontWeight={700} color="success.main">
+              <CountUp end={stats.availableDevices} duration={1.2} />
             </Typography>
-            <Typography variant="body2" sx={{ fontSize: '0.8rem', color: alpha(theme.palette.text.primary, 0.7) }}>
+            <Typography variant="caption" color="text.secondary">
               {t('dashboard:deviceStatus.active')}
             </Typography>
           </Box>
         </Grid>
 
-        <Grid item xs={6} sm={3}>
+        <Grid item xs={6} md={3}>
           <Box
             sx={{
-              bgcolor: alpha(theme.palette.error.main, 0.1),
               p: 2,
-              borderRadius: '16px',
-              textAlign: 'center',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: '100%',
+              borderRadius: 2,
+              bgcolor: alpha(theme.palette.error.main, 0.05),
               border: `1px solid ${alpha(theme.palette.error.main, 0.1)}`,
-              transition: 'all 0.3s',
-              '&:hover': {
-                transform: 'translateY(-4px)',
-                boxShadow: `0 8px 16px ${alpha(theme.palette.error.main, 0.15)}`,
-              }
+              textAlign: 'center'
             }}
           >
-            <ErrorIcon sx={{ color: theme.palette.error.main, mb: 1, fontSize: 32 }} />
-            <Typography variant="h5" color="error.main" sx={{ fontWeight: 700, mb: 0.5, lineHeight: 1 }}>
-              <CountUp end={stats.unavailableDevices} duration={1.5} />
+            <Typography variant="h6" fontWeight={700} color="error.main">
+              <CountUp end={stats.unavailableDevices} duration={1.2} />
             </Typography>
-            <Typography variant="body2" sx={{ fontSize: '0.8rem', color: alpha(theme.palette.text.primary, 0.7) }}>
+            <Typography variant="caption" color="text.secondary">
               {t('dashboard:deviceStatus.inactive')}
             </Typography>
           </Box>
         </Grid>
 
-        <Grid item xs={6} sm={3}>
+        <Grid item xs={6} md={3}>
           <Box
             sx={{
-              bgcolor: alpha(theme.palette.info.main, 0.1),
               p: 2,
-              borderRadius: '16px',
-              textAlign: 'center',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: '100%',
+              borderRadius: 2,
+              bgcolor: alpha(theme.palette.info.main, 0.05),
               border: `1px solid ${alpha(theme.palette.info.main, 0.1)}`,
-              transition: 'all 0.3s',
-              '&:hover': {
-                transform: 'translateY(-4px)',
-                boxShadow: `0 8px 16px ${alpha(theme.palette.info.main, 0.15)}`,
-              }
+              textAlign: 'center'
             }}
           >
-            <CloudIcon sx={{ color: theme.palette.info.main, mb: 1, fontSize: 32 }} />
-            <Typography variant="h5" color="info.main" sx={{ fontWeight: 700, mb: 0.5, lineHeight: 1 }}>
-              <CountUp end={stats.totalDevices} duration={1.5} />
+            <Typography variant="h6" fontWeight={700} color="info.main">
+              <CountUp end={stats.totalDevices} duration={1.2} />
             </Typography>
-            <Typography variant="body2" sx={{ fontSize: '0.8rem', color: alpha(theme.palette.text.primary, 0.7) }}>
+            <Typography variant="caption" color="text.secondary">
               {t('dashboard:deviceStatus.total')}
             </Typography>
           </Box>
         </Grid>
 
-        <Grid item xs={6} sm={3}>
+        <Grid item xs={6} md={3}>
           <Box
             sx={{
-              bgcolor: alpha(theme.palette.warning.main, 0.1),
               p: 2,
-              borderRadius: '16px',
-              textAlign: 'center',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: '100%',
+              borderRadius: 2,
+              bgcolor: alpha(theme.palette.warning.main, 0.05),
               border: `1px solid ${alpha(theme.palette.warning.main, 0.1)}`,
-              transition: 'all 0.3s',
-              '&:hover': {
-                transform: 'translateY(-4px)',
-                boxShadow: `0 8px 16px ${alpha(theme.palette.warning.main, 0.15)}`,
-              }
+              textAlign: 'center'
             }}
           >
-            <AlarmIcon sx={{ color: theme.palette.warning.main, mb: 1, fontSize: 32 }} />
-            <Typography variant="h5" color="warning.main" sx={{ fontWeight: 700, mb: 0.5, lineHeight: 1 }}>
-              <CountUp end={stats.uptimePercent} duration={1.5} suffix="%" />
+            <Typography variant="h6" fontWeight={700} color="warning.main">
+              <CountUp end={stats.uptimePercent} duration={1.2} suffix="%" />
             </Typography>
-            <Typography variant="body2" sx={{ fontSize: '0.8rem', color: alpha(theme.palette.text.primary, 0.7) }}>
+            <Typography variant="caption" color="text.secondary">
               {t('dashboard:deviceStatus.uptime')}
             </Typography>
           </Box>

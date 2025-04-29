@@ -1,27 +1,25 @@
+// DeviceForm.tsx
 import React from 'react';
 import {
   Box,
   TextField,
-  FormControl,
-  FormLabel,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
   Grid,
   Typography,
   useTheme,
   alpha,
   Paper,
-  Divider,
   Tooltip,
   IconButton,
-  Zoom,
+  InputAdornment,
 } from '@mui/material';
 import {
   ComputerRounded as ComputerIcon,
-  SmartToyRounded as SmartToyIcon,
+  SmartToyRounded as CustomIcon,
   HelpOutlineRounded as HelpIcon,
   InfoOutlined as InfoIcon,
+  DevicesRounded as DeviceIcon,
+  SubtitlesRounded as DescriptionIcon,
+  NetworkCheckRounded as NetworkIcon,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { DeviceCreate, DeviceType } from '../../types/device';
@@ -41,177 +39,159 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ deviceData, onChange }) => {
     onChange({ [name]: value });
   };
 
-  const handleTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newType = e.target.value as DeviceType;
-
-    // Reset specific device data when changing type
-    if (newType === 'standard') {
-      onChange({
-        type: newType,
-        custom_device: undefined,
-        standard_device: {
-          os_type: 'linux',
-          hostname: '',
-          username: '',
-          password: '',
-          port: 22,
-        },
-      });
-    } else {
-      onChange({
-        type: newType,
-        standard_device: undefined,
-        custom_device: {
-          plugin_id: 0,
-          connection_params: {},
-        },
-      });
-    }
+  const handleTypeChange = (type: DeviceType) => {
+    onChange({ type });
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-    >
-      <Paper
-        elevation={0}
-        sx={{
-          p: 3,
-          borderRadius: '24px',
-          bgcolor: alpha(theme.palette.background.paper, 0.8),
-          backdropFilter: 'blur(10px)',
-          border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-          mb: 4,
-        }}
-      >
-        <Typography
-          variant="h6"
-          sx={{
-            mb: 3,
-            fontWeight: 700,
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        >
-          {t('devices:basicInfo')}
-          <Tooltip
-            title={t('devices:basicInfoDescription')}
-            arrow
-            TransitionComponent={Zoom}
+    <Box>
+      <Typography variant="h6" sx={{ mb: 3, fontWeight: 700 }}>
+        {t('devices:enterBasicInfo')}
+      </Typography>
+
+      <Grid container spacing={3}>
+        {/* Device Information */}
+        <Grid item xs={12}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              borderRadius: '16px',
+              bgcolor: alpha(theme.palette.background.paper, 0.5),
+              border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+              mb: 3,
+            }}
           >
-            <IconButton size="small" sx={{ ml: 1, color: alpha(theme.palette.text.primary, 0.6) }}>
-              <HelpIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        </Typography>
-
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
-            <TextField
-              name="name"
-              label={t('devices:name')}
-              value={deviceData.name || ''}
-              onChange={handleChange}
-              fullWidth
-              required
-              error={!deviceData.name && deviceData.name !== undefined}
-              helperText={
-                !deviceData.name && deviceData.name !== undefined
-                  ? t('common:errors.required')
-                  : t('devices:nameHint')
-              }
-              InputProps={{
-                sx: {
-                  borderRadius: '12px',
-                }
+            <Typography
+              variant="subtitle1"
+              sx={{
+                mb: 2,
+                fontWeight: 700,
+                display: 'flex',
+                alignItems: 'center'
               }}
-            />
-          </Grid>
+            >
+              <DeviceIcon sx={{ mr: 1, color: theme.palette.primary.main }} />
+              {t('devices:identificationDetails')}
+            </Typography>
 
-          <Grid item xs={12} md={6}>
-            <TextField
-              name="ip_address"
-              label={t('devices:ipAddress')}
-              value={deviceData.ip_address || ''}
-              onChange={handleChange}
-              fullWidth
-              required
-              error={!deviceData.ip_address && deviceData.ip_address !== undefined}
-              helperText={
-                !deviceData.ip_address && deviceData.ip_address !== undefined
-                  ? t('common:errors.required')
-                  : t('devices:ipAddressHint')
-              }
-              InputProps={{
-                sx: {
-                  borderRadius: '12px',
-                }
-              }}
-            />
-          </Grid>
+            <Grid container spacing={3}>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  name="name"
+                  label={t('devices:name')}
+                  value={deviceData.name || ''}
+                  onChange={handleChange}
+                  fullWidth
+                  required
+                  error={!deviceData.name && deviceData.name !== undefined}
+                  helperText={
+                    !deviceData.name && deviceData.name !== undefined
+                      ? t('common:errors.required')
+                      : t('devices:nameHint')
+                  }
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <DeviceIcon sx={{ color: theme.palette.primary.main }} />
+                      </InputAdornment>
+                    ),
+                    sx: { borderRadius: '12px' }
+                  }}
+                />
+              </Grid>
 
-          <Grid item xs={12}>
-            <TextField
-              name="description"
-              label={t('devices:description')}
-              value={deviceData.description || ''}
-              onChange={handleChange}
-              fullWidth
-              multiline
-              rows={3}
-              helperText={t('devices:descriptionHint')}
-              InputProps={{
-                sx: {
-                  borderRadius: '12px',
-                }
-              }}
-            />
-          </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  name="ip_address"
+                  label={t('devices:ipAddress')}
+                  value={deviceData.ip_address || ''}
+                  onChange={handleChange}
+                  fullWidth
+                  required
+                  error={!deviceData.ip_address && deviceData.ip_address !== undefined}
+                  helperText={
+                    !deviceData.ip_address && deviceData.ip_address !== undefined
+                      ? t('common:errors.required')
+                      : t('devices:ipAddressHint')
+                  }
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <NetworkIcon sx={{ color: theme.palette.primary.main }} />
+                      </InputAdornment>
+                    ),
+                    sx: { borderRadius: '12px' }
+                  }}
+                />
+              </Grid>
+
+              <Grid item xs={12}>
+                <TextField
+                  name="description"
+                  label={t('devices:description')}
+                  value={deviceData.description || ''}
+                  onChange={handleChange}
+                  fullWidth
+                  multiline
+                  rows={3}
+                  helperText={t('devices:descriptionHint')}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <DescriptionIcon sx={{ color: theme.palette.primary.main }} />
+                      </InputAdornment>
+                    ),
+                    sx: {
+                      borderRadius: '12px',
+                      alignItems: 'flex-start',
+                      '& .MuiInputAdornment-root': {
+                        mt: '14px',
+                        ml: '3px',
+                        mr: '2px'
+                      }
+                    }
+                  }}
+                />
+              </Grid>
+            </Grid>
+          </Paper>
         </Grid>
-      </Paper>
 
-      <Paper
-        elevation={0}
-        sx={{
-          p: 3,
-          borderRadius: '24px',
-          bgcolor: alpha(theme.palette.background.paper, 0.8),
-          backdropFilter: 'blur(10px)',
-          border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-        }}
-      >
-        <Typography
-          variant="h6"
-          sx={{
-            mb: 3,
-            fontWeight: 700,
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        >
-          {t('devices:deviceType')}
-          <Tooltip
-            title={t('devices:deviceTypeDescription')}
-            arrow
-            TransitionComponent={Zoom}
+        {/* Device Type Selection */}
+        <Grid item xs={12}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              borderRadius: '16px',
+              bgcolor: alpha(theme.palette.background.paper, 0.5),
+              border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+            }}
           >
-            <IconButton size="small" sx={{ ml: 1, color: alpha(theme.palette.text.primary, 0.6) }}>
-              <HelpIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <Typography variant="subtitle1" fontWeight={700}>
+                {t('devices:selectDeviceType')}
+              </Typography>
+              <Tooltip title={t('devices:deviceTypeDescription')}>
+                <IconButton size="small" sx={{ ml: 1, color: alpha(theme.palette.text.primary, 0.6) }}>
+                  <HelpIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </Box>
 
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
+            <Box sx={{
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' },
+              gap: 3,
+            }}>
+              {/* Standard Device Option */}
               <Paper
                 component={motion.div}
-                whileHover={{ y: -5, boxShadow: theme.shadows[8] }}
+                whileHover={{ y: -5 }}
                 whileTap={{ scale: 0.98 }}
                 elevation={0}
-                onClick={() => onChange({ type: 'standard' })}
+                onClick={() => handleTypeChange('standard')}
                 sx={{
                   p: 3,
                   borderRadius: '16px',
@@ -222,63 +202,68 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ deviceData, onChange }) => {
                   border: `2px solid ${deviceData.type === 'standard'
                     ? theme.palette.primary.main
                     : alpha(theme.palette.divider, 0.1)}`,
-                  flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 16px)' },
                   transition: 'all 0.3s',
                   display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  textAlign: 'center',
+                  flexDirection: { xs: 'column', md: 'row' },
+                  alignItems: { xs: 'center', md: 'flex-start' },
+                  height: '100%',
                 }}
               >
                 <Box
                   sx={{
-                    width: 80,
-                    height: 80,
-                    borderRadius: '20px',
+                    width: 70,
+                    height: 70,
+                    borderRadius: '16px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     bgcolor: alpha(theme.palette.primary.main, deviceData.type === 'standard' ? 0.2 : 0.1),
-                    mb: 2,
+                    mb: { xs: 2, md: 0 },
+                    mr: { md: 2 },
                     color: theme.palette.primary.main,
+                    flexShrink: 0,
                   }}
                 >
-                  <ComputerIcon sx={{ fontSize: '2.5rem' }} />
+                  <ComputerIcon sx={{ fontSize: '2rem' }} />
                 </Box>
 
-                <Typography variant="h6" gutterBottom fontWeight={700}>
-                  {t('devices:deviceTypes.standard')}
-                </Typography>
+                <Box sx={{ textAlign: { xs: 'center', md: 'left' } }}>
+                  <Typography variant="h6" gutterBottom fontWeight={700} sx={{ mb: 1 }}>
+                    {t('devices:deviceTypes.standard')}
+                  </Typography>
 
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  {t('devices:standardDeviceDescription')}
-                </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {t('devices:standardDeviceDescription')}
+                  </Typography>
 
-                <Typography
-                  variant="caption"
-                  sx={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    bgcolor: alpha(theme.palette.info.main, 0.1),
-                    color: theme.palette.info.main,
-                    px: 1.5,
-                    py: 0.5,
-                    borderRadius: '20px',
-                    fontWeight: 600,
-                    fontSize: '0.7rem',
-                  }}
-                >
-                  <InfoIcon sx={{ fontSize: '0.9rem', mr: 0.5 }} />
-                  {t('devices:supportsSSH')}
-                </Typography>
+                  <Box sx={{ mt: 2, display: 'flex', justifyContent: { xs: 'center', md: 'flex-start' } }}>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        bgcolor: alpha(theme.palette.info.main, 0.1),
+                        color: theme.palette.info.main,
+                        px: 1.5,
+                        py: 0.5,
+                        borderRadius: '20px',
+                        fontWeight: 600,
+                      }}
+                    >
+                      <InfoIcon sx={{ fontSize: '0.9rem', mr: 0.5 }} />
+                      {t('devices:supportsSSH')}
+                    </Typography>
+                  </Box>
+                </Box>
               </Paper>
 
+              {/* Custom Device Option */}
               <Paper
                 component={motion.div}
-                whileHover={{ y: -5, boxShadow: theme.shadows[8] }}
+                whileHover={{ y: -5 }}
                 whileTap={{ scale: 0.98 }}
                 elevation={0}
-                onClick={() => onChange({ type: 'custom' })}
+                onClick={() => handleTypeChange('custom')}
                 sx={{
                   p: 3,
                   borderRadius: '16px',
@@ -289,107 +274,65 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ deviceData, onChange }) => {
                   border: `2px solid ${deviceData.type === 'custom'
                     ? theme.palette.secondary.main
                     : alpha(theme.palette.divider, 0.1)}`,
-                  flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 16px)' },
                   transition: 'all 0.3s',
                   display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  textAlign: 'center',
+                  flexDirection: { xs: 'column', md: 'row' },
+                  alignItems: { xs: 'center', md: 'flex-start' },
+                  height: '100%',
                 }}
               >
                 <Box
                   sx={{
-                    width: 80,
-                    height: 80,
-                    borderRadius: '20px',
+                    width: 70,
+                    height: 70,
+                    borderRadius: '16px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     bgcolor: alpha(theme.palette.secondary.main, deviceData.type === 'custom' ? 0.2 : 0.1),
-                    mb: 2,
+                    mb: { xs: 2, md: 0 },
+                    mr: { md: 2 },
                     color: theme.palette.secondary.main,
+                    flexShrink: 0,
                   }}
                 >
-                  <SmartToyIcon sx={{ fontSize: '2.5rem' }} />
+                  <CustomIcon sx={{ fontSize: '2rem' }} />
                 </Box>
 
-                <Typography variant="h6" gutterBottom fontWeight={700}>
-                  {t('devices:deviceTypes.custom')}
-                </Typography>
+                <Box sx={{ textAlign: { xs: 'center', md: 'left' } }}>
+                  <Typography variant="h6" gutterBottom fontWeight={700} sx={{ mb: 1 }}>
+                    {t('devices:deviceTypes.custom')}
+                  </Typography>
 
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  {t('devices:customDeviceDescription')}
-                </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {t('devices:customDeviceDescription')}
+                  </Typography>
 
-                <Typography
-                  variant="caption"
-                  sx={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    bgcolor: alpha(theme.palette.warning.main, 0.1),
-                    color: theme.palette.warning.main,
-                    px: 1.5,
-                    py: 0.5,
-                    borderRadius: '20px',
-                    fontWeight: 600,
-                    fontSize: '0.7rem',
-                  }}
-                >
-                  <InfoIcon sx={{ fontSize: '0.9rem', mr: 0.5 }} />
-                  {t('devices:requiresPlugin')}
-                </Typography>
+                  <Box sx={{ mt: 2, display: 'flex', justifyContent: { xs: 'center', md: 'flex-start' } }}>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        bgcolor: alpha(theme.palette.warning.main, 0.1),
+                        color: theme.palette.warning.main,
+                        px: 1.5,
+                        py: 0.5,
+                        borderRadius: '20px',
+                        fontWeight: 600,
+                      }}
+                    >
+                      <InfoIcon sx={{ fontSize: '0.9rem', mr: 0.5 }} />
+                      {t('devices:requiresPlugin')}
+                    </Typography>
+                  </Box>
+                </Box>
               </Paper>
             </Box>
-          </Grid>
-
-          <Grid item xs={12} sx={{ mt: 1 }}>
-            <Box
-              sx={{
-                p: 3,
-                borderRadius: '16px',
-                bgcolor: alpha(
-                  deviceData.type === 'standard'
-                    ? theme.palette.primary.main
-                    : theme.palette.secondary.main,
-                  0.05
-                ),
-                border: `1px solid ${alpha(
-                  deviceData.type === 'standard'
-                    ? theme.palette.primary.main
-                    : theme.palette.secondary.main,
-                  0.1
-                )}`,
-                display: 'flex',
-                alignItems: 'flex-start',
-              }}
-            >
-              <InfoIcon
-                sx={{
-                  color: deviceData.type === 'standard'
-                    ? theme.palette.primary.main
-                    : theme.palette.secondary.main,
-                  fontSize: '1.5rem',
-                  mr: 2,
-                  mt: 0.5,
-                }}
-              />
-              <Box>
-                <Typography variant="subtitle1" fontWeight={600} mb={0.5}>
-                  {deviceData.type === 'standard'
-                    ? t('devices:info.standardDeviceTitle')
-                    : t('devices:info.customDeviceTitle')}
-                </Typography>
-                <Typography variant="body2">
-                  {deviceData.type === 'standard'
-                    ? t('devices:info.standardDevice')
-                    : t('devices:info.customDevice')}
-                </Typography>
-              </Box>
-            </Box>
-          </Grid>
+          </Paper>
         </Grid>
-      </Paper>
-    </motion.div>
+      </Grid>
+    </Box>
   );
 };
 
