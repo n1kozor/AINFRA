@@ -1,38 +1,100 @@
 {
   "title": "Dashboard",
-  "summary": "System Overview",
+  "subtitle": "Overview of your infrastructure",
+  "refresh": "Refresh data",
   "addDevice": "Add Device",
   "viewAll": "View All",
-  "viewDetails": "View Details",
+
+  "sections": {
+    "overview": "System Overview",
+    "details": "Detailed Analytics"
+  },
+
   "stats": {
     "totalDevices": "Total Devices",
     "standardDevices": "Standard Devices",
     "customDevices": "Custom Devices",
-    "plugins": "Plugins"
+    "plugins": "Plugins Available"
   },
-  "deviceStatus": {
-    "title": "Device Status",
-    "active": "Active",
-    "inactive": "Inactive",
-    "byOs": "By OS Type",
-    "noStandardDevices": "No standard devices available"
-  },
-  "recentDevices": {
-    "title": "Recent Devices",
-    "noDevices": "No devices added yet"
-  },
+
   "osTypes": {
     "windows": "Windows",
     "linux": "Linux",
-    "macos": "MacOS",
+    "macos": "macOS",
     "unknown": "Unknown"
   },
+
   "deviceTypes": {
     "standard": "Standard",
     "custom": "Custom"
   },
-  "info": {
-    "standardDevice": "Standard devices include Windows, MacOS, and Linux servers/clients that can be monitored with Glances.",
-    "customDevice": "Custom devices can be any networked equipment that has a plugin defined for it."
+
+  "deviceActivity": {
+    "title": "Device Availability",
+    "subtitle": "Real-time monitoring of device uptime",
+    "selectDevice": "Select a device",
+    "tabs": {
+      "day": "Day",
+      "week": "Week",
+      "month": "Month",
+      "live": "Live Status",
+      "daily": "Daily Uptime",
+      "response": "Response Time"
+    }
+  },
+
+  "deviceStatus": {
+    "active": "Online",
+    "inactive": "Offline",
+    "uptime": "Uptime",
+    "total": "Total",
+    "status": "Status",
+    "responseTime": "Response Time",
+    "cloud": "Cloud Services",
+    "alerts": "Alerts"
+  },
+
+  "osDistribution": {
+    "title": "OS Distribution",
+    "subtitle": "Breakdown of operating systems",
+    "devices": "devices",
+    "noDevices": "No devices found",
+    "addDevices": "Add your first device to see OS distribution"
+  },
+
+  "systemHealth": {
+    "title": "System Health",
+    "subtitle": "Status of your infrastructure",
+    "devices": "Devices Uptime",
+    "cpu": "CPU Usage",
+    "memory": "Memory Usage",
+    "storage": "Storage Usage",
+    "overallStatus": "Overall System Status",
+    "status": {
+      "excellent": "Excellent",
+      "good": "Good",
+      "critical": "Critical"
+    },
+    "messages": {
+      "excellent": "Your system is running optimally",
+      "good": "Your system is running well with minor issues",
+      "critical": "Your system needs immediate attention"
+    }
+  },
+
+  "recentDevices": {
+    "title": "Recent Devices",
+    "subtitle": "Recently added or updated devices",
+    "noDevices": "No devices found",
+    "addYourFirst": "Start by adding your first device"
+  },
+
+  "actions": {
+    "edit": "Edit",
+    "delete": "Delete",
+    "refresh": "Refresh",
+    "more": "More Options",
+    "share": "Share",
+    "favorite": "Add to Favorites"
   }
 }

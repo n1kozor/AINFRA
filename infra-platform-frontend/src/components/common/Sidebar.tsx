@@ -7,7 +7,6 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Collapse,
   useTheme,
   alpha,
   Typography,
@@ -19,15 +18,11 @@ import {
 } from '@mui/material';
 import {
   SpeedRounded as DashboardIcon,
-  HubRounded as DevicesIcon,
   ComputerRounded as StandardDeviceIcon,
   SmartToyRounded as CustomDeviceIcon,
   ExtensionRounded as PluginIcon,
   SettingsRounded as SettingsIcon,
-  ExpandMoreRounded,
-  ExpandLessRounded,
   SupportAgentRounded as SupportIcon,
-  NewReleasesRounded as NewFeatureIcon,
   WorkspacePremiumRounded as ProIcon,
 } from '@mui/icons-material';
 import { Link, useLocation } from 'react-router-dom';
@@ -44,20 +39,6 @@ const Sidebar = () => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('lg'));
 
-  const [devicesOpen, setDevicesOpen] = useState(true);
-  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
-
-  // Close devices submenu on small screens when sidebar first opens
-  useEffect(() => {
-    if (isSmallScreen && sidebarOpen) {
-      setDevicesOpen(false);
-    }
-  }, [isSmallScreen, sidebarOpen]);
-
-  const handleDevicesClick = () => {
-    setDevicesOpen(!devicesOpen);
-  };
-
   const isActive = (path: string) => {
     return location.pathname === path;
   };
@@ -73,27 +54,17 @@ const Sidebar = () => {
       path: '/',
     },
     {
-      id: 'devices',
-      text: t('navigation.devices'),
-      icon: <DevicesIcon />,
-      children: [
-        {
-          id: 'standard-devices',
-          text: t('navigation.standardDevices'),
-          icon: <StandardDeviceIcon />,
-          path: '/devices/standard',
-        },
-        {
-          id: 'custom-devices',
-          text: t('navigation.customDevices'),
-          icon: <CustomDeviceIcon />,
-          path: '/devices/custom',
-          badge: {
-            content: "5",
-            color: "error"
-          }
-        },
-      ],
+      id: 'standard-devices',
+      text: t('navigation.standardDevices'),
+      icon: <StandardDeviceIcon />,
+      path: '/devices/standard',
+    },
+    {
+      id: 'custom-devices',
+      text: t('navigation.customDevices'),
+      icon: <CustomDeviceIcon />,
+      path: '/devices/custom',
+
     },
     {
       id: 'plugins',
@@ -191,147 +162,15 @@ const Sidebar = () => {
 
       <List sx={{ px: 1.5, py: 0 }}>
         {navItems.map((item) => (
-          item.children ? (
-            <React.Fragment key={item.id}>
-              <MotionListItem
-                disablePadding
-                sx={{ mb: 0.5 }}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2 }}
-                onMouseEnter={() => setHoveredItem(item.id)}
-            onMouseLeave={() => setHoveredItem(null)}
-              >
-                <ListItemButton
-                  onClick={handleDevicesClick}
-                  sx={{
-                    borderRadius: '16px',
-                    p: 1.5,
-                    backgroundColor: devicesOpen
-                      ? alpha(theme.palette.primary.main, theme.palette.mode === 'dark' ? 0.15 : 0.08)
-                      : 'transparent',
-                    '&:hover': {
-                      backgroundColor: alpha(theme.palette.primary.main, theme.palette.mode === 'dark' ? 0.2 : 0.12),
-                    },
-                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                  }}
-                >
-                  <MotionListItemIcon
-  sx={{
-    minWidth: '42px',
-    color: isActive(item.path) ? theme.palette.primary.main : theme.palette.text.primary,
-    transition: 'all 0.3s ease',
-  }}
-  animate={{
-    rotate: isActive(item.path) ? 5 : 0,
-    scale: isActive(item.path) ? 1.1 : 1
-  }}
-  whileHover={{ scale: 1.1 }}
->
-                    {item.icon}
-                  </MotionListItemIcon>
-                  <ListItemText
-                    primary={item.text}
-                    primaryTypographyProps={{
-                      fontWeight: devicesOpen ? 700 : 500,
-                      color: devicesOpen ? theme.palette.primary.main : theme.palette.text.primary,
-                      fontSize: '0.95rem',
-                    }}
-                  />
-                  <motion.div
-                    animate={{ rotate: devicesOpen ? 180 : 0 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    {devicesOpen ? <ExpandLessRounded /> : <ExpandMoreRounded />}
-                  </motion.div>
-                </ListItemButton>
-              </MotionListItem>
-
-              <Collapse in={devicesOpen} timeout="auto" unmountOnExit>
-                <List component="div" disablePadding>
-                  {item.children.map((child, index) => (
-                    <MotionListItem
-                      key={child.id}
-                      disablePadding
-                      sx={{ mb: 0.5 }}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.2, delay: index * 0.1 }}
-                      onMouseEnter={() => setHoveredItem(child.id)}
-                      onMouseLeave={() => setHoveredItem(null)}
-                    >
-                      <ListItemButton
-                        component={Link}
-                        to={child.path}
-                        sx={{
-                          pl: 4.5,
-                          pr: 1.5,
-                          py: 1.2,
-                          borderRadius: '16px',
-                          backgroundColor: isActive(child.path)
-                            ? alpha(theme.palette.primary.main, theme.palette.mode === 'dark' ? 0.15 : 0.1)
-                            : 'transparent',
-                          '&:hover': {
-                            backgroundColor: alpha(theme.palette.primary.main, theme.palette.mode === 'dark' ? 0.2 : 0.12),
-                          },
-                          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                        }}
-                      >
-                        <MotionListItemIcon
-  sx={{
-    minWidth: '42px',
-    color: isActive(item.path) ? theme.palette.primary.main : theme.palette.text.primary,
-    transition: 'all 0.3s ease',
-  }}
-  animate={{
-    rotate: isActive(item.path) ? 5 : 0,
-    scale: isActive(item.path) ? 1.1 : 1
-  }}
-  whileHover={{ scale: 1.1 }}
->
-                          {child.icon}
-                        </MotionListItemIcon>
-                        <ListItemText
-                          primary={child.text}
-                          primaryTypographyProps={{
-                            fontWeight: isActive(child.path) ? 600 : 400,
-                            color: isActive(child.path) ? theme.palette.primary.main : alpha(theme.palette.text.primary, 0.8),
-                            fontSize: '0.9rem',
-                          }}
-                        />
-                        {child.badge && (
-                          <Badge
-                            badgeContent={child.badge.content}
-                            color={child.badge.color as "error" | "success" | "default"}
-                            sx={{
-                              '& .MuiBadge-badge': {
-                                borderRadius: '8px',
-                                textTransform: 'none',
-                                fontWeight: 600,
-                                fontSize: '0.7rem',
-                                px: 0.8,
-                              }
-                            }}
-                          />
-                        )}
-                      </ListItemButton>
-                    </MotionListItem>
-                  ))}
-                </List>
-              </Collapse>
-            </React.Fragment>
-          ) : (
-            <MotionListItem
-              key={item.id}
-              disablePadding
-              sx={{ mb: 0.5 }}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2 }}
-              onMouseEnter={() => setHoveredItem(item.id)}
-onMouseLeave={() => setHoveredItem(null)}
-            >
-              <ListItemButton
+          <MotionListItem
+            key={item.id}
+            disablePadding
+            sx={{ mb: 0.5 }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <ListItemButton
               component={Link}
               to={item.path}
               sx={{
@@ -350,46 +189,45 @@ onMouseLeave={() => setHoveredItem(null)}
                 },
               }}
             >
-                <MotionListItemIcon
-  sx={{
-    minWidth: '42px',
-    color: isActive(item.path) ? theme.palette.primary.main : theme.palette.text.primary,
-    transition: 'all 0.3s ease',
-  }}
-  animate={{
-    rotate: isActive(item.path) ? 5 : 0,
-    scale: isActive(item.path) ? 1.1 : 1
-  }}
-  whileHover={{ scale: 1.1 }}
->
-                  {item.icon}
-                </MotionListItemIcon>
-                <ListItemText
-                  primary={item.text}
-                  primaryTypographyProps={{
-                    fontWeight: isActive(item.path) ? 700 : 500,
-                    color: isActive(item.path) ? theme.palette.primary.main : theme.palette.text.primary,
-                    fontSize: '0.95rem',
+              <MotionListItemIcon
+                sx={{
+                  minWidth: '42px',
+                  color: isActive(item.path) ? theme.palette.primary.main : theme.palette.text.primary,
+                  transition: 'all 0.3s ease',
+                }}
+                animate={{
+                  rotate: isActive(item.path) ? 5 : 0,
+                  scale: isActive(item.path) ? 1.1 : 1
+                }}
+                whileHover={{ scale: 1.1 }}
+              >
+                {item.icon}
+              </MotionListItemIcon>
+              <ListItemText
+                primary={item.text}
+                primaryTypographyProps={{
+                  fontWeight: isActive(item.path) ? 700 : 500,
+                  color: isActive(item.path) ? theme.palette.primary.main : theme.palette.text.primary,
+                  fontSize: '0.95rem',
+                }}
+              />
+              {item.badge && (
+                <Badge
+                  badgeContent={item.badge.content}
+                  color={item.badge.color as "error" | "success" | "default"}
+                  sx={{
+                    '& .MuiBadge-badge': {
+                      borderRadius: '8px',
+                      textTransform: 'none',
+                      fontWeight: 600,
+                      fontSize: '0.7rem',
+                      px: 0.8,
+                    }
                   }}
                 />
-                {item.badge && (
-                  <Badge
-                    badgeContent={item.badge.content}
-                    color={item.badge.color as "error" | "success" | "default"}
-                    sx={{
-                      '& .MuiBadge-badge': {
-                        borderRadius: '8px',
-                        textTransform: 'none',
-                        fontWeight: 600,
-                        fontSize: '0.7rem',
-                        px: 0.8,
-                      }
-                    }}
-                  />
-                )}
-              </ListItemButton>
-            </MotionListItem>
-          )
+              )}
+            </ListItemButton>
+          </MotionListItem>
         ))}
       </List>
 

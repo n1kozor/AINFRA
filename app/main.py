@@ -3,11 +3,15 @@ from contextlib import asynccontextmanager
 from .core.config import get_settings
 from .core.database import Base, engine
 from .api.router import api_router
+from .core.init_settings import initialize_default_settings
+from .core.availability_scheduler import AvailabilityScheduler
 from .plugins.loader import PluginLoader
 from sqlalchemy.orm import Session
 from .core.database import get_db
 from fastapi_mcp import FastApiMCP
 from fastapi.middleware.cors import CORSMiddleware
+
+from .services.availability_service import AvailabilityService
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -21,12 +25,25 @@ async def lifespan(app: FastAPI):
     # Startup actions
     db = next(get_db())
     try:
+        # Initialize default settings
+        initialize_default_settings(db)
+
+        # Load plugins
         plugin_loader = PluginLoader()
         plugin_loader.load_plugins(db)
+
+        # Initialize and start scheduler
+        scheduler = AvailabilityScheduler()
+        scheduler.init_scheduler()  # app parameter eltávolítva
+        interval = AvailabilityService.get_check_interval(db)
+        scheduler.schedule_availability_checks(interval_minutes=interval)
+        scheduler.start()
     finally:
         db.close()
     yield
-    # (Optional) Shutdown actions can be placed after yield if needed
+    # Shutdown actions
+    scheduler = AvailabilityScheduler()
+    scheduler.stop()
 
 # Create FastAPI app
 app = FastAPI(

@@ -175,7 +175,7 @@ export const lightTheme: ThemeOptions = {
             boxShadow: '0 0 0 0 rgba(59, 130, 246, 0.7)',
           },
           '70%': {
-            boxShadow: '0 0 0 10px rgba(59, 130, 246, 0)',
+            boxShadow: '0 0 0 5px rgba(59, 130, 246, 0)',
           },
           '100%': {
             boxShadow: '0 0 0 0 rgba(59, 130, 246, 0)',
@@ -203,7 +203,7 @@ export const lightTheme: ThemeOptions = {
           fontWeight: 600,
           '&:hover': {
             transform: 'translateY(-2px)',
-            boxShadow: '0 6px 20px rgba(59, 130, 246, 0.2)',
+            boxShadow: '0 6px 20px rgba(59, 130, 246, 0.1)',
           },
           '&:active': {
             transform: 'translateY(0)',

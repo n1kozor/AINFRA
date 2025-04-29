@@ -35,6 +35,19 @@
     "en": "English",
     "hu": "Hungarian"
   },
+  "deviceActivity": {
+    "title": "Device Availability",
+    "subtitle": "Real-time monitoring of device uptime",
+    "selectDevice": "Select a device",
+    "tabs": {
+      "day": "Day",
+      "week": "Week",
+      "month": "Month",
+      "live": "Live Status",
+      "daily": "Daily Uptime",
+      "response": "Response Time"
+    }
+  },
   "errors": {
     "required": "This field is required",
     "invalidIP": "Invalid IP address",

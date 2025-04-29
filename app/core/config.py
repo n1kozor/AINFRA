@@ -5,7 +5,7 @@ from functools import lru_cache
 
 class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
-    PROJECT_NAME: str = "Infrastruktúra Platform"
+    PROJECT_NAME: str = "AInfrastructure Platform"
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./infra_platform.db")
     PLUGINS_DIR: str = os.getenv("PLUGINS_DIR", "./plugins")
 

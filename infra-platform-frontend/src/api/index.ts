@@ -3,6 +3,7 @@ import { deviceApi } from './deviceApi';
 import { standardDeviceApi } from './standardDeviceApi';
 import { customDeviceApi } from './customDeviceApi';
 import { pluginApi } from './pluginApi';
+import { availabilityApi } from './availability';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
 
@@ -33,4 +34,5 @@ export const api = {
   standardDevices: standardDeviceApi,
   customDevices: customDeviceApi,
   plugins: pluginApi,
+  availability: availabilityApi,
 };
