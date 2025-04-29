@@ -33,8 +33,6 @@ class Device(Base):
     custom_device = relationship("CustomDevice", back_populates="device", uselist=False, cascade="all, delete-orphan")
     sensors = relationship("Sensor", back_populates="device", cascade="all, delete-orphan")
 
-    availability_checks = relationship("AvailabilityCheck", back_populates="device", cascade="all, delete-orphan")
-
 
 class StandardDevice(Base):
     __tablename__ = "standard_devices"

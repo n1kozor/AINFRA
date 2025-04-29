@@ -4,20 +4,18 @@ from .core.config import get_settings
 from .core.database import Base, engine
 from .api.router import api_router
 from .core.init_settings import initialize_default_settings
-from .core.availability_scheduler import AvailabilityScheduler
 from .plugins.loader import PluginLoader
 from sqlalchemy.orm import Session
 from .core.database import get_db
 from fastapi_mcp import FastApiMCP
 from fastapi.middleware.cors import CORSMiddleware
 
-from .services.availability_service import AvailabilityService
-
 # Create database tables
 Base.metadata.create_all(bind=engine)
 
 # Instantiate settings
 settings = get_settings()
+
 
 # Define lifespan
 @asynccontextmanager
@@ -32,18 +30,15 @@ async def lifespan(app: FastAPI):
         plugin_loader = PluginLoader()
         plugin_loader.load_plugins(db)
 
-        # Initialize and start scheduler
-        scheduler = AvailabilityScheduler()
-        scheduler.init_scheduler()  # app parameter eltávolítva
-        interval = AvailabilityService.get_check_interval(db)
-        scheduler.schedule_availability_checks(interval_minutes=interval)
-        scheduler.start()
+        # Ez a rész törölve - itt volt a scheduler inicializálása
     finally:
         db.close()
+
+    # Fontos: itt kell a yield-nek lennie, nem a try-finally blokkon belül!
     yield
-    # Shutdown actions
-    scheduler = AvailabilityScheduler()
-    scheduler.stop()
+
+    # A shutdown actions rész is törölve - itt volt a scheduler leállítása
+
 
 # Create FastAPI app
 app = FastAPI(
@@ -57,7 +52,6 @@ app = FastAPI(
 # Include API router
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -66,10 +60,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 # Add MCP
 mcp = FastApiMCP(app)
 mcp.mount()
+
 
 # Root endpoint
 @app.get("/")
