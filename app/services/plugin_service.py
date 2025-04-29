@@ -1,8 +1,10 @@
+# app/services/plugin_service.py - módosítjuk
+
 from sqlalchemy.orm import Session
 from typing import List, Dict, Any, Optional
 from ..models.plugin import Plugin
 from ..schemas.plugin import PluginCreate, PluginUpdate
-from ..plugins.validator import validate_plugin_code
+from ..plugins.validator import validate_plugin_code, get_plugin_template
 from ..plugins.loader import PluginLoader
 from ..core.exceptions import PluginNotFoundException, PluginValidationError
 
@@ -26,6 +28,10 @@ class PluginService:
         """
         Create a new plugin after validating the code
         """
+        # Use template if no code provided
+        if not plugin_data.code or plugin_data.code.strip() == "":
+            plugin_data.code = get_plugin_template()
+
         # Validate plugin code
         is_valid, error_message = validate_plugin_code(plugin_data.code)
         if not is_valid:
@@ -85,3 +91,8 @@ class PluginService:
         db.delete(plugin)
         db.commit()
         return True
+
+    @staticmethod
+    async def get_plugin_template() -> str:
+        """Get plugin template code"""
+        return get_plugin_template()

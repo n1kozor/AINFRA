@@ -1,4 +1,3 @@
-// CustomDeviceForm.tsx
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -31,12 +30,18 @@ import {
   ExtensionRounded as PluginIcon,
   TuneRounded as TuneIcon,
   SecurityRounded as SecurityIcon,
+  Search as SearchIcon,
+  Add as AddIcon,
+  Refresh as ReloadIcon,
+  DesignServices as TemplateIcon,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { CustomDeviceCreate } from '../../types/device';
 import { Plugin } from '../../types/plugin';
 import Editor from '@monaco-editor/react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useQuery } from '@tanstack/react-query';
+import { api } from '../../api';
 
 interface CustomDeviceFormProps {
   customDeviceData: Partial<CustomDeviceCreate>;
@@ -58,6 +63,13 @@ const CustomDeviceForm: React.FC<CustomDeviceFormProps> = ({
   const [activeTab, setActiveTab] = useState(0);
   const [editorHeight, setEditorHeight] = useState('300px');
   const [searchTerm, setSearchTerm] = useState('');
+
+  // Fetch plugin template
+  const { data: pluginTemplate, isLoading: templateLoading } = useQuery({
+    queryKey: ['pluginTemplate'],
+    queryFn: () => api.plugins.getTemplate(),
+    staleTime: Infinity,
+  });
 
   // Update selected plugin when plugin_id changes
   useEffect(() => {
@@ -234,20 +246,82 @@ const CustomDeviceForm: React.FC<CustomDeviceFormProps> = ({
               </Tooltip>
             </Box>
 
-            <TextField
-              fullWidth
-              placeholder={t('devices:searchPlugins')}
-              value={searchTerm}
-              onChange={handleSearchChange}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-                sx: { borderRadius: '12px', mb: 3 }
-              }}
-            />
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
+              <TextField
+                sx={{ flexGrow: 1, mr: 2 }}
+                placeholder={t('devices:searchPlugins')}
+                value={searchTerm}
+                onChange={handleSearchChange}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                  sx: { borderRadius: '12px' }
+                }}
+              />
+              
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<AddIcon />}
+                sx={{ borderRadius: '12px' }}
+                onClick={() => {
+                  // Navigate to plugin creation page - in a real app you'd use router
+                  window.location.href = '/plugins/new';
+                }}
+              >
+                {t('devices:createNewPlugin')}
+              </Button>
+            </Box>
+
+            {/* Plugin Templates */}
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600, display: 'flex', alignItems: 'center' }}>
+                <TemplateIcon sx={{ mr: 1, fontSize: '1rem', color: theme.palette.info.main }} />
+                {t('devices:popularTemplates')}
+              </Typography>
+              
+              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  startIcon={<ReloadIcon />}
+                  sx={{ borderRadius: '10px' }}
+                  color="info"
+                  onClick={() => {
+                    window.location.href = '/plugins/new?template=ssh';
+                  }}
+                >
+                  SSH Device
+                </Button>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  startIcon={<ReloadIcon />}
+                  sx={{ borderRadius: '10px' }}
+                  color="info"
+                  onClick={() => {
+                    window.location.href = '/plugins/new?template=http';
+                  }}
+                >
+                  HTTP API Device
+                </Button>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  startIcon={<ReloadIcon />}
+                  sx={{ borderRadius: '10px' }}
+                  color="info"
+                  onClick={() => {
+                    window.location.href = '/plugins/new?template=mqtt';
+                  }}
+                >
+                  MQTT Device
+                </Button>
+              </Box>
+            </Box>
 
             <Box
               sx={{
@@ -562,7 +636,7 @@ const CustomDeviceForm: React.FC<CustomDeviceFormProps> = ({
                         <SecurityIcon sx={{ mr: 1, color: theme.palette.secondary.main }} />
                         {t('devices:connectionParams')}
                       </Typography>
-                      
+
                       {generateFormFields()}
 
                       <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
@@ -577,7 +651,6 @@ const CustomDeviceForm: React.FC<CustomDeviceFormProps> = ({
                             // Reset to defaults
                             if (selectedPlugin?.ui_schema?.properties?.connection?.properties) {
                               const props = selectedPlugin.ui_schema.properties.connection.properties;
-                              // CustomDeviceForm.tsx (folytatás)
                               const initialParams = Object.keys(props).reduce((acc, key) => {
                                 if (props[key].default !== undefined) {
                                   acc[key] = props[key].default;
@@ -882,6 +955,83 @@ const CustomDeviceForm: React.FC<CustomDeviceFormProps> = ({
                         </Stack>
                       </Paper>
                     </Grid>
+
+                    {/* Available Operations Section */}
+                    <Grid item xs={12}>
+                      <Paper
+                        elevation={0}
+                        sx={{
+                          p: 3,
+                          borderRadius: '16px',
+                          bgcolor: alpha(theme.palette.background.paper, 0.3),
+                          border: `1px solid ${alpha(theme.palette.divider, 0.1)}`
+                        }}
+                      >
+                        <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+                          {t('devices:availableOperations')}
+                        </Typography>
+
+                        <Divider sx={{ mb: 2, opacity: 0.1 }} />
+
+                        <Grid container spacing={2}>
+                          {selectedPlugin.ui_schema?.buttons?.map((button: any, index: number) => (
+                            <Grid item xs={12} sm={6} md={4} key={index}>
+                              <Paper
+                                elevation={0}
+                                sx={{
+                                  p: 2,
+                                  borderRadius: '12px',
+                                  bgcolor: alpha(theme.palette.primary.main, 0.05),
+                                  border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
+                                  display: 'flex',
+                                  alignItems: 'center'
+                                }}
+                              >
+                                <Box sx={{
+                                  width: 40,
+                                  height: 40,
+                                  borderRadius: '8px',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  bgcolor: alpha(theme.palette.primary.main, 0.1),
+                                  color: theme.palette.primary.main,
+                                  mr: 2
+                                }}>
+                                  {getIconComponent(button.icon) || <PlayIcon />}
+                                </Box>
+                                <Box>
+                                  <Typography variant="subtitle2" fontWeight={600}>
+                                    {button.title}
+                                  </Typography>
+                                  <Typography variant="caption" color="text.secondary">
+                                    {button.action}
+                                  </Typography>
+                                </Box>
+                              </Paper>
+                            </Grid>
+                          ))}
+
+                          {(!selectedPlugin.ui_schema?.buttons || selectedPlugin.ui_schema.buttons.length === 0) && (
+                            <Grid item xs={12}>
+                              <Box
+                                sx={{
+                                  p: 2,
+                                  borderRadius: '12px',
+                                  bgcolor: alpha(theme.palette.background.paper, 0.5),
+                                  border: `1px dashed ${alpha(theme.palette.divider, 0.3)}`,
+                                  textAlign: 'center'
+                                }}
+                              >
+                                <Typography color="text.secondary">
+                                  {t('devices:noOperationsAvailable')}
+                                </Typography>
+                              </Box>
+                            </Grid>
+                          )}
+                        </Grid>
+                      </Paper>
+                    </Grid>
                   </Grid>
                 </motion.div>
               )}
@@ -893,17 +1043,22 @@ const CustomDeviceForm: React.FC<CustomDeviceFormProps> = ({
   );
 };
 
-// Hiányzó SearchIcon import
-const SearchIcon = () => {
-  const theme = useTheme();
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path
-        d="M15.5 14H14.71L14.43 13.73C15.41 12.59 16 11.11 16 9.5C16 5.91 13.09 3 9.5 3C5.91 3 3 5.91 3 9.5C3 13.09 5.91 16 9.5 16C11.11 16 12.59 15.41 13.73 14.43L14 14.71V15.5L19 20.49L20.49 19L15.5 14ZM9.5 14C7.01 14 5 11.99 5 9.5C5 7.01 7.01 5 9.5 5C11.99 5 14 7.01 14 9.5C14 11.99 11.99 14 9.5 14Z"
-        fill={theme.palette.text.secondary}
-      />
-    </svg>
-  );
+// Helper functions
+const getIconComponent = (iconName?: string) => {
+  if (!iconName) return null;
+
+  const icons: any = {
+    refresh: <RefreshIcon />,
+    settings: <TuneIcon />,
+    code: <CodeIcon />,
+    info: <InfoIcon />,
+    warning: <WarningIcon />,
+    restart: <RefreshIcon />,
+    update: <RefreshIcon />,
+    play: <PlayIcon />
+  };
+
+  return icons[iconName] || null;
 };
 
 export default CustomDeviceForm;

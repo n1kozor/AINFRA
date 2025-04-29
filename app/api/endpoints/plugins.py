@@ -1,3 +1,5 @@
+# app/api/endpoints/plugins.py - új végponttal kiegészítve
+
 from fastapi import APIRouter, Depends, Path, Query, HTTPException, Body
 from sqlalchemy.orm import Session
 from typing import List
@@ -28,6 +30,13 @@ async def get_plugin(
     Get a plugin by ID.
     """
     return await PluginService.get_plugin(db, plugin_id)
+
+@router.get("/template", operation_id="get_plugin_template")
+async def get_plugin_template():
+    """
+    Get plugin template code.
+    """
+    return {"template": await PluginService.get_plugin_template()}
 
 @router.post("/", response_model=PluginResponse, operation_id="create_new_plugin")
 async def create_plugin(

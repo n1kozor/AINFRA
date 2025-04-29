@@ -37,6 +37,16 @@ import {
   Launch as LaunchIcon,
   FileCopy as CopyIcon,
   Storage as StorageIcon,
+  PowerSettingsNew as PowerIcon,
+  Settings as SettingsIcon,
+  Warning as WarningIcon,
+  Update as UpdateIcon,
+  Info as InfoIcon,
+  MoreVert as MoreIcon,
+  Speed as SpeedIcon,
+  Memory as MemoryIcon,
+  SdStorage as DiskIcon,
+  Dns as NetworkIcon,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { Device } from '../../../types/device';
@@ -138,6 +148,7 @@ const DynamicCard: React.FC<DynamicCardProps> = ({
         height: '100%',
         cursor: onClick ? 'pointer' : 'default',
         transition: 'transform 0.2s, box-shadow 0.2s',
+        borderRadius: 2,
         '&:hover': onClick ? {
           transform: 'translateY(-4px)',
           boxShadow: theme.shadows[4],
@@ -203,6 +214,74 @@ const isPositiveStatus = (status: string): boolean => {
   return positiveKeywords.some(keyword => statusLower.includes(keyword));
 };
 
+// Get appropriate icon component for metric type
+const getMetricIcon = (key: string) => {
+  if (key.includes('cpu')) return <SpeedIcon />;
+  if (key.includes('memory') || key.includes('ram')) return <MemoryIcon />;
+  if (key.includes('disk') || key.includes('storage')) return <DiskIcon />;
+  if (key.includes('network') || key.includes('interface')) return <NetworkIcon />;
+  if (key.includes('temperature') || key.includes('temp')) return <WarningIcon />;
+  if (key.includes('status') || key.includes('state')) return <InfoIcon />;
+  return <MetricsIcon />;
+};
+
+// Choose a color for a metric card
+const getMetricColor = (key: string, theme: any) => {
+  if (key.includes('cpu')) return theme.palette.primary.main;
+  if (key.includes('memory') || key.includes('ram')) return theme.palette.secondary.main;
+  if (key.includes('disk') || key.includes('storage')) return theme.palette.warning.main;
+  if (key.includes('network') || key.includes('interface')) return theme.palette.info.main;
+  if (key.includes('temperature') || key.includes('temp')) return theme.palette.error.main;
+  return theme.palette.success.main;
+};
+
+const getButtonProps = (buttonType = 'primary', theme: any) => {
+  const variants: any = {
+    primary: {
+      variant: 'contained',
+      color: 'primary',
+      sx: { borderRadius: 2 }
+    },
+    secondary: {
+      variant: 'outlined',
+      color: 'secondary',
+      sx: { borderRadius: 2 }
+    },
+    warning: {
+      variant: 'contained',
+      color: 'warning',
+      sx: { borderRadius: 2 }
+    },
+    error: {
+      variant: 'contained',
+      color: 'error',
+      sx: { borderRadius: 2 }
+    },
+    success: {
+      variant: 'contained',
+      color: 'success',
+      sx: { borderRadius: 2 }
+    }
+  };
+
+  return variants[buttonType] || variants.primary;
+};
+
+const getIconComponent = (iconName: string) => {
+  const icons: any = {
+    power: <PowerIcon />,
+    settings: <SettingsIcon />,
+    restart: <RefreshIcon />,
+    update: <UpdateIcon />,
+    warning: <WarningIcon />,
+    info: <InfoIcon />,
+    code: <CodeIcon />,
+    play: <PlayIcon />
+  };
+
+  return icons[iconName] || null;
+};
+
 const CustomDeviceDetails: React.FC<CustomDeviceDetailsProps> = ({ device }) => {
   const { t } = useTranslation(['devices', 'common']);
   const theme = useTheme();
@@ -215,6 +294,8 @@ const CustomDeviceDetails: React.FC<CustomDeviceDetailsProps> = ({ device }) => 
   const [modalData, setModalData] = useState<string>('');
   const [modalTitle, setModalTitle] = useState<string>('');
   const [dataLoading, setDataLoading] = useState(false);
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [pendingOperation, setPendingOperation] = useState<any>(null);
 
   // Fetch device status
   const { data: status, isLoading: statusLoading, error: statusError } = useQuery({
@@ -257,51 +338,94 @@ const CustomDeviceDetails: React.FC<CustomDeviceDetailsProps> = ({ device }) => 
     },
   });
 
+  // Extract quick action buttons from plugin UI schema
+  const getQuickActionButtons = () => {
+    if (!plugin?.ui_schema?.buttons) return [];
+    return plugin.ui_schema.buttons.map((button: any) => ({
+      title: button.title,
+      action: button.action,
+      variant: button.variant || 'primary',
+      icon: button.icon,
+      confirm: button.confirm
+    }));
+  };
+
   // Extract operations from plugin
   const availableOperations = extractOperations(plugin);
 
-  // Extract key metrics dynamically
+  // Extract key metrics dynamically for status panel
   const extractMainMetrics = () => {
     if (!metrics) return [];
 
+    // Pre-defined important metrics to look for
+    const metricKeys = [
+      { key: 'cpu_usage', type: 'percentage', icon: <SpeedIcon /> },
+      { key: 'memory_used', type: 'percentage', icon: <MemoryIcon /> },
+      { key: 'disk_usage', type: 'percentage', icon: <DiskIcon /> },
+      { key: 'temperature', type: 'text', icon: <WarningIcon /> },
+    ];
+
     const mainMetrics = [];
 
-    // Find numeric/boolean metrics that might be interesting
-    for (const [key, value] of Object.entries(metrics)) {
-      // Skip complex objects and arrays
-      if (typeof value === 'object' || Array.isArray(value)) continue;
+    // First try to find our predefined important metrics
+    for (const metricDef of metricKeys) {
+      if (metrics[metricDef.key] !== undefined) {
+        // Format the title to be user-friendly
+        const formattedTitle = metricDef.key
+          .replace(/_/g, ' ')
+          .replace(/([A-Z])/g, ' $1')
+          .replace(/^\w/, c => c.toUpperCase())
+          .replace(/\b\w/g, c => c.toUpperCase());
 
-      // Skip special fields
-      if (key === 'error') continue;
-
-      let metricType: ValueDisplayType = 'text';
-
-      // Try to determine value type
-      if (typeof value === 'number') {
-        if (value >= 0 && value <= 100) {
-          metricType = 'percentage';
-        } else if (value > 1000) {
-          metricType = 'bytes';
-        }
-      } else if (typeof value === 'boolean') {
-        metricType = 'boolean';
+        mainMetrics.push({
+          title: t(`devices:metrics.${metricDef.key}`, formattedTitle),
+          value: metrics[metricDef.key],
+          type: metricDef.type as ValueDisplayType,
+          icon: metricDef.icon,
+          color: getMetricColor(metricDef.key, theme)
+        });
       }
+    }
 
-      // Format the title to be user-friendly
-      const formattedTitle = key
-        .replace(/_/g, ' ')
-        .replace(/([A-Z])/g, ' $1')
-        .replace(/^\w/, c => c.toUpperCase())
-        .replace(/\b\w/g, c => c.toUpperCase());
+    // If we don't have enough, add some other numeric metrics
+    if (mainMetrics.length < 4) {
+      for (const [key, value] of Object.entries(metrics)) {
+        // Skip complex objects, arrays and already added metrics
+        if (typeof value === 'object' || Array.isArray(value) || mainMetrics.some(m => m.title.toLowerCase().includes(key.toLowerCase()))) continue;
+        // Skip special fields
+        if (key === 'error') continue;
 
-      mainMetrics.push({
-        title: t(`devices:metrics.${key}`, formattedTitle),
-        value,
-        type: metricType
-      });
+        let metricType: ValueDisplayType = 'text';
 
-      // Limit to 4 metrics to avoid overwhelming the UI
-      if (mainMetrics.length >= 4) break;
+        // Try to determine value type
+        if (typeof value === 'number') {
+          if (value >= 0 && value <= 100) {
+            metricType = 'percentage';
+          } else if (value > 1000) {
+            metricType = 'bytes';
+          }
+        } else if (typeof value === 'boolean') {
+          metricType = 'boolean';
+        }
+
+        // Format the title to be user-friendly
+        const formattedTitle = key
+          .replace(/_/g, ' ')
+          .replace(/([A-Z])/g, ' $1')
+          .replace(/^\w/, c => c.toUpperCase())
+          .replace(/\b\w/g, c => c.toUpperCase());
+
+        mainMetrics.push({
+          title: t(`devices:metrics.${key}`, formattedTitle),
+          value,
+          type: metricType,
+          icon: getMetricIcon(key),
+          color: getMetricColor(key, theme)
+        });
+
+        // Limit to 4 metrics total
+        if (mainMetrics.length >= 4) break;
+      }
     }
 
     return mainMetrics;
@@ -343,61 +467,67 @@ const CustomDeviceDetails: React.FC<CustomDeviceDetailsProps> = ({ device }) => 
     return systemInfo;
   };
 
-  // Új függvény - Általános művelet végrehajtó
-  const handleExecuteGenericAction = (actionId: string, rowData: any = {}) => {
-    // Ebben a funkcióban kezeljük az összes táblázaton belüli művelet végrehajtását
-    const params = {
+  // General operation handler that checks if confirmation is needed
+  const handleOperation = (operationId: string, params: any = {}, requireConfirm = false) => {
+    // Merge connection parameters with provided params
+    const fullParams = {
       ...device.custom_device?.connection_params,
-      ...rowData
+      ...params,
     };
 
-    operationMutation.mutate({
-      operationId: actionId,
-      params
-    });
+    if (requireConfirm) {
+      // Store operation details and show confirmation dialog
+      setPendingOperation({
+        operationId,
+        params: fullParams
+      });
+      setConfirmModalOpen(true);
+    } else {
+      // Execute immediately if no confirmation needed
+      operationMutation.mutate({
+        operationId,
+        params: fullParams
+      });
+    }
   };
 
-  // Új függvény - Gombokat generál táblázathoz
-  const generateTableActions = (tableData: any, tableKey: string) => {
-    // Ha van plugin UI schema és van benne műveletek az adott táblázathoz
-    if (plugin?.ui_schema?.components?.[tableKey]?.actions) {
-      const actions = plugin.ui_schema.components[tableKey].actions;
+  // Table row action handler
+  const handleTableRowAction = (actionId: string, rowData: any = {}) => {
+    // Find the operation from available operations
+    const operation = availableOperations.find(op => op.id === actionId);
+    const requireConfirmation = operation?.confirm || false;
 
-      return actions.map((action: any) => ({
-        title: action.title,
-        action: action.action,
-        buttonType: action.buttonType || "primary",
-        enabledWhen: action.enabledWhen
-      }));
+    handleOperation(actionId, rowData, requireConfirmation);
+  };
+
+  // Generate actions for table rows
+  const generateTableActions = (tableKey: string) => {
+    if (plugin?.ui_schema?.components?.[tableKey]?.actions) {
+      return plugin.ui_schema.components[tableKey].actions;
     }
 
-    // Egyébként univerzális műveletek, mint pl a frissítés
-    return [
-      {
-        title: t('common:actions.refresh'),
-        action: 'refresh',
-        buttonType: 'primary'
-      }
-    ];
+    // Default actions if none defined
+    return [];
   };
 
-  // Általános táblázat renderelő függvény - Ez a legfontosabb új funkció!
+  // Dynamic table renderer
   const renderDynamicTable = (key: string, data: any[]) => {
     if (!data || data.length === 0) return null;
 
-    // Táblázat oszlopok generálása az első elemből
+    // Generate columns from first item
     const columns = Object.keys(data[0])
-      .filter(colKey => typeof data[0][colKey] !== 'object') // Csak egyszerű típusok
+      .filter(colKey => typeof data[0][colKey] !== 'object') // Only simple types
       .map(colKey => ({
         key: colKey,
         title: colKey.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
       }));
 
-    // Lehetséges műveletek a táblázathoz
-    const tableActions = generateTableActions(data, key);
+    // Get actions for this table
+    const tableActions = generateTableActions(key);
 
-    // Táblanév generálása
-    const tableName = key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    // Generate table name
+    const tableName = plugin?.ui_schema?.components?.[key]?.title ||
+                     key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
     return (
       <Grid item xs={12} key={key}>
@@ -418,7 +548,7 @@ const CustomDeviceDetails: React.FC<CustomDeviceDetailsProps> = ({ device }) => 
           }
         >
           <Box sx={{ p: 2 }}>
-            <TableContainer component={Paper}>
+            <TableContainer component={Paper} sx={{ boxShadow: 'none', borderRadius: 2 }}>
               <Table size="small">
                 <TableHead>
                   <TableRow>
@@ -427,7 +557,7 @@ const CustomDeviceDetails: React.FC<CustomDeviceDetailsProps> = ({ device }) => 
                         {col.title}
                       </TableCell>
                     ))}
-                    {tableActions.length > 0 && <TableCell>Actions</TableCell>}
+                    {tableActions.length > 0 && <TableCell align="right">Actions</TableCell>}
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -449,15 +579,22 @@ const CustomDeviceDetails: React.FC<CustomDeviceDetailsProps> = ({ device }) => 
                         </TableCell>
                       ))}
                       {tableActions.length > 0 && (
-                        <TableCell>
-                          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                        <TableCell align="right">
+                          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
                             {tableActions.map((action, actionIndex) => {
-                              // Ellenőrizzük, hogy a gomb engedélyezett-e a jelenlegi sorban
+                              // Check if button should be enabled for this row
                               let isEnabled = true;
                               if (action.enabledWhen) {
                                 try {
-                                  // Biztonságos értékelés - csak egyszerű feltételekre
-                                  isEnabled = eval(action.enabledWhen.replace(/row\./g, 'row["') + '"]');
+                                  const evalStr = action.enabledWhen
+                                    .replace(/row\.(\w+)/g, (match, field) => {
+                                      if (typeof row[field] === 'string') {
+                                        return `"${row[field]}"`;
+                                      }
+                                      return row[field];
+                                    });
+                                  // Use Function instead of eval for better safety
+                                  isEnabled = new Function('return ' + evalStr)();
                                 } catch (e) {
                                   console.error('Error evaluating button condition:', e);
                                   isEnabled = false;
@@ -473,7 +610,8 @@ const CustomDeviceDetails: React.FC<CustomDeviceDetailsProps> = ({ device }) => 
                                          action.buttonType === 'success' ? 'success' :
                                          action.buttonType === 'warning' ? 'warning' :
                                          action.buttonType === 'error' ? 'error' : 'secondary'}
-                                  onClick={() => handleExecuteGenericAction(action.action, row)}
+                                  onClick={() => handleTableRowAction(action.action, row)}
+                                  sx={{ borderRadius: 1, minWidth: 'auto', padding: '3px 8px' }}
                                 >
                                   {action.title}
                                 </Button>
@@ -493,7 +631,23 @@ const CustomDeviceDetails: React.FC<CustomDeviceDetailsProps> = ({ device }) => 
     );
   };
 
-  // Handle executing operation
+  // Handle opening operation modal for complex operations with parameters
+  const handleOperationClick = (operation: any) => {
+    setSelectedOperation(operation);
+    setOperationParams({});
+    setOperationModalOpen(true);
+  };
+
+  // Execute confirmed operation (from confirmation dialog)
+  const executeConfirmedOperation = () => {
+    if (pendingOperation) {
+      operationMutation.mutate(pendingOperation);
+      setPendingOperation(null);
+      setConfirmModalOpen(false);
+    }
+  };
+
+  // Execute operation from modal
   const handleExecuteOperation = () => {
     if (selectedOperation) {
       // Combine connection parameters from device with user-provided parameters
@@ -509,13 +663,6 @@ const CustomDeviceDetails: React.FC<CustomDeviceDetailsProps> = ({ device }) => 
 
       setOperationModalOpen(false);
     }
-  };
-
-  // Handle opening operation modal
-  const handleOperationClick = (operation: any) => {
-    setSelectedOperation(operation);
-    setOperationParams({});
-    setOperationModalOpen(true);
   };
 
   // Loading and error states
@@ -557,6 +704,7 @@ const CustomDeviceDetails: React.FC<CustomDeviceDetailsProps> = ({ device }) => 
   // Main metrics and system info
   const mainMetrics = extractMainMetrics();
   const systemInfo = extractSystemInfo();
+  const quickActions = getQuickActionButtons();
 
   // Identify and collect all arrays that should be rendered as tables
   const tableData = [];
@@ -574,6 +722,46 @@ const CustomDeviceDetails: React.FC<CustomDeviceDetailsProps> = ({ device }) => 
   return (
     <Box>
       <Grid container spacing={3}>
+        {/* Quick Action Buttons */}
+        {quickActions.length > 0 && (
+          <Grid item xs={12}>
+            <Paper
+              elevation={0}
+              sx={{
+                p: 2,
+                borderRadius: 2,
+                border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 2,
+                alignItems: 'center',
+                justifyContent: 'flex-start'
+              }}
+            >
+              <Typography variant="subtitle1" sx={{ mr: 2, fontWeight: 500 }}>
+                {t('devices:quickActions')}:
+              </Typography>
+
+              {quickActions.map((button, index) => {
+                const buttonProps = getButtonProps(button.variant, theme);
+                const icon = button.icon ? getIconComponent(button.icon) : null;
+
+                return (
+                  <Button
+                    key={index}
+                    {...buttonProps}
+                    startIcon={icon}
+                    onClick={() => handleOperation(button.action, {}, button.confirm)}
+                    disabled={operationMutation.isPending}
+                  >
+                    {button.title}
+                  </Button>
+                );
+              })}
+            </Paper>
+          </Grid>
+        )}
+
         {/* Main metrics */}
         {mainMetrics.length > 0 && (
           <Grid item xs={12}>
@@ -621,14 +809,23 @@ const CustomDeviceDetails: React.FC<CustomDeviceDetailsProps> = ({ device }) => 
                         bgcolor: alpha(theme.palette.background.paper, 0.5),
                         borderRadius: theme.shape.borderRadius,
                         boxShadow: theme.shadows[1],
+                        height: '100%'
                       }}>
                         <Typography variant="subtitle2" gutterBottom>
                           {info.title}
                         </Typography>
                         {info.type === 'status' ? (
                           <Chip
-                            label={info.value ? t('common:status.online') : t('common:status.offline')}
-                            color={info.value ? 'success' : 'error'}
+                            label={
+                              typeof info.value === 'boolean'
+                                ? (info.value ? t('common:status.online') : t('common:status.offline'))
+                                : info.value
+                            }
+                            color={
+                              typeof info.value === 'boolean'
+                                ? (info.value ? 'success' : 'error')
+                                : (isPositiveStatus(info.value?.toString() || '') ? 'success' : 'error')
+                            }
                             size="small"
                           />
                         ) : info.type === 'boolean' ? (
@@ -647,7 +844,7 @@ const CustomDeviceDetails: React.FC<CustomDeviceDetailsProps> = ({ device }) => 
           </Grid>
         )}
 
-        {/* Minden táblázatos adat dinamikus megjelenítése */}
+        {/* Dynamic tables */}
         {tableData.map(table => renderDynamicTable(table.key, table.data))}
 
         {/* Available Operations */}
@@ -673,6 +870,7 @@ const CustomDeviceDetails: React.FC<CustomDeviceDetailsProps> = ({ device }) => 
                           flexDirection: 'column',
                           textAlign: 'center',
                           height: '100%',
+                          borderRadius: 2
                         }}
                       >
                         <Typography variant="subtitle1" gutterBottom>
@@ -761,6 +959,52 @@ const CustomDeviceDetails: React.FC<CustomDeviceDetailsProps> = ({ device }) => 
         </DialogActions>
       </Dialog>
 
+      {/* Confirmation Modal */}
+      <Dialog
+        open={confirmModalOpen}
+        onClose={() => {
+          setConfirmModalOpen(false);
+          setPendingOperation(null);
+        }}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle>
+          {t('devices:confirmAction')}
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            <WarningIcon color="warning" sx={{ mr: 1, fontSize: 28 }} />
+            <Typography>
+              {t('devices:confirmActionMessage')}
+            </Typography>
+          </Box>
+          <Typography variant="body2" color="text.secondary">
+            {t('devices:confirmActionDescription')}
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setConfirmModalOpen(false);
+              setPendingOperation(null);
+            }}
+            color="inherit"
+          >
+            {t('common:actions.cancel')}
+          </Button>
+          <Button
+            onClick={executeConfirmedOperation}
+            color="error"
+            variant="contained"
+            disabled={operationMutation.isPending}
+            startIcon={operationMutation.isPending && <CircularProgress size={20} color="inherit" />}
+          >
+            {t('common:actions.confirm')}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       {/* Data Modal (logs, output, etc.) */}
       <Dialog
         open={dataModalOpen}
@@ -797,6 +1041,7 @@ const CustomDeviceDetails: React.FC<CustomDeviceDetailsProps> = ({ device }) => 
                 fontFamily: 'monospace',
                 whiteSpace: 'pre-wrap',
                 fontSize: '0.85rem',
+                borderRadius: 2
               }}
             >
               {modalData || t('devices:noDataAvailable')}
