@@ -34,6 +34,7 @@ const App = () => {
       <ThemeProvider>
         <AppProvider>
           <CssBaseline />
+
           <BrowserRouter>
             <MainLayout>
               <Routes>

@@ -1,0 +1,38 @@
+{
+  "title": "Irányítópult",
+  "summary": "Rendszer Áttekintés",
+  "addDevice": "Eszköz Hozzáadása",
+  "viewAll": "Összes Megtekintése",
+  "viewDetails": "Részletek",
+  "stats": {
+    "totalDevices": "Összes Eszköz",
+    "standardDevices": "Standard Eszközök",
+    "customDevices": "Egyedi Eszközök",
+    "plugins": "Bővítmények"
+  },
+  "deviceStatus": {
+    "title": "Eszközök Állapota",
+    "active": "Aktív",
+    "inactive": "Inaktív",
+    "byOs": "Operációs Rendszerek Szerint",
+    "noStandardDevices": "Nincsenek standard eszközök"
+  },
+  "recentDevices": {
+    "title": "Legutóbbi Eszközök",
+    "noDevices": "Még nincsenek eszközök hozzáadva"
+  },
+  "osTypes": {
+    "windows": "Windows",
+    "linux": "Linux",
+    "macos": "MacOS",
+    "unknown": "Ismeretlen"
+  },
+  "deviceTypes": {
+    "standard": "Standard",
+    "custom": "Egyedi"
+  },
+  "info": {
+    "standardDevice": "A standard eszközök közé tartoznak a Windows, MacOS és Linux szerverek/kliensek, amelyeket a Glances segítségével lehet monitorozni.",
+    "customDevice": "Az egyedi eszközök bármilyen hálózati berendezések lehetnek, amelyekhez bővítmény van definiálva."
+  }
+}

@@ -95,15 +95,23 @@ useEffect(() => {
   ];
 
   const drawerContent = (
-    <Box sx={{
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100%',
-      background: theme.palette.mode === 'dark'
-        ? `linear-gradient(145deg, ${alpha('#121e2d', 0.95)}, ${alpha('#0c1524', 0.97)})`
-        : `linear-gradient(145deg, ${alpha('#f8fafc', 0.97)}, ${alpha('#ffffff', 0.99)})`,
-      borderRight: `1px solid ${alpha(theme.palette.divider, 0.05)}`,
-    }}>
+      <Box sx={{
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%', // Full height
+    background: theme.palette.mode === 'dark'
+      ? `linear-gradient(145deg, ${alpha('#121e2d', 0.95)}, ${alpha('#0c1524', 0.97)})`
+      : `linear-gradient(145deg, ${alpha('#f8fafc', 0.97)}, ${alpha('#ffffff', 0.99)})`,
+    borderRight: `1px solid ${alpha(theme.palette.divider, 0.05)}`,
+    overflowY: 'auto',
+    overflowX: 'hidden',
+
+    msOverflowStyle: 'none',
+    scrollbarWidth: 'none',
+    '&::-webkit-scrollbar': {
+      display: 'none'
+    }
+  }}>
       <Box sx={{
         display: 'flex',
         alignItems: 'center',
@@ -241,7 +249,7 @@ useEffect(() => {
         ))}
       </List>
 
-      <Box sx={{ flexGrow: 1 }} />
+      <Box sx={{ flexGrow: 1, minHeight: '20px' }} />
 
       <Box sx={{ p: 2.5 }}>
         <motion.div
@@ -329,33 +337,34 @@ useEffect(() => {
   );
 
   return (
-    <Drawer
-      open={sidebarOpen}
-      variant="permanent"
-      sx={{
-        width: sidebarOpen ? DRAWER_WIDTH : 0,
-        flexShrink: 0,
-        zIndex: 100,
-        [`& .MuiDrawer-paper`]: {
-          width: DRAWER_WIDTH,
-          boxSizing: 'border-box',
-          border: 'none',
-          transition: theme.transitions.create(['width', 'transform'], {
-            easing: theme.transitions.easing.easeInOut,
-            duration: theme.transitions.duration.standard,
-          }),
-          zIndex: 100,
-          mt: '64px',
-          height: 'calc(100% - 64px)',
-          overflow: 'hidden',
-          ...(!sidebarOpen && {
-            transform: 'translateX(-100%)',
-          }),
-        },
-      }}
-    >
-      {drawerContent}
-    </Drawer>
+                <Drawer
+  open={sidebarOpen}
+  variant="permanent" // Always keep it in the DOM
+  sx={{
+    width: sidebarOpen ? DRAWER_WIDTH : 0,
+    flexShrink: 0,
+    zIndex: 100,
+    [`& .MuiDrawer-paper`]: {
+      width: DRAWER_WIDTH,
+      boxSizing: 'border-box',
+      border: 'none',
+      transition: theme.transitions.create(['width', 'transform'], {
+        easing: theme.transitions.easing.easeInOut,
+        duration: theme.transitions.duration.standard,
+      }),
+      zIndex: 100,
+      mt: '64px', // Match header height
+      height: 'calc(100% - 64px)', // Full height minus header
+      overflow: 'hidden',
+      // Transform sidebar off-screen when closed (rather than changing width)
+      ...(!sidebarOpen && {
+        transform: 'translateX(-100%)',
+      }),
+    },
+  }}
+>
+  {drawerContent}
+</Drawer>
   );
 };
 

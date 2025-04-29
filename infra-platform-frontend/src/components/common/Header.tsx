@@ -329,27 +329,28 @@ const Header = () => {
 
   return (
     <AppBar
-      position="fixed"
-      elevation={0}
-      sx={{
-        backgroundColor: theme.palette.mode === 'dark'
-          ? alpha('#0f172a', 0.8)
-          : alpha('#ffffff', 0.8),
-        backdropFilter: 'blur(20px)',
-        zIndex: 1100,
-        boxShadow: theme.palette.mode === 'dark'
-          ? '0 4px 20px rgba(0,0,0,0.2)'
-          : '0 4px 20px rgba(0,0,0,0.05)',
-        borderBottom: `1px solid ${alpha(
-          theme.palette.mode === 'dark' ? theme.palette.common.white : theme.palette.common.black,
-          0.05
-        )}`,
-        color: theme.palette.mode === 'dark'
-          ? theme.palette.common.white
-          : theme.palette.common.black,
-        height: 64,
-      }}
-    >
+  position="fixed"
+  elevation={0}
+  sx={{
+    backgroundColor: theme.palette.mode === 'dark'
+      ? alpha('#0f172a', 0.8)
+      : alpha('#ffffff', 0.8),
+    backdropFilter: 'blur(20px)',
+    zIndex: (theme) => theme.zIndex.drawer + 1, // Fontos: a drawer fölött legyen
+    boxShadow: theme.palette.mode === 'dark'
+      ? '0 4px 20px rgba(0,0,0,0.2)'
+      : '0 4px 20px rgba(0,0,0,0.05)',
+    borderBottom: `1px solid ${alpha(
+      theme.palette.mode === 'dark' ? theme.palette.common.white : theme.palette.common.black,
+      0.05
+    )}`,
+    color: theme.palette.mode === 'dark'
+      ? theme.palette.common.white
+      : theme.palette.common.black,
+    height: 64,
+    width: '100%',
+  }}
+>
       <Toolbar sx={{
         padding: theme => theme.spacing(0, 2),
         minHeight: '64px !important',

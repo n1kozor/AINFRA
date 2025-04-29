@@ -86,16 +86,19 @@ const PageContainer = ({
   };
 
   return (
-    <Box
-      component={motion.div}
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      sx={{
-        width: '100%',
-        p: { xs: 2, sm: 3, md: 4 },
-      }}
-    >
+        <Box
+          component={motion.div}
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          sx={{
+            width: '100%',
+            p: { xs: 2, sm: 2, md: 2 }, // Reduced padding on all sides
+            pl: { xs: 2, sm: 2, md: 2 }, // Explicitly control left padding
+            // The content should start very close to the sidebar
+            maxWidth: '100%', // Allow content to use full width
+          }}
+        >
       <PageHeader
         component={motion.div}
         variants={itemVariants}

@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, Path, Query, HTTPException, Body, BackgroundTasks
+from fastapi import FastAPI, Depends, Path, Query, Body, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from sqlalchemy import create_engine, Column, Integer, String, DateTime, Boolean, Float, ForeignKey, func, and_

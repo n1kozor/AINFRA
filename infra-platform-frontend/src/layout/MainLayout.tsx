@@ -76,18 +76,22 @@ const MainLayout = ({ children }: MainLayoutProps) => {
         sx={{
           flexGrow: 1,
           p: 0,
+          pl: 0, // Remove left padding
           width: { sm: sidebarOpen ? 'calc(100% - 280px)' : '100%' },
-          ml: { sm: 0 },
+          ml: { sm: sidebarOpen ? '280px' : 0 }, // Match Sidebar width
           transition: theme => theme.transitions.create(['width', 'margin'], {
             easing: theme.transitions.easing.easeInOut,
             duration: theme.transitions.duration.standard,
           }),
           overflowX: 'hidden',
-          position: 'relative',
+          overflowY: 'auto', // Make content scrollable
+          position: 'fixed', // Fix the position
+          top: '64px', // Header height
+          bottom: 0,
+          right: 0,
           zIndex: 1, // Position above decorative elements
         }}
       >
-        <Toolbar />
         {children}
       </Box>
     </Box>
