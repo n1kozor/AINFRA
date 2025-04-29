@@ -23,14 +23,14 @@
     "linux": "Linux"
   },
   "status": {
-    "active": "Active",
-    "inactive": "Inactive"
+    "online": "Online",
+    "offline": "Offline"
   },
   "statusFilter": "Status Filter",
   "statusOptions": {
     "all": "All",
-    "active": "Active",
-    "inactive": "Inactive"
+    "active": "Online",
+    "inactive": "Offline"
   },
   "name": "Name",
   "description": "Description",

@@ -10,7 +10,6 @@ import {
   Avatar,
   Divider,
   ButtonBase,
-  Skeleton,
 } from '@mui/material';
 import {
   ComputerRounded as StandardIcon,
@@ -44,8 +43,7 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ device }) => {
   const { t } = useTranslation(['devices', 'common']);
   const navigate = useNavigate();
   const theme = useTheme();
-  const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isAvailable, setIsAvailable] = useState<boolean>(false);
 
   const isStandard = device.type === 'standard';
 
@@ -83,15 +81,12 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ device }) => {
     let intervalId: NodeJS.Timeout;
 
     const checkAvailability = async () => {
-      setIsLoading(true);
       try {
         const result = await availabilityApi.checkDevice(device.id);
         setIsAvailable(result.is_available);
       } catch (error) {
         setIsAvailable(false);
         console.error(`Failed to check availability for device ${device.id}:`, error);
-      } finally {
-        setIsLoading(false);
       }
     };
 
@@ -126,56 +121,6 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ device }) => {
 
   const colorScheme = getColorScheme();
 
-  // Common card styles with fixed dimensions
-  const cardStyles = {
-    height: 340, // Fixed height for all cards
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    borderRadius: '20px',
-    overflow: 'hidden',
-    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-    backgroundImage: 'none',
-    position: 'relative',
-  };
-
-  // Render loading skeleton when availability status is being checked
-  if (isLoading && isAvailable === null) {
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        <Card
-          elevation={0}
-          sx={{
-            ...cardStyles,
-            border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-            p: 3,
-          }}
-        >
-          <Box sx={{ display: 'flex', mb: 2 }}>
-            <Skeleton variant="rounded" width={50} height={50} sx={{ borderRadius: '16px' }} />
-            <Box sx={{ ml: 2, width: '100%' }}>
-              <Skeleton variant="text" width="70%" height={30} />
-              <Skeleton variant="text" width="40%" height={20} />
-            </Box>
-          </Box>
-          <Skeleton variant="rounded" width="40%" height={30} sx={{ mb: 2 }} />
-          <Skeleton variant="text" width="100%" height={20} sx={{ mb: 1 }} />
-          <Skeleton variant="text" width="90%" height={20} sx={{ mb: 1 }} />
-          <Box sx={{ flexGrow: 1 }} />
-          <Skeleton variant="text" width="60%" height={16} sx={{ mt: 2 }} />
-          <Divider sx={{ my: 2, opacity: 0.1 }} />
-          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-            <Skeleton variant="rounded" width={120} height={36} />
-          </Box>
-        </Card>
-      </motion.div>
-    );
-  }
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -185,7 +130,13 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ device }) => {
       <Card
         elevation={0}
         sx={{
-          ...cardStyles,
+          height: 360, // Increased height to ensure button is visible
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          borderRadius: '20px',
+          overflow: 'hidden',
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
           border: `1px solid ${alpha(colorScheme.main, 0.15)}`,
           '&:hover': {
             transform: 'translateY(-5px)',
@@ -228,7 +179,6 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ device }) => {
                 fontSize: '1.1rem',
                 lineHeight: 1.2,
                 mb: 0.5,
-                // Limit to 1 line with ellipsis
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
@@ -245,7 +195,6 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ device }) => {
                 alignItems: 'center',
                 gap: 0.5,
                 fontSize: '0.85rem',
-                // Limit to 1 line with ellipsis
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
@@ -262,12 +211,14 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ device }) => {
           sx={{
             flexGrow: 1,
             p: 3,
-            '&:last-child': { pb: 3 },
+            pt: 2,
+            pb: 1, // Reduced bottom padding
+            '&:last-child': { pb: 2 }, // Override Material UI default
             display: 'flex',
             flexDirection: 'column',
           }}
         >
-          {/* Status chip */}
+          {/* Type and status chips */}
           <Box sx={{ mb: 2, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
             {/* Device type chip */}
             <Chip
@@ -285,70 +236,68 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ device }) => {
             />
 
             {/* Availability status chip */}
-            {isLoading ? (
-              <Skeleton variant="rounded" width={100} height={24} sx={{ borderRadius: '8px' }} />
-            ) : (
-              <Chip
-                size="small"
-                label={isAvailable ? t('devices:status.online') : t('devices:status.offline')}
+            <Chip
+              size="small"
+              label={isAvailable ? t('devices:status.online') : t('devices:status.offline')}
+              sx={{
+                borderRadius: '8px',
+                minWidth: 90,
+                bgcolor: alpha(isAvailable ? theme.palette.success.main : theme.palette.error.main, 0.1),
+                color: isAvailable ? theme.palette.success.main : theme.palette.error.main,
+                border: `1px solid ${alpha(isAvailable ? theme.palette.success.main : theme.palette.error.main, 0.2)}`,
+                fontWeight: 600,
+                fontSize: '0.75rem',
+                transition: 'background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease',
+              }}
+              icon={isAvailable ?
+                <OnlineIcon sx={{ fontSize: '1rem !important' }} /> :
+                <OfflineIcon sx={{ fontSize: '1rem !important' }} />
+              }
+            />
+          </Box>
+
+          {/* Description */}
+          <Box sx={{ minHeight: 45, mb: 1 }}>
+            {device.description && (
+              <Typography
+                variant="body2"
                 sx={{
-                  borderRadius: '8px',
-                  bgcolor: alpha(isAvailable ? theme.palette.success.main : theme.palette.error.main, 0.1),
-                  color: isAvailable ? theme.palette.success.main : theme.palette.error.main,
-                  border: `1px solid ${alpha(isAvailable ? theme.palette.success.main : theme.palette.error.main, 0.2)}`,
-                  fontWeight: 600,
-                  fontSize: '0.75rem',
+                  color: alpha(theme.palette.text.primary, 0.7),
+                  display: '-webkit-box',
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: 'vertical',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  fontSize: '0.85rem',
+                  lineHeight: 1.5,
                 }}
-                icon={isAvailable ?
-                  <OnlineIcon sx={{ fontSize: '1rem !important' }} /> :
-                  <OfflineIcon sx={{ fontSize: '1rem !important' }} />
-                }
-              />
+              >
+                {device.description}
+              </Typography>
             )}
           </Box>
 
-          {/* Description - limited to 2 lines */}
-          {device.description && (
-            <Typography
-              variant="body2"
-              sx={{
-                color: alpha(theme.palette.text.primary, 0.7),
-                display: '-webkit-box',
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: 'vertical',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                maxHeight: '40px', // Approximately 2 lines
-                mb: 2,
-                fontSize: '0.85rem',
-                lineHeight: 1.6,
-              }}
-            >
-              {device.description}
-            </Typography>
-          )}
-
           {/* Plugin information for custom devices */}
-          {!isStandard && device.custom_device && (
-            <Typography
-              variant="body2"
-              sx={{
-                color: alpha(theme.palette.text.secondary, 0.8),
-                display: 'flex',
-                alignItems: 'center',
-                gap: 0.5,
-                fontSize: '0.85rem',
-                mb: 1,
-                // Limit to 1 line with ellipsis
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              <PluginIcon fontSize="small" sx={{ flexShrink: 0 }} />
-              {t('devices:pluginConnection')}: {device.custom_device.plugin_name}
-            </Typography>
-          )}
+          <Box sx={{ minHeight: 28, mb: 1 }}>
+            {!isStandard && device.custom_device && (
+              <Typography
+                variant="body2"
+                sx={{
+                  color: alpha(theme.palette.text.secondary, 0.8),
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.5,
+                  fontSize: '0.85rem',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                <PluginIcon fontSize="small" sx={{ flexShrink: 0 }} />
+                {t('devices:pluginConnection')}: {device.custom_device.plugin_name}
+              </Typography>
+            )}
+          </Box>
 
           <Box sx={{ flexGrow: 1 }} />
 
@@ -361,7 +310,6 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ device }) => {
               gap: 0.5,
               color: alpha(theme.palette.text.secondary, 0.8),
               fontSize: '0.75rem',
-              mt: 2,
             }}
           >
             {t('devices:added')}: {formatDistanceToNow(new Date(device.created_at), { addSuffix: true })}
@@ -370,15 +318,16 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ device }) => {
 
         <Divider sx={{ opacity: 0.1 }} />
 
-        {/* Actions - only View button */}
-        <Box sx={{ p: 2, display: 'flex', justifyContent: 'center' }}>
+        {/* Actions - only View button, with more space */}
+        <Box sx={{ p: 3, display: 'flex', justifyContent: 'center' }}>
           <ButtonBase
             onClick={handleCardClick}
             sx={{
               borderRadius: '12px',
               overflow: 'hidden',
+              width: '100%', // Make button wider
               px: 2,
-              py: 1,
+              py: 1.5, // Increased vertical padding
               color: colorScheme.main,
               fontSize: '0.85rem',
               fontWeight: 600,
@@ -391,6 +340,7 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ device }) => {
               },
               display: 'flex',
               alignItems: 'center',
+              justifyContent: 'center', // Center the button content
               gap: 0.5,
             }}
           >
