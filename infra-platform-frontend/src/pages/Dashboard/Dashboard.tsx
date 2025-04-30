@@ -18,9 +18,6 @@ import { motion } from 'framer-motion';
 import PageContainer from '../../components/common/PageContainer';
 import { useTranslation } from 'react-i18next';
 import NetworkSoul from '../../components/dashboard/NetworkSoul';
-import DeviceStatusSummary from '../../components/dashboard/DeviceStatusSummary';
-import DeviceTypeDistribution from '../../components/dashboard/DeviceTypeDistribution';
-import RecentActivityList from '../../components/dashboard/RecentActivityList';
 import { useDeviceStats } from '../../hooks/dashboard/useDeviceStats';
 import { useAvailabilityData } from '../../hooks/dashboard/useAvailabilityData';
 
