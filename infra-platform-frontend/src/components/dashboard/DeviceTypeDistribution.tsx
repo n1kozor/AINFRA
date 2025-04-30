@@ -29,7 +29,7 @@ const DeviceTypeDistribution: React.FC<DeviceTypeDistributionProps> = ({ deviceS
         <Box
           sx={{
             background: alpha(theme.palette.background.paper, 0.9),
-            border: `1px solid ${theme.palette.divider}`,
+            border: `1px solid ${alpha(theme.palette.divider, 0.5)}`,
             borderRadius: 2,
             p: 1.5,
             boxShadow: theme.shadows[3],
@@ -49,22 +49,50 @@ const DeviceTypeDistribution: React.FC<DeviceTypeDistributionProps> = ({ deviceS
 
   if (isLoading) {
     return (
-      <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <Skeleton variant="text" width="40%" sx={{ mb: 2 }} />
-        <Skeleton variant="rectangular" sx={{ flex: 1, borderRadius: 3, minHeight: 200 }} />
+      <Box
+        sx={{
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        <Skeleton
+          variant="circular"
+          width={250}
+          height={250}
+          sx={{ opacity: 0.7 }}
+        />
       </Box>
     );
   }
 
   return (
-    <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <Box
+      sx={{
+        height: '100%',
+        bgcolor: alpha(theme.palette.background.paper, 0.5),
+        borderRadius: 4,
+        p: 2,
+        boxShadow: `0 4px 20px ${alpha(theme.palette.common.black, 0.05)}`,
+        border: `1px solid ${alpha(theme.palette.divider, 0.08)}`,
+      }}
+    >
+      <Typography
+        variant="h6"
+        fontWeight={600}
+        sx={{ mb: 2, textAlign: 'center' }}
+      >
+        Device Type Distribution
+      </Typography>
+
       {chartData.length === 1 && chartData[0].name === 'No Data' ? (
         <Box
           sx={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            flex: 1,
+            height: 'calc(100% - 40px)',
           }}
         >
           <Typography color="text.secondary">
@@ -72,7 +100,7 @@ const DeviceTypeDistribution: React.FC<DeviceTypeDistributionProps> = ({ deviceS
           </Typography>
         </Box>
       ) : (
-        <ResponsiveContainer width="100%" height="100%" minHeight={200}>
+        <ResponsiveContainer width="100%" height="90%">
           <PieChart>
             <Pie
               data={chartData}
@@ -86,11 +114,16 @@ const DeviceTypeDistribution: React.FC<DeviceTypeDistributionProps> = ({ deviceS
               labelLine={false}
             >
               {chartData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
+                <Cell
+                  key={`cell-${index}`}
+                  fill={entry.color}
+                  stroke={theme.palette.background.paper}
+                  strokeWidth={2}
+                />
               ))}
             </Pie>
             <Tooltip content={<CustomTooltip />} />
-            <Legend />
+            <Legend verticalAlign="bottom" height={36} />
           </PieChart>
         </ResponsiveContainer>
       )}

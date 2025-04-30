@@ -1,26 +1,26 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   Box,
-  Grid,
   Typography,
   useTheme,
   alpha,
   IconButton,
-  Tooltip
+  Tooltip,
+  Grid,
+  Paper
 } from '@mui/material';
 import {
   DashboardOutlined,
   RefreshRounded,
-  SettingsOutlined,
-  AddRounded
+  SettingsOutlined
 } from '@mui/icons-material';
+import { motion } from 'framer-motion';
 import PageContainer from '../../components/common/PageContainer';
 import { useTranslation } from 'react-i18next';
 import NetworkSoul from '../../components/dashboard/NetworkSoul';
 import DeviceStatusSummary from '../../components/dashboard/DeviceStatusSummary';
 import DeviceTypeDistribution from '../../components/dashboard/DeviceTypeDistribution';
 import RecentActivityList from '../../components/dashboard/RecentActivityList';
-import DashboardCard from '../../components/dashboard/DashboardCard';
 import { useDeviceStats } from '../../hooks/dashboard/useDeviceStats';
 import { useAvailabilityData } from '../../hooks/dashboard/useAvailabilityData';
 
@@ -58,6 +58,24 @@ const Dashboard: React.FC = () => {
     handleRefresh();
   }, [handleRefresh]);
 
+  // Container animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        when: "beforeChildren",
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  // Item animation variants
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 }
+  };
+
   return (
     <PageContainer
       title={t('title')}
@@ -68,114 +86,74 @@ const Dashboard: React.FC = () => {
         { text: t('title') }
       ]}
     >
+
+
+
+      {/* Main Dashboard Layout */}
       <Box
+        component={motion.div}
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
         sx={{
-          mb: 3,
           display: 'flex',
-          justifyContent: 'flex-end',
-          alignItems: 'center'
+          flexDirection: 'column',
+          gap: 4,
+          position: 'relative',
         }}
       >
-        <Box sx={{ flexGrow: 1 }}>
-          <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
-            {t('lastUpdated')}: {refreshTimestamp.toLocaleTimeString()}
-          </Typography>
-        </Box>
-
-        <Tooltip title={t('refresh')} arrow>
-          <IconButton
-            onClick={handleRefresh}
-            disabled={isRefreshing}
-            color="primary"
+        {/* Soul Section - At the top and centered */}
+        <Box
+          component={motion.div}
+          variants={itemVariants}
+          sx={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            mb: 2
+          }}
+        >
+          <Paper
+            elevation={0}
             sx={{
-              mr: 1,
-              animation: isRefreshing ? 'spin 2s linear infinite' : 'none',
-              '@keyframes spin': {
-                '0%': { transform: 'rotate(0deg)' },
-                '100%': { transform: 'rotate(360deg)' }
-              }
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              p: 3,
+              borderRadius: 6,
+              background: `linear-gradient(135deg, ${alpha(theme.palette.background.paper, 0.7)}, ${alpha(theme.palette.background.paper, 0.5)})`,
+              backdropFilter: 'blur(20px)',
+              boxShadow: `0 10px 40px ${alpha(theme.palette.common.black, 0.1)}`,
+              position: 'relative',
+              overflow: 'hidden',
+              border: `1px solid ${alpha(theme.palette.divider, 0.08)}`,
             }}
           >
-            <RefreshRounded />
-          </IconButton>
-        </Tooltip>
+            {/* Decorative elements */}
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                opacity: 0.4,
+                background: `radial-gradient(circle at 30% 40%, ${alpha(theme.palette.primary.main, 0.1)}, transparent 50%),
+                            radial-gradient(circle at 70% 60%, ${alpha(theme.palette.secondary.main, 0.1)}, transparent 50%)`,
+                zIndex: 0,
+              }}
+            />
 
-        <Tooltip title={t('settings')} arrow>
-          <IconButton color="primary">
-            <SettingsOutlined />
-          </IconButton>
-        </Tooltip>
-      </Box>
-
-      {/* Main Dashboard Grid */}
-      <Grid container spacing={3}>
-        {/* First Row */}
-        <Grid item xs={12} md={4}>
-          <DashboardCard title="Network Health">
             <NetworkSoul
               healthScore={availabilityStats?.uptimePercent || 0}
               isLoading={isAvailabilityLoading}
             />
-          </DashboardCard>
-        </Grid>
+          </Paper>
+        </Box>
 
-        <Grid item xs={12} md={8}>
-          <DashboardCard title={t('deviceOverview')}>
-            <DeviceStatusSummary
-              stats={availabilityStats}
-              isLoading={isAvailabilityLoading}
-            />
-          </DashboardCard>
-        </Grid>
 
-        {/* Second Row */}
-        <Grid item xs={12} md={6}>
-          <DashboardCard title={t('deviceDistribution')} height={350}>
-            <DeviceTypeDistribution
-              deviceStats={deviceStats}
-              isLoading={isStatsLoading}
-            />
-          </DashboardCard>
-        </Grid>
 
-        <Grid item xs={12} md={6}>
-          <DashboardCard title={t('recentActivity')} height={350}>
-            <RecentActivityList
-              isLoading={isAvailabilityLoading || isStatsLoading}
-            />
-          </DashboardCard>
-        </Grid>
-      </Grid>
 
-      {/* Add Widget Button */}
-      <Box
-        sx={{
-          position: 'fixed',
-          bottom: 24,
-          right: 24,
-          zIndex: 10
-        }}
-      >
-        <Tooltip title="Add Widget" arrow>
-          <IconButton
-            color="primary"
-            size="large"
-            sx={{
-              backgroundColor: theme.palette.primary.main,
-              color: theme.palette.primary.contrastText,
-              boxShadow: theme.shadows[4],
-              '&:hover': {
-                backgroundColor: alpha(theme.palette.primary.main, 0.9),
-                transform: 'scale(1.05)'
-              },
-              transition: 'all 0.2s',
-              width: 56,
-              height: 56,
-            }}
-          >
-            <AddRounded />
-          </IconButton>
-        </Tooltip>
       </Box>
     </PageContainer>
   );

@@ -47,73 +47,71 @@ const DeviceStatusSummary: React.FC<DeviceStatusSummaryProps> = ({ stats, isLoad
 
   if (isLoading) {
     return (
-      <Box sx={{ p: 2, height: '100%' }}>
-        <Grid container spacing={2}>
-          {[1, 2, 3, 4].map((item) => (
-            <Grid item xs={6} md={3} key={item}>
-              <Skeleton variant="rectangular" height={100} sx={{ borderRadius: 3 }} />
-            </Grid>
-          ))}
-        </Grid>
-      </Box>
+      <Grid container spacing={2}>
+        {[1, 2, 3, 4].map((item) => (
+          <Grid item xs={6} sm={3} key={item}>
+            <Skeleton variant="rectangular" height={120} sx={{ borderRadius: 4 }} />
+          </Grid>
+        ))}
+      </Grid>
     );
   }
 
   return (
-    <Box sx={{ p: 2, height: '100%' }}>
-      <Grid container spacing={2}>
-        {statsItems.map((item, index) => (
-          <Grid item xs={6} md={3} key={index}>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1, duration: 0.5 }}
-              whileHover={{ y: -5, transition: { duration: 0.2 } }}
+    <Grid container spacing={2}>
+      {statsItems.map((item, index) => (
+        <Grid item xs={6} sm={3} key={index}>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1, duration: 0.4 }}
+            whileHover={{ y: -5, boxShadow: `0 10px 20px ${alpha(item.color, 0.2)}` }}
+          >
+            <Box
+              sx={{
+                p: 2,
+                borderRadius: 4,
+                background: `linear-gradient(135deg, ${alpha(item.color, 0.12)} 0%, ${alpha(item.color, 0.05)} 100%)`,
+                border: `1px solid ${alpha(item.color, 0.15)}`,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: 120,
+                transition: 'all 0.3s',
+                boxShadow: `0 4px 12px ${alpha(item.color, 0.1)}`,
+                '&:hover': {
+                  background: `linear-gradient(135deg, ${alpha(item.color, 0.15)} 0%, ${alpha(item.color, 0.08)} 100%)`,
+                  transform: 'translateY(-5px)',
+                }
+              }}
             >
               <Box
                 sx={{
-                  p: 2,
-                  borderRadius: 3,
-                  background: `linear-gradient(135deg, ${alpha(item.color, 0.08)} 0%, ${alpha(item.color, 0.03)} 100%)`,
-                  border: `1px solid ${alpha(item.color, 0.12)}`,
+                  color: item.color,
                   display: 'flex',
-                  flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  height: 120,
-                  transition: 'all 0.3s',
-                  '&:hover': {
-                    background: `linear-gradient(135deg, ${alpha(item.color, 0.12)} 0%, ${alpha(item.color, 0.05)} 100%)`,
-                    boxShadow: `0 8px 20px ${alpha(item.color, 0.15)}`
-                  }
+                  mb: 1,
+                  p: 1,
+                  borderRadius: '50%',
+                  background: alpha(item.color, 0.12),
+                  boxShadow: `0 0 0 4px ${alpha(item.color, 0.05)}`
                 }}
               >
-                <Box
-                  sx={{
-                    color: item.color,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    mb: 1,
-                    p: 1,
-                    borderRadius: '50%',
-                    background: alpha(item.color, 0.1)
-                  }}
-                >
-                  {item.icon}
-                </Box>
-                <Typography variant="h5" fontWeight={700} color={item.color}>
-                  {item.value}{item.suffix || ''}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {item.title}
-                </Typography>
+                {item.icon}
               </Box>
-            </motion.div>
-          </Grid>
-        ))}
-      </Grid>
-    </Box>
+              <Typography variant="h5" fontWeight={700} color={item.color}>
+                {item.value}{item.suffix || ''}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                {item.title}
+              </Typography>
+            </Box>
+          </motion.div>
+        </Grid>
+      ))}
+    </Grid>
   );
 };
 

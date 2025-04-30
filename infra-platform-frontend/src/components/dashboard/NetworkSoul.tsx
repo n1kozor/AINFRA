@@ -12,7 +12,6 @@ const NetworkSoul: React.FC<NetworkSoulProps> = ({ healthScore, isLoading }) => 
   const theme = useTheme();
   const [animationData, setAnimationData] = useState<any>(null);
   const lottieRef = useRef<any>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
 
   // Get color based on health score
@@ -244,7 +243,7 @@ const NetworkSoul: React.FC<NetworkSoulProps> = ({ healthScore, isLoading }) => 
       ]
     };
 
-    // Use embedded animation data rather than fetching
+    // Use embedded animation data
     setAnimationData(fallbackAnimation);
 
     // Alternatively, try to fetch if available
@@ -276,14 +275,13 @@ const NetworkSoul: React.FC<NetworkSoulProps> = ({ healthScore, isLoading }) => 
   if (isLoading) {
     return (
       <Box sx={{
-        p: 2,
+        width: { xs: 220, sm: 260, md: 280 },
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        height: '100%',
       }}>
-        <Skeleton variant="circular" width={160} height={160} sx={{ mb: 3 }} />
+        <Skeleton variant="circular" width={180} height={180} sx={{ mb: 3 }} />
         <Skeleton variant="text" sx={{ width: '60%', mb: 1 }} />
         <Skeleton variant="text" sx={{ width: '40%' }} />
       </Box>
@@ -293,12 +291,11 @@ const NetworkSoul: React.FC<NetworkSoulProps> = ({ healthScore, isLoading }) => 
   return (
     <Box
       sx={{
-        p: 2,
+        width: { xs: 220, sm: 260, md: 280 },
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        height: '100%',
         position: 'relative',
       }}
     >
@@ -309,12 +306,11 @@ const NetworkSoul: React.FC<NetworkSoulProps> = ({ healthScore, isLoading }) => 
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          width: '180%',
-          height: '180%',
+          width: { xs: '140%', md: '160%' },
+          height: { xs: '140%', md: '160%' },
           borderRadius: '50%',
           background: `radial-gradient(circle, ${alpha(healthColor, 0.15)} 0%, transparent 70%)`,
-          filter: 'blur(25px)',
-          opacity: 0.7,
+          filter: 'blur(40px)',
           zIndex: 0,
         }}
       />
@@ -326,59 +322,70 @@ const NetworkSoul: React.FC<NetworkSoulProps> = ({ healthScore, isLoading }) => 
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          mb: 2,
-          width: 160,
-          height: 160,
+          mb: 3,
+          width: { xs: 180, sm: 200, md: 200 },
+          height: { xs: 180, sm: 200, md: 200 },
           zIndex: 1,
         }}
-        ref={containerRef}
       >
-        {/* Pulsing rings around soul */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{
-            opacity: [0, 0.5, 0],
-            scale: [0.8, 1.2, 1.5]
-          }}
-          transition={{
-            repeat: Infinity,
-            duration: 2,
-            ease: "easeOut"
-          }}
-          style={{
+        {/* The pulsing rings - absolutely centered */}
+        <Box
+          sx={{
             position: 'absolute',
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
             width: '100%',
             height: '100%',
-            borderRadius: '50%',
-            border: `2px solid ${alpha(healthColor, 0.6)}`,
+            zIndex: 0,
           }}
-        />
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{
-            opacity: [0, 0.5, 0],
-            scale: [0.8, 1.2, 1.5]
-          }}
-          transition={{
-            repeat: Infinity,
-            duration: 2,
-            delay: 0.5,
-            ease: "easeOut"
-          }}
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '100%',
-            height: '100%',
-            borderRadius: '50%',
-            border: `2px solid ${alpha(healthColor, 0.6)}`,
-          }}
-        />
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{
+              opacity: [0, 0.5, 0],
+              scale: [0.8, 1.2, 1.5]
+            }}
+            transition={{
+              repeat: Infinity,
+              duration: 2,
+              ease: "easeOut"
+            }}
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '100%',
+              height: '100%',
+              borderRadius: '50%',
+              border: `2px solid ${alpha(healthColor, 0.6)}`,
+            }}
+          />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{
+              opacity: [0, 0.5, 0],
+              scale: [0.8, 1.2, 1.5]
+            }}
+            transition={{
+              repeat: Infinity,
+              duration: 2,
+              delay: 0.5,
+              ease: "easeOut"
+            }}
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '100%',
+              height: '100%',
+              borderRadius: '50%',
+              border: `2px solid ${alpha(healthColor, 0.6)}`,
+            }}
+          />
+        </Box>
 
         {/* FOREGROUND: Soul animation with higher stacking context */}
         <motion.div
@@ -394,9 +401,9 @@ const NetworkSoul: React.FC<NetworkSoulProps> = ({ healthScore, isLoading }) => 
           }}
           style={{
             position: 'relative',
-            width: 130,
-            height: 130,
-            transform: 'translateZ(0)'
+            width: '100%',
+            height: '100%',
+            zIndex: 2,
           }}
           onHoverStart={() => setIsHovered(true)}
           onHoverEnd={() => setIsHovered(false)}
@@ -573,10 +580,7 @@ const NetworkSoul: React.FC<NetworkSoulProps> = ({ healthScore, isLoading }) => 
       {/* Health score and status */}
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
-        animate={{
-          scale: 1,
-          opacity: 1,
-        }}
+        animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 0.3, duration: 0.5 }}
       >
         <Typography
@@ -586,7 +590,8 @@ const NetworkSoul: React.FC<NetworkSoulProps> = ({ healthScore, isLoading }) => 
           textAlign="center"
           sx={{
             textShadow: `0 0 10px ${alpha(healthColor, 0.4)}`,
-            fontSize: { xs: '2rem', md: '2.5rem' }
+            fontSize: { xs: '2rem', md: '2.5rem' },
+            mb: 1
           }}
         >
           {healthScore}%
@@ -596,10 +601,7 @@ const NetworkSoul: React.FC<NetworkSoulProps> = ({ healthScore, isLoading }) => 
       {/* Status text */}
       <motion.div
         initial={{ y: 10, opacity: 0 }}
-        animate={{
-          y: 0,
-          opacity: 1,
-        }}
+        animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.5, duration: 0.5 }}
       >
         <Typography
