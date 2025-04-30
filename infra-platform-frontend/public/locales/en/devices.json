@@ -5,15 +5,9 @@
   "deviceCount": "{{count}} devices found",
   "noDevicesFound": "No devices found",
   "tryDifferentFilters": "Try adjusting your filters or add a new device",
-  "allDevices": {
-    "title": "All Devices"
-  },
-  "standardDevices": {
-    "title": "Standard Devices"
-  },
-  "customDevices": {
-    "title": "Custom Devices"
-  },
+  "allDevices": "All Devices",
+  "standardDevices": "Standard Devices",
+  "customDevices": "Custom Devices",
   "deviceTypes": {
     "standard": "Standard",
     "custom": "Custom"
@@ -52,6 +46,7 @@
   "details": "Details",
   "basicInfo": "Basic Information",
   "loading": "Loading device data...",
+  "loadingDevices": "Loading devices...",
   "error": "Error loading device",
   "deviceNotFound": "Device could not be found. It may have been deleted or you don't have permission to view it.",
   "deleteDevice": {
@@ -64,7 +59,9 @@
     "connectionDetails": "Connection Details",
     "standardConfig": "Standard Configuration",
     "customConfig": "Custom Configuration",
-    "review": "Review"
+    "review": "Review",
+    "hostname": "Hostname",
+    "selectPlugin": "Select Plugin"
   },
   "basicInfoDescription": "Enter the basic information for your device, such as name, description, and IP address.",
   "standardConfigDescription": "Configure standard device-specific settings like OS type, hostname, and credentials.",
@@ -198,7 +195,6 @@
   "portHint": "SSH port (default: 22)",
   "deviceTypeDescription": "Choose the type of device you want to add",
   "pluginDescription": "Select a plugin that matches your device type for specialized connection and monitoring",
-  "basicInfoDescription": "Basic information helps identify and organize your device in the inventory",
   "jsonEditor": "JSON Editor",
   "deviceType": "Device Type",
   "selectDeviceType": "Select Device Type",
@@ -213,5 +209,19 @@
     "customDeviceTitle": "Custom Device Selected",
     "standardDevice": "Standard devices connect using SSH protocols. Use this for typical Linux, Windows or MacOS servers and devices.",
     "customDevice": "Custom devices require a plugin to establish connection. Use this for specialized hardware, IoT devices, or systems with proprietary interfaces."
-  }
+  },
+  "filters": "Filters",
+  "online": "Online",
+  "all": "All",
+  "availabilityStatus": "Availability Status",
+  "addStandardDevice": "Add Standard Device",
+  "addCustomDevice": "Add Custom Device",
+  "pluginConnection": "Plugin Connection",
+  "errorFetchingDevices": "Error loading devices",
+  "errorFetchDescription": "There was a problem retrieving your devices. Please try again.",
+  "noDevicesMatchFilters": "No devices match your current filters",
+  "noDevicesYet": "No devices found in your inventory",
+  "addYourFirstDevice": "Start by adding your first device to monitor",
+  "showingFilteredResults": "Showing {{count}} of {{total}} devices",
+  "standardDevices": "Standard Devices"
 }

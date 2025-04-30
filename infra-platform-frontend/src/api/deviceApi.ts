@@ -1,4 +1,5 @@
-import { axiosInstance } from './index';
+// src/api/deviceApi.ts
+import { axiosInstance } from './axiosConfig';
 import { Device, DeviceCreate, DeviceUpdate } from '../types/device';
 
 export const deviceApi = {

@@ -1,4 +1,5 @@
-import { axiosInstance } from './index';
+// src/api/pluginApi.ts
+import { axiosInstance } from './axiosConfig';
 import { Plugin, PluginCreate, PluginUpdate } from '../types/plugin';
 
 export const pluginApi = {

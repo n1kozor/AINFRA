@@ -1,4 +1,5 @@
-import { axiosInstance } from './index';
+// src/api/standardDeviceApi.ts
+import { axiosInstance } from './axiosConfig';
 import { DeviceStats } from '../types/device';
 
 export const standardDeviceApi = {

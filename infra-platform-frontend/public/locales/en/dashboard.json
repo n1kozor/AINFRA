@@ -1,202 +1,56 @@
 {
   "title": "Dashboard",
-  "subtitle": "Overview of your infrastructure",
-  "refresh": "Refresh data",
-  "addDevice": "Add Device",
-  "viewAll": "View All",
-
-  "sections": {
-    "overview": "System Overview",
-    "details": "Detailed Analytics",
-    "monitoring": "Monitoring"
-  },
-
-  "stats": {
-    "active": "Active",
-    "inactive": "Inactive",
-    "totalDevices": "Total Devices",
-    "totalDevicesShort": "Total Devices",
-    "standardDevices": "Standard Devices",
-    "customDevices": "Custom Devices",
-    "plugins": "Plugins Available",
-    "available": "Available",
-    "availableShort": "Available",
-    "unavailable": "Unavailable",
-    "unavailableShort": "Unavailable",
-    "uptimePercent": "Uptime %"
-  },
-
-  "osTypes": {
-    "windows": "Windows",
-    "linux": "Linux",
-    "macos": "macOS",
-    "unknown": "Unknown"
-  },
-
-  "deviceTypes": {
-    "standard": "Standard",
-    "custom": "Custom"
-  },
-
-  "deviceActivity": {
-    "title": "Device Availability",
-    "subtitle": "Real-time monitoring of device uptime",
-    "selectDevice": "Select a device",
-    "selectDeviceHint": "Select a device to see details",
-    "showAll": "Show All",
-    "tabs": {
-      "day": "Day",
-      "week": "Week",
-      "month": "Month",
-      "live": "Live Status",
-      "daily": "Daily Uptime",
-      "response": "Response Time"
-    }
-  },
-
-  "deviceStatus": {
-    "active": "Online",
-    "inactive": "Offline",
-    "uptime": "Uptime",
-    "total": "Total",
-    "status": "Status",
-    "responseTime": "Response Time",
-    "cloud": "Cloud Services",
-    "alerts": "Alerts",
-    "checkInProgress": "Check in Progress",
-    "updatingNow": "Updating Now"
-  },
-
-  "chartTypes": {
-    "status": "Status",
-    "statusDescription": "Device Status",
-    "uptime": "Uptime",
-    "response": "Response"
-  },
-
-  "osDistribution": {
-    "title": "OS Distribution",
-    "subtitle": "Breakdown of operating systems",
-    "devices": "devices",
-    "noDevices": "No devices found",
-    "addDevices": "Add your first device to see OS distribution"
-  },
-
-  "overview": {
-    "networkStatus": "Network Status",
-    "available": "Available",
-    "unavailable": "Unavailable",
-    "summaryTitle": "Summary",
-    "availabilityRate": "Availability Rate",
-    "deviceCount": "Device Count",
-    "availableCount": "Available Count",
-    "unavailableCount": "Unavailable Count"
-  },
-
+  "subtitle": "View the health and status of your network devices",
+  "refresh": "Refresh Data",
+  "emptyState": "Add devices to start monitoring your network",
   "systemHealth": {
     "title": "System Health",
-    "subtitle": "Status of your infrastructure",
-    "devices": "Devices Uptime",
-    "cpu": "CPU Usage",
-    "memory": "Memory Usage",
-    "storage": "Storage Usage",
-    "overallStatus": "Overall System Status",
     "status": "Status",
-    "excellent": "Excellent",
-    "good": "Good",
-    "critical": "Critical",
-    "acceptable": "Acceptable",
-    "happySoulMessage": "Your system is running smoothly",
-    "troubledSoulMessage": "Your system is having some issues",
-    "sufferingSoulMessage": "Your system needs attention"
+    "happySoulMessage": "Your network is healthy and running smoothly",
+    "troubledSoulMessage": "Some issues detected, review device status",
+    "sufferingSoulMessage": "Critical issues detected, immediate attention required"
   },
-
-  "recentDevices": {
-    "title": "Recent Devices",
-    "subtitle": "Recently added or updated devices",
-    "noDevices": "No devices found",
-    "addYourFirst": "Start by adding your first device"
+  "deviceStatus": {
+    "totalDevices": "Total Devices",
+    "available": "Available",
+    "unavailable": "Unavailable",
+    "uptime": "Uptime"
   },
-
-  "actions": {
-    "add": "Add",
-    "edit": "Edit",
-    "delete": "Delete",
-    "save": "Save",
-    "cancel": "Cancel",
-    "confirm": "Confirm",
-    "back": "Back",
-    "refresh": "Refresh",
-    "search": "Search",
-    "more": "More Options",
-    "share": "Share",
-    "favorite": "Add to Favorites"
+  "deviceTypes": {
+    "title": "Device Type Distribution",
+    "noData": "No device data available",
+    "standard": "Standard",
+    "custom": "Custom",
+    "windows": "Windows",
+    "macos": "macOS",
+    "linux": "Linux"
   },
-
-  "appName": "Infrastructure Platform",
-  "navigation": {
-    "main": "Main",
-    "dashboard": "Dashboard",
-    "devices": "Devices",
-    "standardDevices": "Standard Devices",
-    "customDevices": "Custom Devices",
-    "plugins": "Plugins",
-    "settings": "Settings"
+  "recentActivity": {
+    "title": "Recent Activity",
+    "noActivity": "No recent activity",
+    "successStatus": "Status check successful",
+    "errorStatus": "Connection failed"
   },
-
-  "status": {
-    "online": "Online",
-    "offline": "Offline",
-    "warning": "Warning",
-    "error": "Error",
-    "loading": "Loading..."
+  "autoRefresh": {
+    "label": "Auto Refresh",
+    "off": "Off",
+    "seconds": "seconds",
+    "minute": "minute",
+    "minutes": "minutes"
   },
-
-  "theme": {
-    "light": "Light Mode",
-    "dark": "Dark Mode"
+  "networkSoul": {
+    "title": "Network Soul",
+    "status": {
+      "excellent": "Excellent",
+      "good": "Good",
+      "fair": "Fair",
+      "critical": "Critical"
+    }
   },
-
-  "language": {
-    "en": "English",
-    "hu": "Hungarian"
-  },
-
-  "errors": {
-    "required": "This field is required",
-    "invalidIP": "Invalid IP address",
-    "connectionFailed": "Connection failed",
-    "loadFailed": "Failed to load data",
-    "saveFailed": "Failed to save data",
-    "deleteFailed": "Failed to delete",
-    "notFound": "Not found"
-  },
-
-  "sidebar": {
-    "needHelp": "Need Help?",
-    "supportDesc": "Having trouble? Our support team is here to help.",
-    "contactSupport": "Contact Support"
-  },
-
-  "tooltip": {
-    "apps": "Applications",
-    "darkMode": "Toggle Dark Mode",
-    "changeLanguage": "Change Language",
-    "notifications": "Notifications"
-  },
-
-  "user": {
-    "profile": "Profile",
-    "settings": "Settings",
-    "logout": "Logout"
-  },
-
-  "notifications": {
-    "title": "Notifications",
-    "viewAll": "View All"
-  },
-
-  "apps": {
-    "title": "Applications"
-  }
+  "lastUpdated": "Last Updated",
+  "settings": "Settings",
+  "deviceOverview": "Device Overview",
+  "moreOptions": "More Options",
+  "deviceDistribution": "Device Distribution",
+  "recentActivity": "Recent Activity"
 }

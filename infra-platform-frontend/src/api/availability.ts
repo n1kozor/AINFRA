@@ -1,25 +1,6 @@
-// availability.ts - frissített változat
-import axios from 'axios'; // Külön axios példányt használunk a mikroszervizhez
+// src/api/availability.ts
+import { availabilityAxios } from './axiosConfig';
 import { AvailabilityCheck, AvailabilitySettings, AvailabilityChartData } from '../types/availability';
-
-const AVAILABILITY_API_URL = import.meta.env.VITE_AVAILABILITY_API_URL || 'http://localhost:8001';
-
-const availabilityAxios = axios.create({
-  baseURL: AVAILABILITY_API_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-availabilityAxios.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (import.meta.env.DEV) {
-      console.error('Availability API Error:', error);
-    }
-    return Promise.reject(error);
-  }
-);
 
 export const availabilityApi = {
   checkDevice: async (deviceId: number): Promise<any> => {

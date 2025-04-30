@@ -20,7 +20,6 @@ export interface Device {
   description: string | null;
   ip_address: string;
   type: DeviceType;
-  is_active: boolean;
   created_at: string;
   updated_at: string;
   standard_device: StandardDeviceData | null;
@@ -50,7 +49,6 @@ export interface DeviceUpdate {
   name?: string;
   description?: string;
   ip_address?: string;
-  is_active?: boolean;
 }
 
 export interface DeviceStats {

@@ -7,7 +7,7 @@ import { AppProvider } from './context/AppContext';
 import MainLayout from './layout/MainLayout';
 
 // Pages
-import Dashboard from './pages/Dashboard';
+import Dashboard from './pages/Dashboard/Dashboard';
 import DeviceDetails from './pages/Devices/DeviceDetails';
 import Plugins from './pages/Plugins';
 import PluginDetails from './pages/Plugins/PluginDetails';

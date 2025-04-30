@@ -1,4 +1,5 @@
-import { axiosInstance } from './index';
+// src/api/customDeviceApi.ts
+import { axiosInstance } from './axiosConfig';
 
 export const customDeviceApi = {
   getStatus: async (deviceId: number): Promise<any> => {

@@ -15,7 +15,7 @@ export interface AvailabilitySettings {
 export interface AvailabilityChartData {
   device_id: number;
   timestamps: string[];
-  availability: number[]; // 1 for available, 0 for unavailable
+  availability: number[];
   response_times: number[];
   daily_uptime: number[];
   daily_dates: string[];

@@ -22,7 +22,11 @@
     "more": "More",
     "share": "Share",
     "favorite": "Favorite",
-    "view": "View"
+    "view": "View",
+    "next": "Next",
+    "sort": "Sort",
+    "retry": "Retry",
+    "clearFilters": "Clear Filters"
   },
   "status": {
     "online": "Online",
@@ -96,5 +100,6 @@
   },
   "apps": {
     "title": "Applications"
-  }
+  },
+  "home": "Home"
 }

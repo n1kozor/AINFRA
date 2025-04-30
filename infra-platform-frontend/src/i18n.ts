@@ -22,6 +22,8 @@ i18n
 
     ns: ['common', 'dashboard', 'devices', 'plugins'],
     defaultNS: 'common',
+
+    returnObjects: true
   });
 
 export default i18n;
