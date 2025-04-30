@@ -1,3 +1,5 @@
+# main.py - Corrected implementation for Pydantic Tool objects
+
 from fastapi import FastAPI, Depends
 from contextlib import asynccontextmanager
 from .core.config import get_settings
@@ -60,7 +62,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Add MCP
+# Add MCP without customization
 mcp = FastApiMCP(app)
 mcp.mount()
 

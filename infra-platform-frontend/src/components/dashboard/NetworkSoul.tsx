@@ -577,26 +577,7 @@ const NetworkSoul: React.FC<NetworkSoulProps> = ({ healthScore, isLoading }) => 
         </motion.div>
       </Box>
 
-      {/* Health score and status */}
-      <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ delay: 0.3, duration: 0.5 }}
-      >
-        <Typography
-          variant="h3"
-          fontWeight={700}
-          color={healthColor}
-          textAlign="center"
-          sx={{
-            textShadow: `0 0 10px ${alpha(healthColor, 0.4)}`,
-            fontSize: { xs: '2rem', md: '2.5rem' },
-            mb: 1
-          }}
-        >
-          {healthScore}%
-        </Typography>
-      </motion.div>
+
 
       {/* Status text */}
       <motion.div
@@ -610,7 +591,7 @@ const NetworkSoul: React.FC<NetworkSoulProps> = ({ healthScore, isLoading }) => 
           color={healthColor}
           textAlign="center"
         >
-          {getStatusText()} Status
+          {getStatusText()}
         </Typography>
       </motion.div>
     </Box>

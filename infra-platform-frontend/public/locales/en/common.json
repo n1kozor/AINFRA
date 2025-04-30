@@ -79,9 +79,9 @@
     "notFound": "Not found"
   },
   "sidebar": {
-    "needHelp": "Need Help?",
-    "supportDesc": "Having trouble? Our support team is here to help.",
-    "contactSupport": "Contact Support"
+    "joinUs": "Join Our Team!",
+    "joinDesc": "Have some time and want to develop with us?",
+    "contactUs": "GitHub"
   },
   "tooltip": {
     "apps": "Applications",

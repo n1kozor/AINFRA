@@ -23,9 +23,9 @@ import {
   SmartToyRounded as CustomDeviceIcon,
   ExtensionRounded as PluginIcon,
   SettingsRounded as SettingsIcon,
-  SupportAgentRounded as SupportIcon,
   WorkspacePremiumRounded as ProIcon,
 } from '@mui/icons-material';
+import GitHubIcon from '@mui/icons-material/GitHub';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../../context/AppContext';
@@ -53,8 +53,8 @@ useEffect(() => {
     return location.pathname === path;
   };
 
-  const MotionListItem = motion(ListItem);
-  const MotionListItemIcon = motion(ListItemIcon);
+  const MotionListItem = motion.create(ListItem);
+  const MotionListItemIcon = motion.create(ListItemIcon);
 
 
   const navItems = [
@@ -106,56 +106,6 @@ useEffect(() => {
       display: 'none'
     }
   }}>
-      <Box sx={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        p: 2.5,
-      }}>
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.3 }}
-          >
-            <Avatar
-              sx={{
-                background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                width: 40,
-                height: 40,
-                boxShadow: `0 4px 12px ${alpha(theme.palette.primary.main, 0.3)}`,
-              }}
-            >
-              <ProIcon sx={{ fontSize: 20, color: '#fff' }} />
-            </Avatar>
-          </motion.div>
-          <motion.div
-            initial={{ x: -20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.3, delay: 0.1 }}
-          >
-            <Typography
-              variant="h6"
-              sx={{
-                ml: 1.5,
-                fontWeight: 800,
-                background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                letterSpacing: '-0.5px',
-              }}
-            >
-              InfraSphere
-            </Typography>
-          </motion.div>
-        </Box>
-      </Box>
-
-      <Divider sx={{
-        my: 2,
-        mx: 2.5,
-        opacity: 0.08,
-      }} />
 
       <Box sx={{ px: 2.5, mb: 1 }}>
         <Typography
@@ -283,7 +233,7 @@ useEffect(() => {
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
             }}>
-              {t('sidebar.needHelp')}
+              {t('sidebar.joinUs')}
             </Typography>
 
             <Typography variant="body2" sx={{
@@ -292,7 +242,7 @@ useEffect(() => {
               fontSize: '0.85rem',
               lineHeight: 1.5,
             }}>
-              {t('sidebar.supportDesc')}
+              {t('sidebar.joinDesc')}
             </Typography>
 
             <Box
@@ -321,8 +271,8 @@ useEffect(() => {
                 }
               }}
             >
-              <SupportIcon fontSize="small" />
-              {t('sidebar.contactSupport')}
+              <GitHubIcon fontSize="small" />
+              {t('sidebar.contactUs')}
             </Box>
           </Box>
         </motion.div>

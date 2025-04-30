@@ -268,37 +268,9 @@ const PageContainer = ({
                 </Tooltip>
               )}
 
-              <Tooltip title={t('actions.save')} arrow placement="top">
-                <IconButton
-                  size="small"
-                  sx={{
-                    backgroundColor: alpha(theme.palette.secondary.main, 0.1),
-                    color: theme.palette.secondary.main,
-                    borderRadius: '10px',
-                    '&:hover': {
-                      backgroundColor: alpha(theme.palette.secondary.main, 0.2),
-                    }
-                  }}
-                >
-                  <BookmarkBorderRounded fontSize="small" />
-                </IconButton>
-              </Tooltip>
 
-              <Tooltip title={t('actions.share')} arrow placement="top">
-                <IconButton
-                  size="small"
-                  sx={{
-                    backgroundColor: alpha(theme.palette.success.main, 0.1),
-                    color: theme.palette.success.main,
-                    borderRadius: '10px',
-                    '&:hover': {
-                      backgroundColor: alpha(theme.palette.success.main, 0.2),
-                    }
-                  }}
-                >
-                  <ShareRounded fontSize="small" />
-                </IconButton>
-              </Tooltip>
+
+
 
               <Divider orientation="vertical" flexItem sx={{
                 mx: 1,

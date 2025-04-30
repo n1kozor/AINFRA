@@ -43,7 +43,10 @@
   "basicInfo": "Basic Information",
   "tabs": {
     "code": "Code",
-    "uiSchema": "UI Schema"
+    "uiSchema": "UI Schema",
+    "all": "All Plugins",
+    "active": "Active",
+    "inactive": "Inactive"
   },
   "noUiSchema": "This plugin doesn't define a UI schema",
   "viewModes": {

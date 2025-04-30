@@ -113,20 +113,7 @@ const Plugins = () => {
       ]}
       actions={
         <Stack direction="row" spacing={1}>
-          <Tooltip title={t('plugins:refresh')} arrow>
-            <IconButton
-              onClick={() => refetch()}
-              color="primary"
-              sx={{
-                bgcolor: alpha(theme.palette.primary.main, 0.1),
-                borderRadius: '10px',
-                width: 40,
-                height: 40,
-              }}
-            >
-              <RefreshIcon />
-            </IconButton>
-          </Tooltip>
+
 
           <Button
             variant="contained"
@@ -190,35 +177,7 @@ const Plugins = () => {
             }}
           />
 
-          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-            <Tooltip title={t('plugins:viewModes.grid')} arrow>
-              <IconButton
-                size="small"
-                onClick={() => setViewMode('grid')}
-                color={viewMode === 'grid' ? 'primary' : 'default'}
-                sx={{
-                  borderRadius: '8px',
-                  bgcolor: viewMode === 'grid' ? alpha(theme.palette.primary.main, 0.1) : 'transparent',
-                }}
-              >
-                <GridViewIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
 
-            <Tooltip title={t('plugins:viewModes.list')} arrow>
-              <IconButton
-                size="small"
-                onClick={() => setViewMode('list')}
-                color={viewMode === 'list' ? 'primary' : 'default'}
-                sx={{
-                  borderRadius: '8px',
-                  bgcolor: viewMode === 'list' ? alpha(theme.palette.primary.main, 0.1) : 'transparent',
-                }}
-              >
-                <ListViewIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-          </Box>
         </Box>
 
         <Tabs
