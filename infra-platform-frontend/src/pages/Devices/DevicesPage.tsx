@@ -16,7 +16,11 @@ import {
   Tab,
   Paper,
   IconButton,
-  Tooltip
+  Tooltip,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText
 } from '@mui/material';
 import {
   DevicesRounded as DevicesIcon,
@@ -24,18 +28,21 @@ import {
   Refresh as RefreshIcon,
   Computer as StandardDeviceIcon,
   SmartToy as CustomDeviceIcon,
-  FilterAlt as FilterIcon,
-  AddRounded as AddIcon
+  Add as AddIcon,
+  ArrowDropDown as ArrowDropDownIcon
 } from '@mui/icons-material';
-import DashboardCard from '../../components/dashboard/DashboardCard';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
 import { DeviceType } from '../../types/device';
+import StandardDeviceModal from '../../components/devices/StandardDeviceModal';
+import CustomDeviceModal from '../../components/devices/CustomDeviceModal';
 
 const DevicesPage = () => {
   const { t } = useTranslation(['devices', 'common']);
   const theme = useTheme();
   const [activeTab, setActiveTab] = useState<DeviceType | 'all'>('all');
+  const [standardModalOpen, setStandardModalOpen] = useState(false);
+  const [customModalOpen, setCustomModalOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const { data: devices, isLoading, error, refetch } = useQuery({
     queryKey: ['devices'],
@@ -59,6 +66,24 @@ const DevicesPage = () => {
     refetch();
   };
 
+  const handleOpenAddMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseAddMenu = () => {
+    setAnchorEl(null);
+  };
+
+  const handleOpenStandardModal = () => {
+    setStandardModalOpen(true);
+    handleCloseAddMenu();
+  };
+
+  const handleOpenCustomModal = () => {
+    setCustomModalOpen(true);
+    handleCloseAddMenu();
+  };
+
   if (error) {
     return (
       <PageContainer
@@ -70,13 +95,23 @@ const DevicesPage = () => {
         ]}
         icon={<DevicesIcon />}
       >
-        <DashboardCard
-          title={t('devices:error')}
-          icon={<WarningIcon />}
-          color="error"
+        <Paper
+          elevation={0}
+          sx={{
+            p: 5,
+            textAlign: 'center',
+            borderRadius: '24px',
+            bgcolor: alpha(theme.palette.background.paper, 0.7),
+            backdropFilter: 'blur(20px)',
+          }}
         >
-          <Box sx={{ p: 3, textAlign: 'center' }}>
-            <Typography paragraph>
+          <Box sx={{ textAlign: 'center', p: 3 }}>
+            <Typography
+              variant="h6"
+              color="error"
+              sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2 }}
+            >
+              <WarningIcon sx={{ mr: 1 }} />
               {t('devices:errorFetchingDevices')}
             </Typography>
             <Button
@@ -99,7 +134,7 @@ const DevicesPage = () => {
               {t('common:actions.retry')}
             </Button>
           </Box>
-        </DashboardCard>
+        </Paper>
       </PageContainer>
     );
   }
@@ -116,29 +151,85 @@ const DevicesPage = () => {
       ]}
       icon={<DevicesIcon />}
       actions={
-        <Button
-          variant="contained"
-          color="primary"
-          component={Link}
-          to="/devices/new"
-          startIcon={<AddIcon />}
-          sx={{
-            borderRadius: '12px',
-            px: 3,
-            py: 1.2,
-            boxShadow: `0 4px 14px ${alpha(theme.palette.primary.main, 0.3)}`,
-            background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
-            fontWeight: 600,
-            whiteSpace: 'nowrap',
-            '&:hover': {
-              boxShadow: `0 6px 20px ${alpha(theme.palette.primary.main, 0.4)}`,
-              transform: 'translateY(-2px)',
-            },
-            transition: 'all 0.3s',
-          }}
-        >
-          {t('devices:addDevice')}
-        </Button>
+        <>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleOpenAddMenu}
+            endIcon={<ArrowDropDownIcon />}
+            startIcon={<AddIcon />}
+            sx={{
+              borderRadius: '12px',
+              px: 3,
+              py: 1.2,
+              boxShadow: `0 4px 14px ${alpha(theme.palette.primary.main, 0.3)}`,
+              background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
+              fontWeight: 600,
+              whiteSpace: 'nowrap',
+              '&:hover': {
+                boxShadow: `0 6px 20px ${alpha(theme.palette.primary.main, 0.4)}`,
+                transform: 'translateY(-2px)',
+              },
+              transition: 'all 0.3s',
+            }}
+          >
+            {t('devices:addDevice')}
+          </Button>
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleCloseAddMenu}
+            MenuListProps={{
+              sx: { py: 1 }
+            }}
+            PaperProps={{
+              elevation: 3,
+              sx: {
+                mt: 1.5,
+                borderRadius: '16px',
+                minWidth: '220px',
+                overflow: 'visible',
+                '&:before': {
+                  content: '""',
+                  display: 'block',
+                  position: 'absolute',
+                  top: 0,
+                  right: 14,
+                  width: 10,
+                  height: 10,
+                  bgcolor: 'background.paper',
+                  transform: 'translateY(-50%) rotate(45deg)',
+                  zIndex: 0,
+                },
+              }
+            }}
+            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+          >
+            <MenuItem onClick={handleOpenStandardModal} sx={{ py: 1.5 }}>
+              <ListItemIcon>
+                <StandardDeviceIcon sx={{ color: theme.palette.primary.main }} />
+              </ListItemIcon>
+              <ListItemText
+                primary={t('devices:deviceTypes.standard')}
+                secondary={t('devices:standardDeviceDescription')}
+                primaryTypographyProps={{ fontWeight: 600 }}
+                secondaryTypographyProps={{ fontSize: '0.75rem' }}
+              />
+            </MenuItem>
+            <MenuItem onClick={handleOpenCustomModal} sx={{ py: 1.5 }}>
+              <ListItemIcon>
+                <CustomDeviceIcon sx={{ color: theme.palette.secondary.main }} />
+              </ListItemIcon>
+              <ListItemText
+                primary={t('devices:deviceTypes.custom')}
+                secondary={t('devices:customDeviceDescription')}
+                primaryTypographyProps={{ fontWeight: 600 }}
+                secondaryTypographyProps={{ fontSize: '0.75rem' }}
+              />
+            </MenuItem>
+          </Menu>
+        </>
       }
     >
       <motion.div
@@ -273,6 +364,25 @@ const DevicesPage = () => {
           />
         )}
       </motion.div>
+
+      {/* Modals for adding devices */}
+      <StandardDeviceModal
+        open={standardModalOpen}
+        onClose={() => setStandardModalOpen(false)}
+        onSuccess={() => {
+          setStandardModalOpen(false);
+          refetch();
+        }}
+      />
+
+      <CustomDeviceModal
+        open={customModalOpen}
+        onClose={() => setCustomModalOpen(false)}
+        onSuccess={() => {
+          setCustomModalOpen(false);
+          refetch();
+        }}
+      />
     </PageContainer>
   );
 };

@@ -9,7 +9,6 @@ import MainLayout from './layout/MainLayout';
 // Pages
 import Dashboard from './pages/Dashboard';
 import DeviceDetails from './pages/Devices/DeviceDetails';
-import NewDevice from './pages/Devices/NewDevice';
 import Plugins from './pages/Plugins';
 import PluginDetails from './pages/Plugins/PluginDetails';
 import NewPlugin from './pages/Plugins/NewPlugin';
@@ -41,7 +40,6 @@ const App = () => {
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/devices">
                 <Route path="/devices" element={<DevicesPage />} />
-                  <Route path="new" element={<NewDevice />} />
                   <Route path=":id" element={<DeviceDetails />} />
                 </Route>
                 <Route path="/plugins">
