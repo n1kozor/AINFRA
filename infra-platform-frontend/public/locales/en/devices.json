@@ -2,7 +2,7 @@
   "addDevice": "Add Device",
   "addDeviceDescription": "Configure your device settings to add it to your inventory",
   "addFirstDevice": "Add First Device",
-  "deviceCount": "{{count}} devices found",
+  "deviceCount": " devices found",
   "noDevicesFound": "No devices found",
   "tryDifferentFilters": "Try adjusting your filters or add a new device",
   "allDevices": "All Devices",
@@ -51,7 +51,7 @@
   "deviceNotFound": "Device could not be found. It may have been deleted or you don't have permission to view it.",
   "deleteDevice": {
     "title": "Delete Device",
-    "confirmation": "Are you sure you want to delete the device \"{{name}}\"?",
+    "confirmation": "Are you sure you want to delete the device \"\"?",
     "warning": "This action cannot be undone. All device data will be permanently removed."
   },
   "steps": {
@@ -133,17 +133,28 @@
     "advanced": "Advanced",
     "parameters": "Parameters",
     "jsonEditor": "JSON Editor",
-    "details": "Details"
+    "details": "Details",
+    "hardware": "Hardware",
+    "processes": "Processes",
+    "containers": "Containers"
   },
   "systemInfo": {
     "hostname": "Hostname",
     "os": "Operating System",
-    "uptime": "Uptime"
+    "uptime": "Uptime",
+    "platform": "Platform"
   },
   "cpuInfo": {
     "overall": "Overall CPU Usage",
     "cores": "CPU Cores",
-    "core": "Core"
+    "core": "Core",
+    "title": "CPU",
+    "usage": "Usage",
+    "user": "User",
+    "system": "System",
+    "idle": "Idle",
+    "physicalCores": "Physical Cores",
+    "logicalCores": "Logical Cores"
   },
   "diskInfo": {
     "usage": "Usage",
@@ -162,7 +173,46 @@
     "total": "Total",
     "running": "Running",
     "sleeping": "Sleeping",
-    "threads": "Threads"
+    "threads": "Threads",
+    "title": "Processes",
+    "processes": "Processes",
+    "pid": "PID",
+    "name": "Name",
+    "user": "User",
+    "cpu": "CPU",
+    "memory": "Memory",
+    "status": "Status"
+  },
+  "memoryInfo": {
+    "title": "Memory",
+    "ramUsage": "RAM Usage",
+    "free": "Free",
+    "cached": "Cached",
+    "buffers": "Buffers",
+    "used": "Used",
+    "swap": "Swap",
+    "swapUsage": "Swap Usage"
+  },
+  "storage": {
+    "title": "Storage",
+    "mountpoint": "Mount Point",
+    "usage": "Usage",
+    "total": "Total",
+    "used": "Used",
+    "free": "Free"
+  },
+  "network": {
+    "title": "Network",
+    "noData": "No network data available"
+  },
+  "containers": {
+    "title": "Containers",
+    "count": "Container Count",
+    "image": "Image",
+    "cpu": "CPU",
+    "rx": "RX",
+    "tx": "TX",
+    "uptime": "Uptime"
   },
   "errors": {
     "failedToLoadStats": "Failed to load device statistics",
@@ -222,6 +272,8 @@
   "noDevicesMatchFilters": "No devices match your current filters",
   "noDevicesYet": "No devices found in your inventory",
   "addYourFirstDevice": "Start by adding your first device to monitor",
-  "showingFilteredResults": "Showing {{count}} of {{total}} devices",
-  "standardDevices": "Standard Devices"
+  "showingFilteredResults": "Showing  of  devices",
+  "created": "Created",
+  "refresh": "Refresh",
+  "fetchingStats": "Fetching Stats"
 }

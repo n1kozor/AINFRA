@@ -27,11 +27,7 @@ const Settings: React.FC = () => {
         { text: t('common:navigation.settings') },
       ]}
     >
-      <Box sx={{ width: '100%', mb: 3 }}>
-        <Typography variant="h3" fontWeight="bold">
-          Settings
-        </Typography>
-      </Box>
+
 
       <Grid container spacing={3} sx={{ width: '100%' }}>
         <Grid item xs={12} md={6} sx={{ width: '100%' }}>

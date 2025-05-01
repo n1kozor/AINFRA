@@ -20,7 +20,7 @@ const Dashboard: React.FC = () => {
   const { t } = useTranslation('dashboard');
   const [refreshTimestamp, setRefreshTimestamp] = useState<Date>(new Date());
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [timeRange, setTimeRange] = useState<TimeRangeOption>('1h');
+  const [timeRange, setTimeRange] = useState<TimeRangeOption>('24h');
 
   const { deviceStats, isLoading: isStatsLoading, fetchDeviceStats } = useDeviceStats();
   const {

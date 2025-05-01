@@ -52,5 +52,28 @@
   "deviceOverview": "Device Overview",
   "moreOptions": "More Options",
   "deviceDistribution": "Device Distribution",
-  "recentActivity": "Recent Activity"
+  "recentActivity": "Recent Activity",
+  "systemStats": {
+    "title": "System Status",
+    "noData": "No system statistics available",
+    "availabilityTrend": "Availability Trend",
+    "availability": "Availability",
+    "availabilityPercent": "Availability (%)",
+    "avgResponseTime": "Avg Response Time",
+    "recentErrors": "Recent Errors",
+    "noErrors": "No errors in the selected time period",
+    "slowestDevices": "Slowest Devices",
+    "noSlowDevices": "No response time data available",
+    "responseTime": "Response Time"
+  },
+  "timeRange": {
+    "label": "Time Range",
+    "thirtyMinutes": "Last 30 Minutes",
+    "oneHour": "Last Hour",
+    "sixHours": "Last 6 Hours",
+    "oneDay": "Last 24 Hours",
+    "sevenDays": "Last 7 Days",
+    "allTime": "All Time",
+    "timeRangeLabel": "Showing data for"
+  }
 }

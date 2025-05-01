@@ -1,5 +1,5 @@
 // src/api/statisticsApi.ts
-import { availabilityAxios } from './axiosConfig';
+import { axiosInstance } from './axiosConfig';
 import type { SystemStatistics, TimeRangeOption } from '../types/statistics';
 
 /**
@@ -14,7 +14,7 @@ export const statisticsApi = {
    */
   getSystemStatistics: async (timeRange?: TimeRangeOption): Promise<SystemStatistics> => {
     const params = timeRange ? { time_range: timeRange } : {};
-    const response = await availabilityAxios.get('/all-system-stats', { params });
+    const response = await axiosInstance.get('/all-system-stats', { params });
     return response.data;
   },
 };

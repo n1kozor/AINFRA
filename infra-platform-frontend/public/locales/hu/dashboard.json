@@ -52,5 +52,28 @@
   "deviceOverview": "Eszközök áttekintése",
   "moreOptions": "További lehetőségek",
   "deviceDistribution": "Eszközmegoszlás",
-  "recentActivity": "Legutóbbi tevékenység"
+  "recentActivity": "Legutóbbi tevékenység",
+  "systemStats": {
+    "title": "Rendszer állapot",
+    "noData": "Nem állnak rendelkezésre rendszerstatisztikák",
+    "availabilityTrend": "Elérhetőségi trend",
+    "availability": "Elérhetőség",
+    "availabilityPercent": "Elérhetőség (%)",
+    "avgResponseTime": "Átlagos válaszidő",
+    "recentErrors": "Legutóbbi hibák",
+    "noErrors": "Nincs hiba a kiválasztott időszakban",
+    "slowestDevices": "Leglassabb eszközök",
+    "noSlowDevices": "Nincs elérhető válaszidő adat",
+    "responseTime": "Válaszidő"
+  },
+  "timeRange": {
+    "label": "Időtartomány",
+    "thirtyMinutes": "Utolsó 30 perc",
+    "oneHour": "Utolsó óra",
+    "sixHours": "Utolsó 6 óra",
+    "oneDay": "Utolsó 24 óra",
+    "sevenDays": "Utolsó 7 nap",
+    "allTime": "Összes",
+    "timeRangeLabel": "Adatok megjelenítése:"
+  }
 }
