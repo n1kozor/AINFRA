@@ -23,8 +23,9 @@ import {
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { llmApi } from '../../api/llmApi';
-import { deviceChatPrompt } from '../../utils/prompts';
+import { deviceChatPrompt, getDeviceWelcomeMessage } from '../../utils/chatPrompts';
 import { useTranslation } from 'react-i18next';
+import { DeviceType } from '../../types';
 
 interface ChatMessage {
   id: string;
@@ -38,6 +39,7 @@ interface DeviceChatModalProps {
   onClose: () => void;
   deviceId: string;
   deviceName: string;
+  deviceType: DeviceType; // Required device type property
   colorScheme: any;
 }
 
@@ -46,15 +48,21 @@ const DeviceChatModal: React.FC<DeviceChatModalProps> = ({
   onClose,
   deviceId,
   deviceName,
+  deviceType, // Make sure this prop is passed from the parent component
   colorScheme
 }) => {
-  const { t } = useTranslation(['devices', 'common']);
+  const { t, i18n } = useTranslation(['chat', 'common']);
   const theme = useTheme();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    // Debug the device type to ensure it's being passed correctly
+    console.log(`DeviceChatModal opened for device ${deviceName} (${deviceId}) of type: ${deviceType}`);
+  }, [open, deviceId, deviceName, deviceType]);
 
   // Add initial message when chat opens
   useEffect(() => {
@@ -63,7 +71,7 @@ const DeviceChatModal: React.FC<DeviceChatModalProps> = ({
         {
           id: 'welcome',
           sender: 'device',
-          content: `Hello! I'm ${deviceName}. How can I assist you today?`,
+          content: getDeviceWelcomeMessage(deviceName),
           timestamp: new Date()
         }
       ]);
@@ -75,7 +83,7 @@ const DeviceChatModal: React.FC<DeviceChatModalProps> = ({
         inputRef.current?.focus();
       }, 300);
     }
-  }, [open, deviceName, messages.length]);
+  }, [open, deviceName, messages.length, i18n.language]);
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -109,11 +117,12 @@ const DeviceChatModal: React.FC<DeviceChatModalProps> = ({
       // Create the full prompt with context
       const prompt = `${deviceChatPrompt(deviceId, deviceName)}\n\nConversation history:\n${conversationContext}\n\nUser: ${newMessage}\n\n${deviceName} (as Assistant):`;
 
-      // Get response from LLM
+      // Get response from LLM - passing the deviceType
       const response = await llmApi.generateReport(
         prompt,
         deviceId,
-        deviceName
+        deviceName,
+        deviceType // Ensure this prop is passed
       );
 
       // Add device response
@@ -132,7 +141,7 @@ const DeviceChatModal: React.FC<DeviceChatModalProps> = ({
       const errorMessage: ChatMessage = {
         id: `error-${Date.now()}`,
         sender: 'device',
-        content: 'Sorry, I encountered an error while processing your request.',
+        content: t('errorFetchingResponse', 'Sorry, I encountered an error while processing your request.'),
         timestamp: new Date()
       };
 
@@ -162,16 +171,16 @@ const DeviceChatModal: React.FC<DeviceChatModalProps> = ({
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="md" // Increased from "sm" to "md"
+      maxWidth="md"
       fullWidth
       PaperProps={{
         sx: {
           borderRadius: '24px',
           overflow: 'hidden',
           boxShadow: theme.shadows[24],
-          backgroundColor: headerBgColor, // Solid background color
-          backgroundImage: 'none', // Remove any gradients
-          minHeight: '900px', // Set minimum height
+          backgroundColor: headerBgColor,
+          backgroundImage: 'none',
+          minHeight: '900px',
           maxHeight: '80vh',
         }
       }}
@@ -198,7 +207,7 @@ const DeviceChatModal: React.FC<DeviceChatModalProps> = ({
             <SmartToyRounded />
           </Avatar>
           <Typography variant="h6" fontWeight={600}>
-            {deviceName}
+            {deviceName} ({deviceType === 'standard' ? 'Standard' : 'Custom'})
           </Typography>
         </Box>
         <IconButton onClick={onClose} edge="end" aria-label="close"
@@ -215,17 +224,17 @@ const DeviceChatModal: React.FC<DeviceChatModalProps> = ({
 
       {/* Messages */}
       <DialogContent sx={{
-        p: 0, // Remove padding from the container
+        p: 0,
         backgroundColor: contentBgColor,
         display: 'flex',
         flexDirection: 'column',
-        height: '500px', // Fixed height for content area
+        height: '500px',
       }}>
         <Box sx={{
           flexGrow: 1,
           overflowY: 'auto',
-          p: 3, // Add padding inside the scroll container
-          pt: 4, // Extra top padding to ensure first message isn't too close to header
+          p: 3,
+          pt: 4,
           pb: 3,
           '&::-webkit-scrollbar': {
             width: '6px',
@@ -245,7 +254,7 @@ const DeviceChatModal: React.FC<DeviceChatModalProps> = ({
             <Box
               key={message.id}
               sx={{
-                mb: 3, // Increased spacing between messages
+                mb: 3,
                 display: 'flex',
                 flexDirection: message.sender === 'user' ? 'row-reverse' : 'row',
                 alignItems: 'flex-start',
@@ -308,7 +317,7 @@ const DeviceChatModal: React.FC<DeviceChatModalProps> = ({
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, ml: 7 }}>
               <CircularProgress size={24} sx={{ color: colorScheme.main }} />
               <Typography variant="body2" sx={{ ml: 2, color: alpha(theme.palette.text.primary, 0.6) }}>
-                {deviceName} is typing...
+                {t('typing', { deviceName: deviceName }, "{{deviceName}} is typing...")}
               </Typography>
             </Box>
           )}
@@ -322,7 +331,7 @@ const DeviceChatModal: React.FC<DeviceChatModalProps> = ({
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <TextField
               fullWidth
-              placeholder={`Message ${deviceName}...`}
+              placeholder={t('deviceMessagePlaceholder', { deviceName: deviceName }, "Message {{deviceName}}...")}
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyPress={handleKeyPress}

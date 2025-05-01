@@ -21,6 +21,9 @@ import {
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import Lottie from 'react-lottie-player';
+import { useTranslation } from 'react-i18next';
+import { llmApi } from '../../api/llmApi';
+import { getNetworkSoulWelcomeMessage, networkSoulPrompt } from '../../utils/chatPrompts';
 
 interface ChatMessage {
   id: string;
@@ -44,6 +47,7 @@ const SoulChatModal: React.FC<SoulChatModalProps> = ({
   animationData
 }) => {
   const theme = useTheme();
+  const { t, i18n } = useTranslation(['chat', 'common']);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -62,10 +66,17 @@ const SoulChatModal: React.FC<SoulChatModalProps> = ({
 
   // Get status text based on health score
   const getStatusText = () => {
-    if (healthScore > 80) return 'Excellent';
-    if (healthScore > 50) return 'Good';
-    return 'Critical';
+    if (healthScore > 80) return t('excellent');
+    if (healthScore > 50) return t('good');
+    return t('critical');
   };
+
+  // Clear messages when modal is closed
+  useEffect(() => {
+    if (!open) {
+      setMessages([]);
+    }
+  }, [open]);
 
   // Simulate typing effect for the welcome message
   useEffect(() => {
@@ -73,7 +84,7 @@ const SoulChatModal: React.FC<SoulChatModalProps> = ({
       setIsTyping(true);
 
       // Welcome message that will be typed out
-      const welcomeMessage = `Hello! I am the Soul of your network infrastructure. I'm currently monitoring all systems and can assist with any questions about your network health and performance. The current network health status is ${getStatusText().toLowerCase()} (${healthScore}%). How can I help you today?`;
+      const welcomeMessage = getNetworkSoulWelcomeMessage(healthScore);
 
       // Initial empty message
       const initialMessage: ChatMessage = {
@@ -86,19 +97,21 @@ const SoulChatModal: React.FC<SoulChatModalProps> = ({
 
       setMessages([initialMessage]);
 
-      // Simulate typing with a delay for each character
+      // Simulate typing with a much faster delay for each character
       let currentText = '';
       let charIndex = 0;
 
       const typingInterval = setInterval(() => {
         if (charIndex < welcomeMessage.length) {
-          currentText += welcomeMessage.charAt(charIndex);
+          // Type multiple characters at once for faster animation
+          const charsToAdd = Math.min(5, welcomeMessage.length - charIndex);
+          currentText += welcomeMessage.substring(charIndex, charIndex + charsToAdd);
           setMessages([{
             ...initialMessage,
             content: currentText,
-            isTyping: charIndex < welcomeMessage.length - 1
+            isTyping: charIndex + charsToAdd < welcomeMessage.length - 1
           }]);
-          charIndex++;
+          charIndex += charsToAdd;
         } else {
           clearInterval(typingInterval);
           setIsTyping(false);
@@ -108,11 +121,11 @@ const SoulChatModal: React.FC<SoulChatModalProps> = ({
             isTyping: false
           }]);
         }
-      }, 30); // Speed of typing
+      }, 10); // Much faster typing speed
 
       return () => clearInterval(typingInterval);
     }
-  }, [open, healthScore]);
+  }, [open, healthScore, i18n.language]);
 
   // Focus input when modal opens
   useEffect(() => {
@@ -150,73 +163,43 @@ const SoulChatModal: React.FC<SoulChatModalProps> = ({
     setNewMessage('');
     setIsTyping(true);
 
-    // Simulate typing for the soul's response
-    setTimeout(() => {
-      const soulResponseId = `soul-${Date.now()}`;
+    // Add an empty message that will show "typing"
+    const soulResponseId = `soul-${Date.now()}`;
+    setMessages(prev => [...prev, {
+      id: soulResponseId,
+      sender: 'soul',
+      content: '',
+      timestamp: new Date(),
+      isTyping: true
+    }]);
 
-      // Add an empty message that will show "typing"
-      setMessages(prev => [...prev, {
-        id: soulResponseId,
-        sender: 'soul',
-        content: '',
-        timestamp: new Date(),
-        isTyping: true
-      }]);
+    try {
+      // Use the LLM API with statistics focus
+      const prompt = networkSoulPrompt();
+      const response = await llmApi.generateStatisticsReport(newMessage);
 
-      // Sample responses based on user input
-      const userInput = newMessage.toLowerCase();
-      let responseText = '';
+      // Update the soul's message with the actual response
+      setMessages(prev =>
+        prev.map(msg =>
+          msg.id === soulResponseId
+            ? { ...msg, content: response, isTyping: false }
+            : msg
+        )
+      );
+    } catch (error) {
+      console.error('Error fetching Soul response:', error);
 
-      if (userInput.includes('hello') || userInput.includes('hi')) {
-        responseText = 'Hello there! Nice to connect with you. What would you like to know about your network?';
-      } else if (userInput.includes('health') || userInput.includes('status')) {
-        responseText = `The current network health is ${getStatusText().toLowerCase()} with a score of ${healthScore}%. All systems are being monitored continuously.`;
-      } else if (userInput.includes('issue') || userInput.includes('problem')) {
-        if (healthScore < 50) {
-          responseText = 'There are several critical issues affecting network performance. The primary concerns are high latency in your main router and packet loss in your eastern cluster.';
-        } else if (healthScore < 80) {
-          responseText = 'There are some minor issues detected. We\'re seeing slightly elevated response times in your database servers and some bandwidth constraints during peak hours.';
-        } else {
-          responseText = 'No significant issues detected at this time. The network is operating within optimal parameters.';
-        }
-      } else if (userInput.includes('improve') || userInput.includes('optimize')) {
-        responseText = 'To improve network performance, consider upgrading router firmware, optimizing bandwidth allocation, and implementing QoS policies for critical services.';
-      } else {
-        responseText = 'I\'m monitoring all aspects of your network infrastructure. I can provide insights on network health, identify issues, and suggest optimizations. What specific area would you like to explore?';
-      }
-
-      // Simulate typing the response character by character
-      let currentText = '';
-      let charIndex = 0;
-
-      const typingInterval = setInterval(() => {
-        if (charIndex < responseText.length) {
-          currentText += responseText.charAt(charIndex);
-
-          setMessages(prev =>
-            prev.map(msg =>
-              msg.id === soulResponseId
-                ? { ...msg, content: currentText, isTyping: true }
-                : msg
-            )
-          );
-
-          charIndex++;
-        } else {
-          clearInterval(typingInterval);
-          setIsTyping(false);
-
-          setMessages(prev =>
-            prev.map(msg =>
-              msg.id === soulResponseId
-                ? { ...msg, content: responseText, isTyping: false }
-                : msg
-            )
-          );
-        }
-      }, 30);
-
-    }, 500);
+      // Update with error message
+      setMessages(prev =>
+        prev.map(msg =>
+          msg.id === soulResponseId
+            ? { ...msg, content: t('errorFetchingResponse'), isTyping: false }
+            : msg
+        )
+      );
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -224,6 +207,12 @@ const SoulChatModal: React.FC<SoulChatModalProps> = ({
       e.preventDefault();
       handleSendMessage();
     }
+  };
+
+  // Handle close with custom function that also clears messages
+  const handleClose = () => {
+    onClose();
+    // Messages will be cleared by the useEffect that watches the open state
   };
 
   // Determine background colors based on theme
@@ -238,7 +227,7 @@ const SoulChatModal: React.FC<SoulChatModalProps> = ({
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       maxWidth="md"
       fullWidth
       PaperProps={{
@@ -287,69 +276,46 @@ const SoulChatModal: React.FC<SoulChatModalProps> = ({
                 filter: `brightness(1.2) contrast(1.1)`,
               }}
             >
-              {/* Színes réteg gradienssel - közepén erős, kifelé halványodó */}
+              {/* Colored layer with gradient - strong in center, fading outward */}
               <Box
                 sx={{
-                  // Alapvető pozicionálás és méretezés
                   position: 'absolute',
                   top: 0,
                   left: 0,
                   width: '100%',
                   height: '100%',
-
-                  // Radial gradient beállítása:
-                  // - Középen erős szín (a healthColor függvényében)
-                  // - Kifelé haladva fokozatosan halványodik
                   background: `radial-gradient(
                     circle,
-                    ${alpha(healthColor, 1.7)} 0%,     /* Középpont: erős szín */
-                    ${alpha(healthColor, 1.5)} 40%,    /* 40%-os távolság: közepesen erős */
-                    ${alpha(healthColor, 0.001)} 70%,   /* 70%-os távolság: halványabb */
-                    ${alpha(healthColor, 0.000)} 100%   /* Külső szél: nagyon halvány */
+                    ${alpha(healthColor, 1.7)} 0%,
+                    ${alpha(healthColor, 1.5)} 40%,
+                    ${alpha(healthColor, 0.001)} 70%,
+                    ${alpha(healthColor, 0.000)} 100%
                   )`,
-
-                  // Color blending mód - ez határozza meg, hogyan keveredik az alatta lévő réteggel
                   mixBlendMode: 'color',
-
-                  // Stacking context (z-index) és border-radius
                   zIndex: 2,
                   borderRadius: '50%',
-
-                  // Animáció az állapotváltozáskor
                   transition: 'all 0.3s ease-in-out',
                 }}
               />
 
-              {/* Fényerő réteg gradienssel - közepén világosabb, kifelé halványodik */}
+              {/* Brightness layer with gradient - brighter in center, fading outward */}
               <Box
                 sx={{
-                  // Alapvető pozicionálás és méretezés
                   position: 'absolute',
                   top: 0,
                   left: 0,
                   width: '100%',
                   height: '100%',
-
-                  // Radial gradient beállítása a fényerő réteghez:
-                  // - Középen erősebb fényerő-növelés
-                  // - Kifelé haladva fokozatosan átlátszóvá válik
                   background: `radial-gradient(
                     circle,
-                    ${alpha(healthColor, 0.2)} 0%,     /* Középpont: erősebb világosítás */
-                    ${alpha(healthColor, 0.25)} 30%,   /* 30%-os távolság: közepesen erős */
-                    ${alpha(healthColor, 0.1)} 70%,    /* 70%-os távolság: gyenge */
-                    transparent 100%                  /* Külső szél: teljesen átlátszó */
+                    ${alpha(healthColor, 0.2)} 0%,
+                    ${alpha(healthColor, 0.25)} 30%,
+                    ${alpha(healthColor, 0.1)} 70%,
+                    transparent 100%
                   )`,
-
-                  // Screen blending mód - ez világosítja az alatta lévő réteget
-                  // (Az eredmény mindig világosabb vagy ugyanolyan világos, mint az eredeti)
                   mixBlendMode: 'screen',
-
-                  // Stacking context és border-radius
                   zIndex: 3,
                   borderRadius: '50%',
-
-                  // Animáció az állapotváltozáskor
                   transition: 'all 0.3s ease-in-out',
                 }}
               />
@@ -406,7 +372,7 @@ const SoulChatModal: React.FC<SoulChatModalProps> = ({
             </Typography>
           </Box>
         </Box>
-        <IconButton onClick={onClose} edge="end" aria-label="close"
+        <IconButton onClick={handleClose} edge="end" aria-label="close"
           sx={{
             color: theme.palette.text.secondary,
             '&:hover': {
@@ -500,69 +466,46 @@ const SoulChatModal: React.FC<SoulChatModalProps> = ({
                       filter: `brightness(1.2) contrast(1.1)`,
                     }}
                   >
-                    {/* Színes réteg gradienssel - közepén erős, kifelé halványodó */}
+                    {/* Colored layer with gradient */}
                     <Box
                       sx={{
-                        // Alapvető pozicionálás és méretezés
                         position: 'absolute',
                         top: 0,
                         left: 0,
                         width: '100%',
                         height: '100%',
-
-                        // Radial gradient beállítása:
-                        // - Középen erős szín (a healthColor függvényében)
-                        // - Kifelé haladva fokozatosan halványodik
                         background: `radial-gradient(
                           circle,
-                          ${alpha(healthColor, 1.7)} 0%,     /* Középpont: erős szín */
-                          ${alpha(healthColor, 1.5)} 40%,    /* 40%-os távolság: közepesen erős */
-                          ${alpha(healthColor, 0.001)} 70%,   /* 70%-os távolság: halványabb */
-                          ${alpha(healthColor, 0.000)} 100%   /* Külső szél: nagyon halvány */
+                          ${alpha(healthColor, 1.7)} 0%,
+                          ${alpha(healthColor, 1.5)} 40%,
+                          ${alpha(healthColor, 0.001)} 70%,
+                          ${alpha(healthColor, 0.000)} 100%
                         )`,
-
-                        // Color blending mód - ez határozza meg, hogyan keveredik az alatta lévő réteggel
                         mixBlendMode: 'color',
-
-                        // Stacking context (z-index) és border-radius
                         zIndex: 2,
                         borderRadius: '50%',
-
-                        // Animáció az állapotváltozáskor
                         transition: 'all 0.3s ease-in-out',
                       }}
                     />
 
-                    {/* Fényerő réteg gradienssel - közepén világosabb, kifelé halványodik */}
+                    {/* Brightness layer with gradient */}
                     <Box
                       sx={{
-                        // Alapvető pozicionálás és méretezés
                         position: 'absolute',
                         top: 0,
                         left: 0,
                         width: '100%',
                         height: '100%',
-
-                        // Radial gradient beállítása a fényerő réteghez:
-                        // - Középen erősebb fényerő-növelés
-                        // - Kifelé haladva fokozatosan átlátszóvá válik
                         background: `radial-gradient(
                           circle,
-                          ${alpha(healthColor, 0.2)} 0%,     /* Középpont: erősebb világosítás */
-                          ${alpha(healthColor, 0.25)} 30%,   /* 30%-os távolság: közepesen erős */
-                          ${alpha(healthColor, 0.1)} 70%,    /* 70%-os távolság: gyenge */
-                          transparent 100%                  /* Külső szél: teljesen átlátszó */
+                          ${alpha(healthColor, 0.2)} 0%,
+                          ${alpha(healthColor, 0.25)} 30%,
+                          ${alpha(healthColor, 0.1)} 70%,
+                          transparent 100%
                         )`,
-
-                        // Screen blending mód - ez világosítja az alatta lévő réteget
-                        // (Az eredmény mindig világosabb vagy ugyanolyan világos, mint az eredeti)
                         mixBlendMode: 'screen',
-
-                        // Stacking context és border-radius
                         zIndex: 3,
                         borderRadius: '50%',
-
-                        // Animáció az állapotváltozáskor
                         transition: 'all 0.3s ease-in-out',
                       }}
                     />
@@ -691,7 +634,7 @@ const SoulChatModal: React.FC<SoulChatModalProps> = ({
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <TextField
               fullWidth
-              placeholder="Message Network Soul..."
+              placeholder={t('messagePlaceholder')}
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyPress={handleKeyPress}

@@ -1,38 +1,56 @@
 {
   "title": "Irányítópult",
-  "summary": "Rendszer Áttekintés",
-  "addDevice": "Eszköz Hozzáadása",
-  "viewAll": "Összes Megtekintése",
-  "viewDetails": "Részletek",
-  "stats": {
-    "totalDevices": "Összes Eszköz",
-    "standardDevices": "Standard Eszközök",
-    "customDevices": "Egyedi Eszközök",
-    "plugins": "Bővítmények"
+  "subtitle": "Tekintsd meg a hálózati eszközeid állapotát és működését",
+  "refresh": "Adatok frissítése",
+  "emptyState": "Adj hozzá eszközöket a hálózat monitorozásának megkezdéséhez",
+  "systemHealth": {
+    "title": "Rendszerállapot",
+    "status": "Állapot",
+    "happySoulMessage": "A hálózat egészséges és zökkenőmentesen működik",
+    "troubledSoulMessage": "Néhány probléma észlelve, ellenőrizd az eszközök állapotát",
+    "sufferingSoulMessage": "Kritikus problémák észlelve, azonnali beavatkozás szükséges"
   },
   "deviceStatus": {
-    "title": "Eszközök Állapota",
-    "active": "Aktív",
-    "inactive": "Inaktív",
-    "byOs": "Operációs Rendszerek Szerint",
-    "noStandardDevices": "Nincsenek standard eszközök"
-  },
-  "recentDevices": {
-    "title": "Legutóbbi Eszközök",
-    "noDevices": "Még nincsenek eszközök hozzáadva"
-  },
-  "osTypes": {
-    "windows": "Windows",
-    "linux": "Linux",
-    "macos": "MacOS",
-    "unknown": "Ismeretlen"
+    "totalDevices": "Összes eszköz",
+    "available": "Elérhető",
+    "unavailable": "Nem elérhető",
+    "uptime": "Üzemidő"
   },
   "deviceTypes": {
-    "standard": "Standard",
-    "custom": "Egyedi"
+    "title": "Eszköztípusok megoszlása",
+    "noData": "Nem áll rendelkezésre eszközadat",
+    "standard": "Szabványos",
+    "custom": "Egyedi",
+    "windows": "Windows",
+    "macos": "macOS",
+    "linux": "Linux"
   },
-  "info": {
-    "standardDevice": "A standard eszközök közé tartoznak a Windows, MacOS és Linux szerverek/kliensek, amelyeket a Glances segítségével lehet monitorozni.",
-    "customDevice": "Az egyedi eszközök bármilyen hálózati berendezések lehetnek, amelyekhez bővítmény van definiálva."
-  }
+  "recentActivity": {
+    "title": "Legutóbbi tevékenységek",
+    "noActivity": "Nincs legutóbbi tevékenység",
+    "successStatus": "Állapotellenőrzés sikeres",
+    "errorStatus": "Kapcsolódás sikertelen"
+  },
+  "autoRefresh": {
+    "label": "Automatikus frissítés",
+    "off": "Kikapcsolva",
+    "seconds": "másodperc",
+    "minute": "perc",
+    "minutes": "percek"
+  },
+  "networkSoul": {
+    "title": "Hálózat lelke",
+    "status": {
+      "excellent": "Kiváló",
+      "good": "Jó",
+      "fair": "Megfelelő",
+      "critical": "Kritikus"
+    }
+  },
+  "lastUpdated": "Utolsó frissítés",
+  "settings": "Beállítások",
+  "deviceOverview": "Eszközök áttekintése",
+  "moreOptions": "További lehetőségek",
+  "deviceDistribution": "Eszközmegoszlás",
+  "recentActivity": "Legutóbbi tevékenység"
 }

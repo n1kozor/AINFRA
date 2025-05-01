@@ -1,12 +1,20 @@
 {
   "title": "Bővítmények",
-  "addPlugin": "Bővítmény Hozzáadása",
-  "addFirstPlugin": "Első Bővítmény Hozzáadása",
+  "subtitle": "Rendszerbővítmények kezelése és konfigurálása",
+  "refresh": "Bővítmények frissítése",
+  "filter": "Szűrő",
+  "sort": "Rendezés",
+  "status": "Állapot",
+  "loadingPlugins": "Bővítmények betöltése...",
+  "sortOptions": "Rendezési lehetőségek",
+  "resetFilters": "Szűrők alaphelyzetbe állítása",
+  "addPlugin": "Bővítmény hozzáadása",
+  "addFirstPlugin": "Első bővítmény hozzáadása",
   "pluginCount": "{{count}} bővítmény található",
-  "noPluginsYet": "Még nincsenek bővítmények hozzáadva",
-  "noPluginsFound": "Nincs a keresésnek megfelelő bővítmény",
-  "tryDifferentSearch": "Próbáljon más keresési feltételeket megadni",
-  "getStarted": "Hozza létre első bővítményét a platform képességeinek kiterjesztéséhez",
+  "noPluginsYet": "Még nincs hozzáadva bővítmény",
+  "noPluginsFound": "Nincs olyan bővítmény, amely megfelelne a keresésnek",
+  "tryDifferentSearch": "Próbálj meg más keresési kifejezéseket",
+  "getStarted": "Hozd létre első bővítményed, hogy kiterjeszthesd a platform képességeit",
   "active": "Aktív",
   "inactive": "Inaktív",
   "author": "Szerző",
@@ -15,27 +23,82 @@
   "description": "Leírás",
   "name": "Név",
   "version": "Verzió",
-  "pluginCode": "Bővítmény Kód",
-  "uiSchema": "UI Séma",
-  "codeDescription": "Írja meg a bővítmény kódját a BasePlugin interfész implementálásával",
-  "schemaDescription": "Határozza meg a bővítmény UI elemeit (JSON formátumban)",
+  "pluginCode": "Bővítmény kód",
+  "uiSchema": "UI séma",
+  "codeDescription": "Írd meg a bővítmény kódját, amely megvalósítja a BasePlugin interfészt",
+  "schemaDescription": "Határozd meg a bővítmény UI elemeit (JSON formátumban)",
   "view": "Megtekintés",
   "loading": "Bővítmény betöltése...",
   "deletePlugin": {
-    "title": "Bővítmény Törlése",
-    "confirmation": "Biztosan törölni szeretné a(z) \"{{name}}\" bővítményt?",
-    "warning": "Ha bármely eszköz használja ezt a bővítményt, azok nem fognak megfelelően működni."
+    "title": "Bővítmény törlése",
+    "confirmation": "Biztosan törölni szeretnéd a \"{{name}}\" bővítményt?",
+    "warning": "Ha bármelyik eszköz ezt a bővítményt használja, előfordulhat, hogy nem működik megfelelően."
   },
   "error": {
     "title": "Hiba",
-    "loading": "Hiba a bővítmények betöltése közben",
+    "loading": "Hiba a bővítmények betöltésekor",
     "create": "Hiba a bővítmény létrehozásakor"
   },
-  "pluginNotFound": "A bővítmény nem található. Lehet, hogy törölték.",
-  "basicInfo": "Alapvető Információk",
+  "pluginNotFound": "A bővítmény nem található. Lehet, hogy törölve lett.",
+  "basicInfo": "Alapvető információk",
   "tabs": {
     "code": "Kód",
-    "uiSchema": "UI Séma"
+    "uiSchema": "UI séma",
+    "all": "Összes bővítmény",
+    "active": "Aktív",
+    "inactive": "Inaktív"
   },
-  "noUiSchema": "Ez a bővítmény nem definiál UI sémát"
+  "noUiSchema": "Ez a bővítmény nem definiál UI sémát",
+  "viewModes": {
+    "grid": "Rács nézet",
+    "list": "Lista nézet"
+  },
+  "sortOptions": {
+    "name": "Név",
+    "updated": "Utolsó frissítés",
+    "created": "Létrehozás dátuma"
+  },
+  "statusOptions": {
+    "all": "Összes bővítmény",
+    "active": "Aktív",
+    "inactive": "Inaktív"
+  },
+  "installPlugin": "Bővítmény telepítése",
+  "uploadPlugin": "Bővítmény feltöltése",
+  "settings": "Bővítmény beállítások",
+  "developer": "Fejlesztő",
+  "lastUpdated": "Utolsó frissítés",
+  "pluginStatus": {
+    "active": "Aktív",
+    "inactive": "Inaktív",
+    "error": "Hiba",
+    "updating": "Frissítés alatt"
+  },
+  "actions": {
+    "enable": "Engedélyezés",
+    "disable": "Letiltás",
+    "delete": "Törlés",
+    "update": "Frissítés",
+    "configure": "Konfigurálás"
+  },
+  "deleteConfirmation": {
+    "title": "Bővítmény törlése",
+    "message": "Biztosan törölni szeretnéd ezt a bővítményt? Ez a művelet nem vonható vissza.",
+    "dependencyWarning": "Ezt a bővítményt {{count}} eszköz használja. Törlése azok működésképtelenségét okozhatja."
+  },
+  "errors": {
+    "failedToLoad": "Bővítmények betöltése sikertelen",
+    "failedToEnable": "Bővítmény engedélyezése sikertelen",
+    "failedToDisable": "Bővítmény letiltása sikertelen",
+    "failedToDelete": "Bővítmény törlése sikertelen",
+    "failedToUpdate": "Bővítmény frissítése sikertelen",
+    "notCompatible": "A bővítmény nem kompatibilis a jelenlegi rendszerrel"
+  },
+  "pluginDetails": {
+    "capabilities": "Képességek",
+    "dependencies": "Függőségek",
+    "configuration": "Konfiguráció",
+    "documentation": "Dokumentáció",
+    "usedBy": "{{count}} eszköz használja"
+  }
 }

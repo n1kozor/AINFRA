@@ -396,6 +396,7 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ device }) => {
         onClose={() => setChatOpen(false)}
         deviceId={device.id.toString()}
         deviceName={device.name}
+        deviceType={device.type}
         colorScheme={colorScheme}
       />
     </motion.div>

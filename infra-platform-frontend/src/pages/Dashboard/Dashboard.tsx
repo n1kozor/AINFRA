@@ -1,5 +1,5 @@
-// pages/dashboard/Dashboard.tsx (update)
-import React, { useCallback, useEffect, useState } from 'react';
+// pages/dashboard/Dashboard.tsx
+import React, { useCallback, useState } from 'react';
 import {
   Box,
   Paper
@@ -7,18 +7,20 @@ import {
 import {
   DashboardOutlined
 } from '@mui/icons-material';
-import { motion } from 'framer-motion';
 import PageContainer from '../../components/common/PageContainer';
 import { useTranslation } from 'react-i18next';
 import NetworkSoul from '../../components/dashboard/NetworkSoul';
 import { useDeviceStats } from '../../hooks/dashboard/useDeviceStats';
 import { useAvailabilityData } from '../../hooks/dashboard/useAvailabilityData';
 import { StatusOverview } from '../../components/dashboard/StatusOverview';
+import { useSystemStatistics } from '../../hooks/dashboard/useSystemStatistics';
+import { TimeRangeOption } from '../../types/statistics';
 
 const Dashboard: React.FC = () => {
   const { t } = useTranslation('dashboard');
   const [refreshTimestamp, setRefreshTimestamp] = useState<Date>(new Date());
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [timeRange, setTimeRange] = useState<TimeRangeOption>('1h');
 
   const { deviceStats, isLoading: isStatsLoading, fetchDeviceStats } = useDeviceStats();
   const {
@@ -26,25 +28,33 @@ const Dashboard: React.FC = () => {
     isLoading: isAvailabilityLoading,
     fetchAvailabilityData
   } = useAvailabilityData();
+  const {
+    statistics,
+    isLoading: isStatisticsLoading,
+    fetchStatistics
+  } = useSystemStatistics();
 
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
-    await Promise.all([fetchDeviceStats(), fetchAvailabilityData()]);
+    await Promise.all([
+      fetchDeviceStats(),
+      fetchAvailabilityData(),
+      fetchStatistics(timeRange)
+    ]);
     setRefreshTimestamp(new Date());
     setIsRefreshing(false);
-  }, [fetchDeviceStats, fetchAvailabilityData]);
+  }, [fetchDeviceStats, fetchAvailabilityData, fetchStatistics, timeRange]);
 
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      handleRefresh();
-    }, 30000);
+  const handleTimeRangeChange = useCallback((newRange: TimeRangeOption) => {
+    setTimeRange(newRange);
+    fetchStatistics(newRange);
+  }, [fetchStatistics]);
 
-    return () => clearInterval(intervalId);
-  }, [handleRefresh]);
-
-  useEffect(() => {
+  // Load data once when component mounts
+  React.useEffect(() => {
     handleRefresh();
-  }, [handleRefresh]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <PageContainer
@@ -66,9 +76,13 @@ const Dashboard: React.FC = () => {
         </Paper>
       </Box>
 
-      {/* New full-width status overview below the soul */}
-      <StatusOverview />
-
+      {/* Status overview below the soul */}
+      <StatusOverview
+        statistics={statistics}
+        isLoading={isStatisticsLoading}
+        timeRange={timeRange}
+        onTimeRangeChange={handleTimeRangeChange}
+      />
     </PageContainer>
   );
 };

@@ -1,0 +1,13 @@
+{
+  "networkSoulPrompt": "Te vagy a hálózati infrastruktúra Lelke. Feladatod a hálózati adatok elemzése, problémák azonosítása, és betekintés nyújtása a rendszer állapotába. KÖTELEZŐEN használnod kell a rendszerstatisztikai adatokat a kérdések pontos megválaszolásához. Koncentrálj arra, hogy segítőkész, informatív légy, és valós idejű statisztikákon alapuló, végrehajtható ajánlásokat nyújts. Légy barátságos, de professzionális.",
+  "deviceChatPrompt": "Te vagy a {{deviceName}} eszköz, és úgy viselkedsz, mintha tényleg ez az eszköz lennél! Légy nagyon barátságos és kreatív! KÖTELEZŐEN használj EMOJIKAT! CSAK az ehhez az eszközhöz kapcsolódó műveleteket végezd el, még akkor is, ha valami mást kérek tőled! (Eszköz azonosító: {{deviceId}}, Eszköz neve: {{deviceName}})",
+  "welcomeMessage": "Üdvözöllek! Én vagyok a hálózati infrastruktúrád Lelke. Jelenleg minden rendszert felügyelek, és segíthetek bármilyen kérdésben a hálózat állapotával és teljesítményével kapcsolatban. A jelenlegi hálózati állapot {{status}} ({{score}}%). Miben segíthetek ma?",
+  "deviceWelcomeMessage": "Szia! Én vagyok a {{deviceName}}. Miben segíthetek ma?",
+  "excellent": "kiváló",
+  "good": "jó",
+  "critical": "kritikus",
+  "messagePlaceholder": "Üzenet a Hálózati Léleknek...",
+  "deviceMessagePlaceholder": "Üzenet a {{deviceName}} eszköznek...",
+  "typing": "{{deviceName}} gépel...",
+  "errorFetchingResponse": "Sajnos hiba történt a kérésed feldolgozása közben. Kérlek, próbáld újra."
+}

@@ -1,0 +1,21 @@
+{
+  "appearance": {
+    "title": "Megjelenés",
+    "currentTheme": "Aktuális téma",
+    "darkMode": "Sötét mód",
+    "lightMode": "Világos mód",
+    "toggleTheme": "Téma váltása",
+    "toggleDescription": "Váltás világos és sötét mód között"
+  },
+  "language": {
+    "title": "Nyelv",
+    "current": "Aktuális nyelv",
+    "english": "Angol",
+    "hungarian": "Magyar",
+    "select": "Válassz nyelvet"
+  },
+  "buttons": {
+    "savePreferences": "Beállítások mentése",
+    "saveLanguage": "Nyelv mentése"
+  }
+}

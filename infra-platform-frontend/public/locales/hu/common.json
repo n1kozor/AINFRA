@@ -1,10 +1,11 @@
 {
-  "appName": "Infrastruktúra Platform",
+  "appName": "Infrastruktúra platform",
   "navigation": {
+    "main": "Fő",
     "dashboard": "Irányítópult",
     "devices": "Eszközök",
-    "standardDevices": "Standard Eszközök",
-    "customDevices": "Egyedi Eszközök",
+    "standardDevices": "Szabványos eszközök",
+    "customDevices": "Egyedi eszközök",
     "plugins": "Bővítmények",
     "settings": "Beállítások"
   },
@@ -17,7 +18,15 @@
     "confirm": "Megerősítés",
     "back": "Vissza",
     "refresh": "Frissítés",
-    "search": "Keresés"
+    "search": "Keresés",
+    "more": "Tovább",
+    "share": "Megosztás",
+    "favorite": "Kedvenc",
+    "view": "Megtekintés",
+    "next": "Következő",
+    "sort": "Rendezés",
+    "retry": "Újrapróbálkozás",
+    "clearFilters": "Szűrők törlése"
   },
   "status": {
     "online": "Online",
@@ -27,20 +36,70 @@
     "loading": "Betöltés..."
   },
   "theme": {
-    "light": "Világos Mód",
-    "dark": "Sötét Mód"
+    "light": "Világos mód",
+    "dark": "Sötét mód"
   },
   "language": {
     "en": "Angol",
     "hu": "Magyar"
   },
+  "deviceActivity": {
+    "title": "Eszköz elérhetősége",
+    "subtitle": "Valós idejű eszköz üzemidő monitorozása",
+    "selectDevice": "Eszköz kiválasztása",
+    "tabs": {
+      "day": "Nap",
+      "week": "Hét",
+      "month": "Hónap",
+      "live": "Valós állapot",
+      "daily": "Napi üzemidő",
+      "response": "Válaszidő"
+    }
+  },
+  "dashboard": {
+    "refresh": "Frissítés",
+    "systemHealth": {
+      "title": "Rendszer egészsége",
+      "status": "Állapot",
+      "critical": "Kritikus",
+      "excellent": "Kiváló",
+      "acceptable": "Elfogadható",
+      "sufferingSoulMessage": "Rendszered figyelmet igényel",
+      "happySoulMessage": "Rendszered zökkenőmentesen működik",
+      "troubledSoulMessage": "Rendszereddel kapcsolatban problémák merültek fel"
+    }
+  },
   "errors": {
     "required": "Ez a mező kötelező",
-    "invalidIP": "Érvénytelen IP cím",
+    "invalidIP": "Érvénytelen IP-cím",
     "connectionFailed": "Kapcsolódás sikertelen",
     "loadFailed": "Adatok betöltése sikertelen",
-    "saveFailed": "Mentés sikertelen",
+    "saveFailed": "Adatok mentése sikertelen",
     "deleteFailed": "Törlés sikertelen",
     "notFound": "Nem található"
-  }
+  },
+  "sidebar": {
+    "joinUs": "Csatlakozz csapatunkhoz!",
+    "joinDesc": "Van egy kis időd és szeretnél velünk fejleszteni?",
+    "contactUs": "GitHub"
+  },
+  "tooltip": {
+    "apps": "Alkalmazások",
+    "darkMode": "Sötét mód váltása",
+    "changeLanguage": "Nyelv váltása",
+    "notifications": "Értesítések"
+  },
+  "user": {
+    "profile": "Profil",
+    "settings": "Beállítások",
+    "logout": "Kijelentkezés"
+  },
+  "notifications": {
+    "title": "Értesítések",
+    "viewAll": "Összes megtekintése"
+  },
+  "apps": {
+    "title": "Alkalmazások"
+  },
+  "home": "Kezdőlap"
 }

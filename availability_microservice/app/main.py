@@ -1,12 +1,15 @@
 # app/main.py
+from datetime import datetime, timedelta
+
 from fastapi import FastAPI, Depends, Path, Query, Body, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 import asyncio
 import time
-from sqlalchemy import func
-from datetime import datetime, timedelta
+
 from app.models.database import get_db, Base, engine
 from app.models.models import Device, AvailabilityCheck, MonitoringSettings
 from app.schemas.schemas import (
@@ -376,15 +379,38 @@ async def update_availability_settings(
     }
 
 
+# In the monitoring microservice (app/main.py)
 @app.get("/stats")
-async def get_monitoring_statistics(db: Session = Depends(get_db)):
+async def get_monitoring_statistics(
+        time_range: str = Query(None, description="Time range filter: '30m', '1h', '6h', '24h', '7d' or 'all'"),
+        db: Session = Depends(get_db)
+):
     """
     Get comprehensive monitoring statistics and system overview.
 
     Returns aggregated data about device availability, response times,
     errors, and historical trends.
+
+    Parameters:
+    - time_range: Optional filter to limit data to a specific time range
     """
     try:
+        # Parse time range and set the start time accordingly
+        start_time = None
+        if time_range:
+            now = datetime.utcnow()
+            if time_range == "30m":
+                start_time = now - timedelta(minutes=30)
+            elif time_range == "1h":
+                start_time = now - timedelta(hours=1)
+            elif time_range == "6h":
+                start_time = now - timedelta(hours=6)
+            elif time_range == "24h":
+                start_time = now - timedelta(hours=24)
+            elif time_range == "7d":
+                start_time = now - timedelta(days=7)
+            # 'all' doesn't set a start_time, so we get all data
+
         # Get total devices count
         total_devices = db.query(func.count(Device.id)).scalar()
         active_devices = db.query(func.count(Device.id)).filter(Device.is_active == True).scalar()
@@ -410,13 +436,16 @@ async def get_monitoring_statistics(db: Session = Depends(get_db)):
             method = device["check_method"]
             check_methods[method] = check_methods.get(method, 0) + 1
 
-        # Get recent errors (last 24 hours)
-        yesterday = datetime.utcnow() - timedelta(days=1)
-        recent_errors = db.query(AvailabilityCheck).filter(
+        # Determine the time range for recent errors
+        error_time_range = start_time if start_time else (datetime.utcnow() - timedelta(days=1))
+        error_query = db.query(AvailabilityCheck).filter(
             AvailabilityCheck.is_available == False,
-            AvailabilityCheck.timestamp >= yesterday,
+            AvailabilityCheck.timestamp >= error_time_range,
             AvailabilityCheck.error_message != None
-        ).order_by(AvailabilityCheck.timestamp.desc()).limit(50).all()
+        ).order_by(AvailabilityCheck.timestamp.desc())
+
+        # Limit error records to reduce response size
+        recent_errors = error_query.limit(50).all()
 
         error_summary = []
         for error in recent_errors:
@@ -429,16 +458,32 @@ async def get_monitoring_statistics(db: Session = Depends(get_db)):
                     "timestamp": error.timestamp.isoformat()
                 })
 
-        # Calculate 24-hour availability trend (hourly)
+        # Calculate hourly availability trend
+        # Adjust the number of hours based on time range
+        hours_to_show = 24  # Default 24 hours
+        if time_range:
+            if time_range == "30m":
+                hours_to_show = 1  # Just show the current hour
+            elif time_range == "1h":
+                hours_to_show = 1
+            elif time_range == "6h":
+                hours_to_show = 6
+            elif time_range == "24h":
+                hours_to_show = 24
+            elif time_range == "7d":
+                hours_to_show = 24 * 7
+
         hourly_stats = []
-        for hour_offset in range(24, -1, -1):
+        for hour_offset in range(hours_to_show, -1, -1):
             hour_start = datetime.utcnow() - timedelta(hours=hour_offset)
             hour_end = hour_start + timedelta(hours=1)
 
-            checks = db.query(AvailabilityCheck).filter(
+            checks_query = db.query(AvailabilityCheck).filter(
                 AvailabilityCheck.timestamp >= hour_start,
                 AvailabilityCheck.timestamp < hour_end
-            ).all()
+            )
+
+            checks = checks_query.all()
 
             available_count = sum(1 for check in checks if check.is_available)
             total_count = len(checks)
@@ -456,6 +501,33 @@ async def get_monitoring_statistics(db: Session = Depends(get_db)):
         async with check_results_lock:
             has_running_checks = background_check_status["in_progress"]
 
+        # Get slowest devices based on the time range
+        slowest_devices_query = db.query(AvailabilityCheck).filter(
+            AvailabilityCheck.is_available == True,
+            AvailabilityCheck.response_time != None
+        )
+
+        if start_time:
+            slowest_devices_query = slowest_devices_query.filter(AvailabilityCheck.timestamp >= start_time)
+
+        slowest_devices_query = slowest_devices_query.order_by(
+            AvailabilityCheck.response_time.desc()
+        ).limit(5)
+
+        slowest_devices = []
+        for check in slowest_devices_query.all():
+            device = db.query(Device).filter(Device.id == check.device_id).first()
+            if device:
+                slowest_devices.append({
+                    "device_id": check.device_id,
+                    "device_name": device.name,
+                    "is_available": check.is_available,
+                    "response_time": check.response_time,
+                    "check_method": check.check_method,
+                    "timestamp": check.timestamp.isoformat(),
+                    "error": check.error_message
+                })
+
         # Prepare the response
         return {
             "system_status": {
@@ -463,7 +535,8 @@ async def get_monitoring_statistics(db: Session = Depends(get_db)):
                 "service_name": "Availability Monitoring Microservice",
                 "version": "1.0.0",
                 "background_checks_running": has_running_checks,
-                "check_interval_minutes": interval
+                "check_interval_minutes": interval,
+                "time_range": time_range or "all"
             },
             "device_summary": {
                 "total_devices": total_devices,
@@ -479,11 +552,7 @@ async def get_monitoring_statistics(db: Session = Depends(get_db)):
             "check_methods": check_methods,
             "hourly_trend": hourly_stats,
             "recent_errors": error_summary,
-            "top_slowest_devices": sorted(
-                [d for d in latest_availability if d["is_available"] and d["response_time"]],
-                key=lambda x: x["response_time"],
-                reverse=True
-            )[:5]
+            "top_slowest_devices": slowest_devices
         }
     except Exception as e:
         print(f"Error generating monitoring statistics: {str(e)}")

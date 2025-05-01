@@ -7,6 +7,7 @@ from pydantic_ai.mcp import MCPServerHTTP
 from dotenv import load_dotenv
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
+from enum import Enum
 
 load_dotenv()
 
@@ -25,10 +26,16 @@ app.add_middleware(
 )
 
 
+class DeviceType(str, Enum):
+    standard_device = "standard_device"
+    custom_device = "custom_device"
+
+
 class ReportRequest(BaseModel):
     prompt: str
     target_device_id: str = None
     target_device_name: str = None
+    device_type: DeviceType = DeviceType.standard_device
     main_api_url: str = "http://localhost:8000/mcp"
 
 
@@ -52,8 +59,19 @@ async def generate_report(request: ReportRequest = Body(...)):
 
         prompt = request.prompt
         if request.target_device_id or request.target_device_name:
-            device_info = f"Device ID: {request.target_device_id or 'N/A'}, Device Name: {request.target_device_name or 'N/A'}"
+            device_info = (
+                f"Device ID: {request.target_device_id or 'N/A'}, "
+                f"Device Name: {request.target_device_name or 'N/A'}, "
+                f"Device Type: {request.device_type.value}"
+            )
             prompt = f"{device_info}\n\n{prompt}"
+
+        # Debug print to show the prompt being sent to the LLM
+        print("=" * 50)
+        print("DEBUG - /generate endpoint - Prompt sent to LLM:")
+        print("-" * 50)
+        print(prompt)
+        print("=" * 50)
 
         async with agent.run_mcp_servers():
             result = await agent.run(prompt)
@@ -78,6 +96,13 @@ async def generate_statistics_all(request: StatisticsRequest = Body(...)):
             "Do not attempt to use any other tools.\n\n"
             f"User request: {request.prompt}"
         )
+
+        # Debug print to show the prompt being sent to the LLM
+        print("=" * 50)
+        print("DEBUG - /generate_statistics_all endpoint - Prompt sent to LLM:")
+        print("-" * 50)
+        print(enhanced_prompt)
+        print("=" * 50)
 
         async with agent.run_mcp_servers():
             result = await agent.run(enhanced_prompt)
