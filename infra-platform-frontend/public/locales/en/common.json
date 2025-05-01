@@ -86,6 +86,7 @@
   "tooltip": {
     "apps": "Applications",
     "darkMode": "Toggle Dark Mode",
+    "lightMode": "Toggle Light Mode",
     "changeLanguage": "Change Language",
     "notifications": "Notifications"
   },
@@ -105,5 +106,6 @@
   "unknown": "Unknown",
   "value": "Value",
   "loading": "Loading...",
-  "sensors": "Sensors"
+  "sensors": "Sensors",
+  "select": "Select"
 }

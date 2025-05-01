@@ -36,6 +36,10 @@ import {
   InfoOutlined,
   CheckCircleOutlineRounded,
   NotificationsActiveRounded,
+  PaletteRounded,
+  DarkModeRounded,
+  LightModeRounded,
+  ColorLensRounded,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../../context/AppContext';
@@ -44,16 +48,18 @@ import { motion } from 'framer-motion';
 import ReactCountryFlag from 'react-country-flag';
 import { AlertStatus, AlertLevel } from '../../types/sensor';
 import { formatTimeSince } from '../../utils/sensorUtils';
+import { ThemeVariant } from '../../theme';
 
 const Header = () => {
   const { toggleSidebar, activeAlerts, loadingAlerts, resolveAlert, refreshAlerts } = useAppContext();
-  const { mode, toggleMode } = useThemeContext();
+  const { themeVariant, setThemeVariant } = useThemeContext();
   const { t, i18n } = useTranslation();
   const theme = useTheme();
 
   // State for menus
   const [languageMenu, setLanguageMenu] = useState(null);
   const [notificationMenu, setNotificationMenu] = useState(null);
+  const [themeMenu, setThemeMenu] = useState(null);
 
   // Handle resolving an alert
   const handleResolveAlert = async (alertId, event) => {
@@ -73,6 +79,20 @@ const Header = () => {
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
     handleLanguageMenuClose();
+  };
+
+  // Theme menu handlers
+  const handleThemeMenuOpen = (event) => {
+    setThemeMenu(event.currentTarget);
+  };
+
+  const handleThemeMenuClose = () => {
+    setThemeMenu(null);
+  };
+
+  const changeTheme = (variant: ThemeVariant) => {
+    setThemeVariant(variant);
+    handleThemeMenuClose();
   };
 
   // Notification menu handlers
@@ -111,28 +131,50 @@ const Header = () => {
     }
   };
 
+  // Get theme icon based on theme variant
+  const getThemeIcon = () => {
+    switch (themeVariant) {
+      case 'dark':
+        return <DarkModeRounded />;
+      case 'light':
+        return <LightModeRounded />;
+      case 'paper':
+        return <ColorLensRounded />;
+      default:
+        return <PaletteRounded />;
+    }
+  };
+
   return (
     <AppBar
       position="fixed"
       elevation={0}
       sx={{
-        backgroundColor: theme.palette.mode === 'dark'
-          ? alpha('#0f172a', 0.8)
-          : alpha('#ffffff', 0.8),
+        backgroundColor:
+          themeVariant === 'dark'
+            ? alpha('#0f172a', 0.8)
+            : themeVariant === 'paper'
+              ? alpha('#FFFBF0', 0.9)
+              : alpha('#ffffff', 0.8),
         backdropFilter: 'blur(20px)',
         zIndex: (theme) => theme.zIndex.drawer + 1,
-        boxShadow: theme.palette.mode === 'dark'
-          ? '0 4px 20px rgba(0,0,0,0.2)'
-          : '0 4px 20px rgba(0,0,0,0.05)',
-        borderBottom: `1px solid ${alpha(
-          theme.palette.mode === 'dark' ? theme.palette.common.white : theme.palette.common.black,
-          0.05
-        )}`,
-        color: theme.palette.mode === 'dark'
-          ? theme.palette.common.white
-          : theme.palette.common.black,
+        boxShadow:
+          themeVariant === 'dark'
+            ? '0 4px 20px rgba(0,0,0,0.2)'
+            : themeVariant === 'paper'
+              ? 'none'
+              : '0 4px 20px rgba(0,0,0,0.05)',
+        borderBottom:
+          themeVariant === 'paper'
+            ? '2px dashed #D6CBAE'
+            : `1px solid ${alpha(
+                theme.palette.mode === 'dark' ? theme.palette.common.white : theme.palette.common.black,
+                0.05
+              )}`,
+        color: theme.palette.text.primary,
         height: 64,
         width: '100%',
+        transform: themeVariant === 'paper' ? 'rotate(-0.5deg)' : 'none',
       }}
     >
       <Toolbar sx={{
@@ -148,26 +190,41 @@ const Header = () => {
             onClick={toggleSidebar}
             sx={{
               mr: { xs: 1, sm: 2 },
-              backgroundColor: theme.palette.mode === 'dark'
-                ? alpha(theme.palette.common.white, 0.06)
-                : alpha(theme.palette.common.black, 0.03),
-              borderRadius: '14px',
+              backgroundColor:
+                themeVariant === 'dark'
+                  ? alpha(theme.palette.common.white, 0.06)
+                  : themeVariant === 'paper'
+                    ? alpha('#D6CBAE', 0.15)
+                    : alpha(theme.palette.common.black, 0.03),
+              borderRadius: themeVariant === 'paper' ? '12px' : '14px',
               padding: '10px',
               transition: theme.transitions.create(['background-color', 'transform', 'box-shadow'], {
                 duration: theme.transitions.duration.shorter,
               }),
-              border: `1px solid ${theme.palette.mode === 'dark'
-                ? alpha(theme.palette.common.white, 0.08)
-                : alpha(theme.palette.common.black, 0.04)}`,
+              border:
+                themeVariant === 'paper'
+                  ? '2px dashed #D6CBAE'
+                  : `1px solid ${theme.palette.mode === 'dark'
+                    ? alpha(theme.palette.common.white, 0.08)
+                    : alpha(theme.palette.common.black, 0.04)}`,
               '&:hover': {
-                backgroundColor: theme.palette.mode === 'dark'
-                  ? alpha(theme.palette.common.white, 0.12)
-                  : alpha(theme.palette.common.black, 0.06),
-                transform: 'translateY(-2px)',
-                boxShadow: theme.palette.mode === 'dark'
-                  ? `0 4px 12px ${alpha(theme.palette.common.black, 0.3)}`
-                  : `0 4px 12px ${alpha(theme.palette.common.black, 0.06)}`,
+                backgroundColor:
+                  themeVariant === 'dark'
+                    ? alpha(theme.palette.common.white, 0.12)
+                    : themeVariant === 'paper'
+                      ? alpha('#D6CBAE', 0.25)
+                      : alpha(theme.palette.common.black, 0.06),
+                transform: themeVariant === 'paper'
+                  ? 'translateY(-2px) rotate(0.5deg)'
+                  : 'translateY(-2px)',
+                boxShadow:
+                  themeVariant === 'paper'
+                    ? '0 4px 0 -2px rgba(0,0,0,0.1)'
+                    : theme.palette.mode === 'dark'
+                      ? `0 4px 12px ${alpha(theme.palette.common.black, 0.3)}`
+                      : `0 4px 12px ${alpha(theme.palette.common.black, 0.06)}`,
               },
+              transform: themeVariant === 'paper' ? 'rotate(-0.5deg)' : 'none',
             }}
           >
             <MenuRounded />
@@ -181,11 +238,19 @@ const Header = () => {
             >
               <Avatar
                 sx={{
-                  background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                  background:
+                    themeVariant === 'paper'
+                      ? '#FF6B6B'
+                      : `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
                   width: 32,
                   height: 32,
-                  boxShadow: `0 4px 12px ${alpha(theme.palette.primary.main, 0.3)}`,
+                  boxShadow:
+                    themeVariant === 'paper'
+                      ? '0 4px 0 -2px rgba(0,0,0,0.15)'
+                      : `0 4px 12px ${alpha(theme.palette.primary.main, 0.3)}`,
                   mr: 1.5,
+                  border: themeVariant === 'paper' ? '2px solid #D6CBAE' : 'none',
+                  transform: themeVariant === 'paper' ? 'rotate(-2deg)' : 'none',
                 }}
               >
                 <DiamondRounded sx={{ fontSize: 16, color: '#fff' }} />
@@ -198,9 +263,16 @@ const Header = () => {
               sx={{
                 fontWeight: 700,
                 letterSpacing: '-0.5px',
-                background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
+                ...(themeVariant === 'paper'
+                  ? {
+                      color: '#FF6B6B',
+                      fontFamily: '"Patrick Hand", "Just Me Again Down Here", cursive',
+                    }
+                  : {
+                      background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                    }),
               }}
             >
               InfraSphere
@@ -225,26 +297,41 @@ const Header = () => {
               sx={{
                 position: 'relative',
                 mr: 1,
-                backgroundColor: theme.palette.mode === 'dark'
-                  ? alpha(theme.palette.common.white, 0.06)
-                  : alpha(theme.palette.common.black, 0.03),
-                borderRadius: '14px',
+                backgroundColor:
+                  themeVariant === 'dark'
+                    ? alpha(theme.palette.common.white, 0.06)
+                    : themeVariant === 'paper'
+                      ? alpha('#D6CBAE', 0.15)
+                      : alpha(theme.palette.common.black, 0.03),
+                borderRadius: themeVariant === 'paper' ? '12px' : '14px',
                 padding: '10px',
                 transition: theme.transitions.create(['background-color', 'transform', 'box-shadow'], {
                   duration: theme.transitions.duration.shorter,
                 }),
-                border: `1px solid ${theme.palette.mode === 'dark'
-                  ? alpha(theme.palette.common.white, 0.08)
-                  : alpha(theme.palette.common.black, 0.04)}`,
+                border:
+                  themeVariant === 'paper'
+                    ? '2px dashed #D6CBAE'
+                    : `1px solid ${theme.palette.mode === 'dark'
+                      ? alpha(theme.palette.common.white, 0.08)
+                      : alpha(theme.palette.common.black, 0.04)}`,
                 '&:hover': {
-                  backgroundColor: theme.palette.mode === 'dark'
-                    ? alpha(theme.palette.common.white, 0.12)
-                    : alpha(theme.palette.common.black, 0.06),
-                  transform: 'translateY(-2px)',
-                  boxShadow: theme.palette.mode === 'dark'
-                    ? `0 4px 12px ${alpha(theme.palette.common.black, 0.3)}`
-                    : `0 4px 12px ${alpha(theme.palette.common.black, 0.06)}`,
+                  backgroundColor:
+                    themeVariant === 'dark'
+                      ? alpha(theme.palette.common.white, 0.12)
+                      : themeVariant === 'paper'
+                        ? alpha('#D6CBAE', 0.25)
+                        : alpha(theme.palette.common.black, 0.06),
+                  transform: themeVariant === 'paper'
+                    ? 'translateY(-2px) rotate(0.5deg)'
+                    : 'translateY(-2px)',
+                  boxShadow:
+                    themeVariant === 'paper'
+                      ? '0 4px 0 -2px rgba(0,0,0,0.1)'
+                      : theme.palette.mode === 'dark'
+                        ? `0 4px 12px ${alpha(theme.palette.common.black, 0.3)}`
+                        : `0 4px 12px ${alpha(theme.palette.common.black, 0.06)}`,
                 },
+                transform: themeVariant === 'paper' ? 'rotate(-0.5deg)' : 'none',
               }}
             >
               <Badge
@@ -272,41 +359,59 @@ const Header = () => {
             </IconButton>
           </Tooltip>
 
+          {/* Theme Selection Button */}
           <Tooltip
-            title={mode === 'dark' ? t('tooltip.lightMode') : t('tooltip.darkMode')}
+            title={t('tooltip.changeTheme')}
             TransitionComponent={Fade}
             TransitionProps={{ timeout: 600 }}
             arrow
           >
             <IconButton
               color="inherit"
-              onClick={toggleMode}
-              aria-label={mode === 'dark' ? 'switch to light mode' : 'switch to dark mode'}
+              onClick={handleThemeMenuOpen}
+              aria-label="change theme"
+              aria-controls="theme-menu"
+              aria-haspopup="true"
               sx={{
                 mx: 1,
-                backgroundColor: theme.palette.mode === 'dark'
-                  ? alpha(theme.palette.common.white, 0.06)
-                  : alpha(theme.palette.common.black, 0.03),
-                borderRadius: '14px',
+                backgroundColor:
+                  themeVariant === 'dark'
+                    ? alpha(theme.palette.common.white, 0.06)
+                    : themeVariant === 'paper'
+                      ? alpha('#D6CBAE', 0.15)
+                      : alpha(theme.palette.common.black, 0.03),
+                borderRadius: themeVariant === 'paper' ? '12px' : '14px',
                 padding: '10px',
                 transition: theme.transitions.create(['background-color', 'transform', 'box-shadow'], {
                   duration: theme.transitions.duration.shorter,
                 }),
-                border: `1px solid ${theme.palette.mode === 'dark'
-                  ? alpha(theme.palette.common.white, 0.08)
-                  : alpha(theme.palette.common.black, 0.04)}`,
+                border:
+                  themeVariant === 'paper'
+                    ? '2px dashed #D6CBAE'
+                    : `1px solid ${theme.palette.mode === 'dark'
+                      ? alpha(theme.palette.common.white, 0.08)
+                      : alpha(theme.palette.common.black, 0.04)}`,
                 '&:hover': {
-                  backgroundColor: theme.palette.mode === 'dark'
-                    ? alpha(theme.palette.common.white, 0.12)
-                    : alpha(theme.palette.common.black, 0.06),
-                  transform: 'translateY(-2px)',
-                  boxShadow: theme.palette.mode === 'dark'
-                    ? `0 4px 12px ${alpha(theme.palette.common.black, 0.3)}`
-                    : `0 4px 12px ${alpha(theme.palette.common.black, 0.06)}`,
+                  backgroundColor:
+                    themeVariant === 'dark'
+                      ? alpha(theme.palette.common.white, 0.12)
+                      : themeVariant === 'paper'
+                        ? alpha('#D6CBAE', 0.25)
+                        : alpha(theme.palette.common.black, 0.06),
+                  transform: themeVariant === 'paper'
+                    ? 'translateY(-2px) rotate(0.5deg)'
+                    : 'translateY(-2px)',
+                  boxShadow:
+                    themeVariant === 'paper'
+                      ? '0 4px 0 -2px rgba(0,0,0,0.1)'
+                      : theme.palette.mode === 'dark'
+                        ? `0 4px 12px ${alpha(theme.palette.common.black, 0.3)}`
+                        : `0 4px 12px ${alpha(theme.palette.common.black, 0.06)}`,
                 },
+                transform: themeVariant === 'paper' ? 'rotate(-0.5deg)' : 'none',
               }}
             >
-              {mode === 'dark' ? <Brightness7Rounded /> : <Brightness4Rounded />}
+              {getThemeIcon()}
             </IconButton>
           </Tooltip>
 
@@ -323,32 +428,161 @@ const Header = () => {
               aria-controls="language-menu"
               aria-haspopup="true"
               sx={{
-                backgroundColor: theme.palette.mode === 'dark'
-                  ? alpha(theme.palette.common.white, 0.06)
-                  : alpha(theme.palette.common.black, 0.03),
-                borderRadius: '14px',
+                backgroundColor:
+                  themeVariant === 'dark'
+                    ? alpha(theme.palette.common.white, 0.06)
+                    : themeVariant === 'paper'
+                      ? alpha('#D6CBAE', 0.15)
+                      : alpha(theme.palette.common.black, 0.03),
+                borderRadius: themeVariant === 'paper' ? '12px' : '14px',
                 padding: '10px',
                 transition: theme.transitions.create(['background-color', 'transform', 'box-shadow'], {
                   duration: theme.transitions.duration.shorter,
                 }),
-                border: `1px solid ${theme.palette.mode === 'dark'
-                  ? alpha(theme.palette.common.white, 0.08)
-                  : alpha(theme.palette.common.black, 0.04)}`,
+                border:
+                  themeVariant === 'paper'
+                    ? '2px dashed #D6CBAE'
+                    : `1px solid ${theme.palette.mode === 'dark'
+                      ? alpha(theme.palette.common.white, 0.08)
+                      : alpha(theme.palette.common.black, 0.04)}`,
                 '&:hover': {
-                  backgroundColor: theme.palette.mode === 'dark'
-                    ? alpha(theme.palette.common.white, 0.12)
-                    : alpha(theme.palette.common.black, 0.06),
-                  transform: 'translateY(-2px)',
-                  boxShadow: theme.palette.mode === 'dark'
-                    ? `0 4px 12px ${alpha(theme.palette.common.black, 0.3)}`
-                    : `0 4px 12px ${alpha(theme.palette.common.black, 0.06)}`,
+                  backgroundColor:
+                    themeVariant === 'dark'
+                      ? alpha(theme.palette.common.white, 0.12)
+                      : themeVariant === 'paper'
+                        ? alpha('#D6CBAE', 0.25)
+                        : alpha(theme.palette.common.black, 0.06),
+                  transform: themeVariant === 'paper'
+                    ? 'translateY(-2px) rotate(0.5deg)'
+                    : 'translateY(-2px)',
+                  boxShadow:
+                    themeVariant === 'paper'
+                      ? '0 4px 0 -2px rgba(0,0,0,0.1)'
+                      : theme.palette.mode === 'dark'
+                        ? `0 4px 12px ${alpha(theme.palette.common.black, 0.3)}`
+                        : `0 4px 12px ${alpha(theme.palette.common.black, 0.06)}`,
                 },
+                transform: themeVariant === 'paper' ? 'rotate(-0.5deg)' : 'none',
               }}
             >
               <TranslateRounded />
             </IconButton>
           </Tooltip>
         </Box>
+
+        {/* Theme Menu */}
+        <Menu
+          id="theme-menu"
+          anchorEl={themeMenu}
+          keepMounted
+          open={Boolean(themeMenu)}
+          onClose={handleThemeMenuClose}
+          PaperProps={{
+            sx: {
+              mt: 1.5,
+              borderRadius: '16px',
+              minWidth: '180px',
+              overflow: 'visible',
+              filter: 'drop-shadow(0 4px 24px rgba(0,0,0,0.08))',
+              border: themeVariant === 'paper'
+                ? '2px dashed #D6CBAE'
+                : `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+              '& .MuiMenuItem-root': {
+                borderRadius: '12px',
+                mx: 1,
+                my: 0.5,
+                px: 2,
+                py: 1.5,
+                fontSize: '0.9rem',
+                transition: 'all 0.2s',
+                fontFamily: themeVariant === 'paper' ? '"Comic Neue", "Marker Felt", "Neucha", cursive' : 'inherit',
+                '&:hover': {
+                  backgroundColor: themeVariant === 'paper'
+                    ? alpha('#FF6B6B', 0.08)
+                    : alpha(theme.palette.primary.main, 0.08),
+                  transform: themeVariant === 'paper'
+                    ? 'translateY(-2px) rotate(0.5deg)'
+                    : 'translateY(-2px)',
+                  boxShadow: themeVariant === 'paper'
+                    ? '0 4px 0 -2px rgba(0,0,0,0.1)'
+                    : `0 4px 12px ${alpha(theme.palette.common.black, 0.08)}`,
+                }
+              },
+              backdropFilter: 'blur(8px)',
+              backgroundColor: themeVariant === 'paper'
+                ? '#FFFBF0'
+                : theme.palette.mode === 'dark'
+                  ? alpha(theme.palette.background.paper, 0.8)
+                  : alpha(theme.palette.background.paper, 0.8),
+              '&:before': {
+                content: '""',
+                display: 'block',
+                position: 'absolute',
+                top: 0,
+                right: 20,
+                width: 12,
+                height: 12,
+                transform: 'translateY(-50%) rotate(45deg)',
+                backgroundColor: themeVariant === 'paper'
+                  ? '#FFFBF0'
+                  : theme.palette.background.paper,
+                borderLeft: themeVariant === 'paper'
+                  ? '2px dashed #D6CBAE'
+                  : `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+                borderTop: themeVariant === 'paper'
+                  ? '2px dashed #D6CBAE'
+                  : `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+                zIndex: 0,
+              },
+              transform: themeVariant === 'paper' ? 'rotate(-0.5deg)' : 'none',
+            }
+          }}
+          transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+          anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+        >
+          <MenuItem
+            onClick={() => changeTheme('light')}
+            selected={themeVariant === 'light'}
+          >
+            <ListItemIcon sx={{ minWidth: '36px' }}>
+              <LightModeRounded />
+            </ListItemIcon>
+            <ListItemText
+              primary={t('theme.light')}
+              primaryTypographyProps={{
+                fontWeight: themeVariant === 'light' ? 600 : 400
+              }}
+            />
+          </MenuItem>
+          <MenuItem
+            onClick={() => changeTheme('dark')}
+            selected={themeVariant === 'dark'}
+          >
+            <ListItemIcon sx={{ minWidth: '36px' }}>
+              <DarkModeRounded />
+            </ListItemIcon>
+            <ListItemText
+              primary={t('theme.dark')}
+              primaryTypographyProps={{
+                fontWeight: themeVariant === 'dark' ? 600 : 400
+              }}
+            />
+          </MenuItem>
+          <MenuItem
+            onClick={() => changeTheme('paper')}
+            selected={themeVariant === 'paper'}
+          >
+            <ListItemIcon sx={{ minWidth: '36px' }}>
+              <ColorLensRounded />
+            </ListItemIcon>
+            <ListItemText
+              primary={t('theme.paper')}
+              primaryTypographyProps={{
+                fontWeight: themeVariant === 'paper' ? 600 : 400
+              }}
+            />
+          </MenuItem>
+        </Menu>
 
         {/* Language Menu */}
         <Menu
@@ -364,7 +598,9 @@ const Header = () => {
               minWidth: '180px',
               overflow: 'visible',
               filter: 'drop-shadow(0 4px 24px rgba(0,0,0,0.08))',
-              border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+              border: themeVariant === 'paper'
+                ? '2px dashed #D6CBAE'
+                : `1px solid ${alpha(theme.palette.divider, 0.1)}`,
               '& .MuiMenuItem-root': {
                 borderRadius: '12px',
                 mx: 1,
@@ -373,16 +609,25 @@ const Header = () => {
                 py: 1.5,
                 fontSize: '0.9rem',
                 transition: 'all 0.2s',
+                fontFamily: themeVariant === 'paper' ? '"Comic Neue", "Marker Felt", "Neucha", cursive' : 'inherit',
                 '&:hover': {
-                  backgroundColor: alpha(theme.palette.primary.main, 0.08),
-                  transform: 'translateY(-2px)',
-                  boxShadow: `0 4px 12px ${alpha(theme.palette.common.black, 0.08)}`,
+                  backgroundColor: themeVariant === 'paper'
+                    ? alpha('#FF6B6B', 0.08)
+                    : alpha(theme.palette.primary.main, 0.08),
+                  transform: themeVariant === 'paper'
+                    ? 'translateY(-2px) rotate(0.5deg)'
+                    : 'translateY(-2px)',
+                  boxShadow: themeVariant === 'paper'
+                    ? '0 4px 0 -2px rgba(0,0,0,0.1)'
+                    : `0 4px 12px ${alpha(theme.palette.common.black, 0.08)}`,
                 }
               },
               backdropFilter: 'blur(8px)',
-              backgroundColor: theme.palette.mode === 'dark'
-                ? alpha(theme.palette.background.paper, 0.8)
-                : alpha(theme.palette.background.paper, 0.8),
+              backgroundColor: themeVariant === 'paper'
+                ? '#FFFBF0'
+                : theme.palette.mode === 'dark'
+                  ? alpha(theme.palette.background.paper, 0.8)
+                  : alpha(theme.palette.background.paper, 0.8),
               '&:before': {
                 content: '""',
                 display: 'block',
@@ -392,11 +637,18 @@ const Header = () => {
                 width: 12,
                 height: 12,
                 transform: 'translateY(-50%) rotate(45deg)',
-                backgroundColor: theme.palette.background.paper,
-                borderLeft: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-                borderTop: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+                backgroundColor: themeVariant === 'paper'
+                  ? '#FFFBF0'
+                  : theme.palette.background.paper,
+                borderLeft: themeVariant === 'paper'
+                  ? '2px dashed #D6CBAE'
+                  : `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+                borderTop: themeVariant === 'paper'
+                  ? '2px dashed #D6CBAE'
+                  : `1px solid ${alpha(theme.palette.divider, 0.1)}`,
                 zIndex: 0,
               },
+              transform: themeVariant === 'paper' ? 'rotate(-0.5deg)' : 'none',
             }
           }}
           transformOrigin={{ horizontal: 'right', vertical: 'top' }}
@@ -453,12 +705,18 @@ const Header = () => {
               maxHeight: 440,
               borderRadius: '16px',
               overflow: 'hidden',
-              boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
-              border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+              boxShadow: themeVariant === 'paper'
+                ? '0 8px 0 -4px rgba(0,0,0,0.1)'
+                : '0 10px 40px rgba(0,0,0,0.1)',
+              border: themeVariant === 'paper'
+                ? '2px dashed #D6CBAE'
+                : `1px solid ${alpha(theme.palette.divider, 0.1)}`,
               backdropFilter: 'blur(8px)',
-              backgroundColor: theme.palette.mode === 'dark'
-                ? alpha(theme.palette.background.paper, 0.8)
-                : alpha(theme.palette.background.paper, 0.8),
+              backgroundColor: themeVariant === 'paper'
+                ? '#FFFBF0'
+                : theme.palette.mode === 'dark'
+                  ? alpha(theme.palette.background.paper, 0.8)
+                  : alpha(theme.palette.background.paper, 0.8),
               '&:before': {
                 content: '""',
                 display: 'block',
@@ -468,11 +726,18 @@ const Header = () => {
                 width: 12,
                 height: 12,
                 transform: 'translateY(-50%) rotate(45deg)',
-                backgroundColor: theme.palette.background.paper,
-                borderLeft: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-                borderTop: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+                backgroundColor: themeVariant === 'paper'
+                  ? '#FFFBF0'
+                  : theme.palette.background.paper,
+                borderLeft: themeVariant === 'paper'
+                  ? '2px dashed #D6CBAE'
+                  : `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+                borderTop: themeVariant === 'paper'
+                  ? '2px dashed #D6CBAE'
+                  : `1px solid ${alpha(theme.palette.divider, 0.1)}`,
                 zIndex: 0,
               },
+              transform: themeVariant === 'paper' ? 'rotate(-0.5deg)' : 'none',
             }
           }}
         >
@@ -482,10 +747,16 @@ const Header = () => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              borderBottom: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+              borderBottom: themeVariant === 'paper'
+                ? '2px dashed #D6CBAE'
+                : `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+              fontFamily: themeVariant === 'paper' ? '"Patrick Hand", "Just Me Again Down Here", cursive' : 'inherit',
             }}
           >
-            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+            <Typography variant="h6" sx={{
+              fontWeight: 600,
+              fontFamily: themeVariant === 'paper' ? '"Patrick Hand", "Just Me Again Down Here", cursive' : 'inherit',
+            }}>
               {t('notifications.title')}
             </Typography>
             <Chip
@@ -497,20 +768,35 @@ const Header = () => {
                 minWidth: 30,
                 height: 24,
                 animation: activeAlerts.length > 0 ? 'pulse 2s infinite' : 'none',
+                fontFamily: themeVariant === 'paper' ? '"Comic Neue", "Marker Felt", "Neucha", cursive' : 'inherit',
+                ...(themeVariant === 'paper' && {
+                  border: '2px dashed #FFB8B8',
+                  background: alpha('#FF6B6B', 0.1),
+                  color: '#E74C3C',
+                }),
               }}
             />
           </Box>
 
           {loadingAlerts ? (
             <Box sx={{ p: 3, textAlign: 'center' }}>
-              <Typography variant="body2" color="textSecondary">
+              <Typography variant="body2" color="textSecondary" sx={{
+                fontFamily: themeVariant === 'paper' ? '"Comic Neue", "Marker Felt", "Neucha", cursive' : 'inherit',
+              }}>
                 {t('status.loading')}
               </Typography>
             </Box>
           ) : activeAlerts.length === 0 ? (
             <Box sx={{ p: 3, textAlign: 'center' }}>
-              <CheckCircleOutlineRounded sx={{ fontSize: 40, color: theme.palette.success.main, mb: 1, opacity: 0.8 }} />
-              <Typography variant="body2" color="textSecondary">
+              <CheckCircleOutlineRounded sx={{
+                fontSize: 40,
+                color: theme.palette.success.main,
+                mb: 1,
+                opacity: 0.8
+              }} />
+              <Typography variant="body2" color="textSecondary" sx={{
+                fontFamily: themeVariant === 'paper' ? '"Comic Neue", "Marker Felt", "Neucha", cursive' : 'inherit',
+              }}>
                 {t('sensors:noActiveAlerts')}
               </Typography>
             </Box>
@@ -527,18 +813,31 @@ const Header = () => {
                       transition: 'all 0.2s',
                       cursor: 'pointer',
                       '&:hover': {
-                        backgroundColor: alpha(theme.palette.primary.main, 0.06),
-                        transform: 'translateY(-2px)',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                        backgroundColor: themeVariant === 'paper'
+                          ? alpha('#FF6B6B', 0.06)
+                          : alpha(theme.palette.primary.main, 0.06),
+                        transform: themeVariant === 'paper'
+                          ? 'translateY(-2px) rotate(0.5deg)'
+                          : 'translateY(-2px)',
+                        boxShadow: themeVariant === 'paper'
+                          ? '0 4px 0 -2px rgba(0,0,0,0.1)'
+                          : '0 4px 12px rgba(0,0,0,0.05)',
                       },
                       mb: 0.5,
+                      ...(themeVariant === 'paper' && {
+                        transform: 'rotate(-0.5deg)',
+                      }),
                     }}
                   >
                     <ListItemAvatar>
                       <Avatar
                         sx={{
-                          backgroundColor: alpha(getAlertColor(alert.level), 0.1),
+                          backgroundColor: alpha(getAlertColor(alert.level), themeVariant === 'paper' ? 0.15 : 0.1),
                           color: getAlertColor(alert.level),
+                          ...(themeVariant === 'paper' && {
+                            border: '2px solid #D6CBAE',
+                            transform: 'rotate(-2deg)',
+                          }),
                         }}
                       >
                         {getAlertIcon(alert.level)}
@@ -547,10 +846,16 @@ const Header = () => {
                     <ListItemText
                       primary={
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 0.5 }}>
-                          <Typography variant="subtitle2" sx={{ fontWeight: 600, pr: 2 }}>
+                          <Typography variant="subtitle2" sx={{
+                            fontWeight: 600,
+                            pr: 2,
+                            fontFamily: themeVariant === 'paper' ? '"Patrick Hand", "Just Me Again Down Here", cursive' : 'inherit',
+                          }}>
                             {alert.status === AlertStatus.NEW ? 'New Alert' : 'Ongoing Alert'}
                           </Typography>
-                          <Typography variant="caption" color="textSecondary">
+                          <Typography variant="caption" color="textSecondary" sx={{
+                            fontFamily: themeVariant === 'paper' ? '"Comic Neue", "Marker Felt", "Neucha", cursive' : 'inherit',
+                          }}>
                             {formatTimeSince(alert.last_checked_at)}
                           </Typography>
                         </Box>
@@ -567,6 +872,7 @@ const Header = () => {
                               display: '-webkit-box',
                               WebkitLineClamp: 2,
                               WebkitBoxOrient: 'vertical',
+                              fontFamily: themeVariant === 'paper' ? '"Comic Neue", "Marker Felt", "Neucha", cursive' : 'inherit',
                             }}
                           >
                             {alert.message}
@@ -580,12 +886,17 @@ const Header = () => {
                                 fontSize: '0.75rem',
                                 bgcolor: alpha(getAlertColor(alert.level), 0.1),
                                 color: getAlertColor(alert.level),
-                                fontWeight: 500
+                                fontWeight: 500,
+                                fontFamily: themeVariant === 'paper' ? '"Comic Neue", "Marker Felt", "Neucha", cursive' : 'inherit',
+                                ...(themeVariant === 'paper' && {
+                                  border: '2px dashed',
+                                  borderColor: alpha(getAlertColor(alert.level), 0.3),
+                                }),
                               }}
                             />
                             <Button
                               size="small"
-                              variant="outlined"
+                              variant={themeVariant === 'paper' ? 'outlined' : 'contained'}
                               color="primary"
                               onClick={(e) => handleResolveAlert(alert.id, e)}
                               sx={{
@@ -593,6 +904,14 @@ const Header = () => {
                                 fontSize: '0.75rem',
                                 px: 1.5,
                                 py: 0.25,
+                                fontFamily: themeVariant === 'paper' ? '"Patrick Hand", "Just Me Again Down Here", cursive' : 'inherit',
+                                ...(themeVariant === 'paper' && {
+                                  borderStyle: 'dashed',
+                                  transform: 'rotate(-0.5deg)',
+                                  '&:hover': {
+                                    transform: 'rotate(0.5deg) translateY(-2px)',
+                                  },
+                                }),
                               }}
                             >
                               {t('sensors:resolveAlert')}
@@ -602,7 +921,12 @@ const Header = () => {
                       }
                     />
                   </ListItem>
-                  {index < activeAlerts.length - 1 && <Divider variant="inset" component="li" sx={{ opacity: 0.6 }} />}
+                  {index < activeAlerts.length - 1 && <Divider variant="inset" component="li" sx={{
+                    opacity: 0.6,
+                    ...(themeVariant === 'paper' && {
+                      borderStyle: 'dashed',
+                    }),
+                  }} />}
                 </React.Fragment>
               ))}
             </List>
@@ -611,7 +935,9 @@ const Header = () => {
           <Box
             sx={{
               p: 2,
-              borderTop: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+              borderTop: themeVariant === 'paper'
+                ? '2px dashed #D6CBAE'
+                : `1px solid ${alpha(theme.palette.divider, 0.1)}`,
               textAlign: 'center',
               bgcolor: alpha(theme.palette.background.default, 0.5),
             }}
@@ -623,7 +949,18 @@ const Header = () => {
               component="a"
               href="/sensors"
               onClick={handleNotificationMenuClose}
-              sx={{ borderRadius: '10px', fontWeight: 600, textTransform: 'none' }}
+              sx={{
+                borderRadius: '10px',
+                fontWeight: 600,
+                textTransform: 'none',
+                fontFamily: themeVariant === 'paper' ? '"Patrick Hand", "Just Me Again Down Here", cursive' : 'inherit',
+                ...(themeVariant === 'paper' && {
+                  transform: 'rotate(-0.5deg)',
+                  '&:hover': {
+                    transform: 'rotate(0.5deg) translateY(-2px)',
+                  },
+                }),
+              }}
             >
               {t('notifications.viewAll')}
             </Button>

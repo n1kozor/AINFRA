@@ -1,41 +1,71 @@
+// src/context/ThemeContext.tsx
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { ThemeProvider as MuiThemeProvider, PaletteMode } from '@mui/material';
-import { getTheme } from '../theme';
+import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
+import { getTheme, ThemeVariant } from '../theme';
 
-type ThemeContextType = {
-  mode: PaletteMode;
+interface ThemeContextType {
+  themeVariant: ThemeVariant;
+  mode: 'light' | 'dark';
   toggleMode: () => void;
-};
+  setThemeVariant: (variant: ThemeVariant) => void;
+}
 
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+const ThemeContext = createContext<ThemeContextType>({
+  themeVariant: 'light',
+  mode: 'light',
+  toggleMode: () => {},
+  setThemeVariant: () => {},
+});
 
-export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  const [mode, setMode] = useState<PaletteMode>(() => {
-    const savedMode = localStorage.getItem('themeMode');
-    return (savedMode as PaletteMode) || 'light';
-  });
+export const useThemeContext = () => useContext(ThemeContext);
 
-  const toggleMode = () => {
-    setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
-  };
+interface ThemeProviderProps {
+  children: ReactNode;
+}
+
+export const ThemeProvider = ({ children }: ThemeProviderProps) => {
+  const [themeVariant, setThemeVariant] = useState<ThemeVariant>('light');
+
+  // Determine the PaletteMode based on the themeVariant
+  const mode = themeVariant === 'paper' ? 'light' : themeVariant as 'light' | 'dark';
 
   useEffect(() => {
-    localStorage.setItem('themeMode', mode);
-  }, [mode]);
+    // Check for stored theme
+    const storedTheme = localStorage.getItem('themeVariant') as ThemeVariant | null;
+    if (storedTheme && ['light', 'dark', 'paper'].includes(storedTheme)) {
+      setThemeVariant(storedTheme);
+    }
+  }, []);
 
-  const theme = getTheme(mode);
+  const toggleMode = () => {
+    const newThemeVariant: ThemeVariant =
+      themeVariant === 'light'
+        ? 'dark'
+        : themeVariant === 'dark'
+          ? 'paper'
+          : 'light';
+
+    setThemeVariant(newThemeVariant);
+    localStorage.setItem('themeVariant', newThemeVariant);
+  };
+
+  const handleSetThemeVariant = (variant: ThemeVariant) => {
+    setThemeVariant(variant);
+    localStorage.setItem('themeVariant', variant);
+  };
+
+  const theme = getTheme(themeVariant);
 
   return (
-    <ThemeContext.Provider value={{ mode, toggleMode }}>
-      <MuiThemeProvider theme={theme}>{children}</MuiThemeProvider>
+    <ThemeContext.Provider value={{
+      themeVariant,
+      mode,
+      toggleMode,
+      setThemeVariant: handleSetThemeVariant,
+    }}>
+      <MuiThemeProvider theme={theme}>
+        {children}
+      </MuiThemeProvider>
     </ThemeContext.Provider>
   );
-};
-
-export const useThemeContext = () => {
-  const context = useContext(ThemeContext);
-  if (context === undefined) {
-    throw new Error('useThemeContext must be used within a ThemeProvider');
-  }
-  return context;
 };
