@@ -18,8 +18,6 @@ import { useTranslation } from 'react-i18next';
 import {
   NavigateNextRounded,
   InfoOutlined,
-  BookmarkBorderRounded,
-  ShareRounded
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 
@@ -39,7 +37,7 @@ const PageHeader = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(3),
 }));
 
-const PageContent = styled(motion.div)(({ theme }) => ({
+const PageContent = styled(motion.div)(() => ({
   width: '100%',
   minHeight: 'calc(100vh - 180px)',
   position: 'relative',
@@ -171,10 +169,11 @@ const PageContainer = ({
                     justifyContent: 'center',
                     width: 50,
                     height: 50,
-                    borderRadius: '16px',
-                    background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.12)}, ${alpha(theme.palette.secondary.main, 0.12)})`,
-                    boxShadow: `0 4px 20px ${alpha(theme.palette.primary.main, 0.15)}`,
+                    borderRadius: theme.shape.borderRadius * 1.5,
+                    background: alpha(theme.palette.primary.main, 0.12),
+                    boxShadow: `0 4px 16px ${alpha(theme.palette.primary.main, 0.15)}`,
                     color: theme.palette.primary.main,
+                    border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
                   }}
                 >
                   {icon}
@@ -190,9 +189,6 @@ const PageContainer = ({
                     letterSpacing: '-0.5px',
                     fontSize: { xs: '1.75rem', sm: '2rem' },
                     lineHeight: 1.2,
-                    background: `linear-gradient(135deg, ${theme.palette.text.primary}, ${alpha(theme.palette.text.primary, 0.7)})`,
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
                   }}
                 >
                   {title}
@@ -223,7 +219,7 @@ const PageContainer = ({
                     label={tag}
                     size="small"
                     sx={{
-                      borderRadius: '8px',
+                      borderRadius: theme.shape.borderRadius,
                       backgroundColor: alpha(theme.palette.primary.main, 0.1),
                       color: theme.palette.primary.main,
                       fontWeight: 500,
@@ -257,7 +253,7 @@ const PageContainer = ({
                     sx={{
                       backgroundColor: alpha(theme.palette.info.main, 0.1),
                       color: theme.palette.info.main,
-                      borderRadius: '10px',
+                      borderRadius: theme.shape.borderRadius,
                       '&:hover': {
                         backgroundColor: alpha(theme.palette.info.main, 0.2),
                       }
@@ -267,10 +263,6 @@ const PageContainer = ({
                   </IconButton>
                 </Tooltip>
               )}
-
-
-
-
 
               <Divider orientation="vertical" flexItem sx={{
                 mx: 1,

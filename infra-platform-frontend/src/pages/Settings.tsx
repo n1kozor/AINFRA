@@ -1,23 +1,13 @@
 // src/pages/Settings.tsx
 import React from 'react';
-import { Box, Grid, Typography } from '@mui/material';
+import { Grid } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import PageContainer from '../components/common/PageContainer';
-import ExactCard from '../components/settingspage/ExactCard';
-import { useThemeContext } from '../context/ThemeContext'; // Használjuk a hookot a közvetlen Context helyett
+import AppearanceSettings from '../components/settingspage/AppearanceSettings';
+import LanguageSettings from '../components/settingspage/LanguageSettings';
 
 const Settings: React.FC = () => {
   const { t } = useTranslation(['settings', 'common']);
-  const { mode, toggleMode } = useThemeContext(); // Használjuk a hookot
-  const { i18n } = useTranslation();
-
-  const handleThemeToggle = () => {
-    toggleMode();
-  };
-
-  const handleLanguageChange = (lang: string) => {
-    i18n.changeLanguage(lang);
-  };
 
   return (
     <PageContainer
@@ -27,27 +17,13 @@ const Settings: React.FC = () => {
         { text: t('common:navigation.settings') },
       ]}
     >
-
-
-      <Grid container spacing={3} sx={{ width: '100%' }}>
-        <Grid item xs={12} md={6} sx={{ width: '100%' }}>
-          <ExactCard
-            type="appearance"
-            mode={mode}
-            onToggleTheme={handleThemeToggle}
-            currentLanguage=""
-            onLanguageChange={() => {}}
-          />
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={6}>
+          <AppearanceSettings />
         </Grid>
 
-        <Grid item xs={12} md={6} sx={{ width: '100%' }}>
-          <ExactCard
-            type="language"
-            mode=""
-            onToggleTheme={() => {}}
-            currentLanguage={i18n.language}
-            onLanguageChange={handleLanguageChange}
-          />
+        <Grid item xs={12} md={6}>
+          <LanguageSettings />
         </Grid>
       </Grid>
     </PageContainer>

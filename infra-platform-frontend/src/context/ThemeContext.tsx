@@ -27,13 +27,20 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
   const [themeVariant, setThemeVariant] = useState<ThemeVariant>('light');
 
   // Determine the PaletteMode based on the themeVariant
-  const mode = themeVariant === 'paper' ? 'light' : themeVariant as 'light' | 'dark';
+  const mode = ['paper', 'windows31'].includes(themeVariant) ? 'light' : themeVariant as 'light' | 'dark';
 
   useEffect(() => {
     // Check for stored theme
     const storedTheme = localStorage.getItem('themeVariant') as ThemeVariant | null;
-    if (storedTheme && ['light', 'dark', 'paper'].includes(storedTheme)) {
+    if (storedTheme && ['light', 'dark', 'paper', 'windows31'].includes(storedTheme)) {
       setThemeVariant(storedTheme);
+    } else {
+      // Optional: Check for user's system preference if no theme is stored
+      const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (prefersDarkMode) {
+        setThemeVariant('dark');
+        localStorage.setItem('themeVariant', 'dark');
+      }
     }
   }, []);
 
@@ -43,7 +50,9 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
         ? 'dark'
         : themeVariant === 'dark'
           ? 'paper'
-          : 'light';
+          : themeVariant === 'paper'
+            ? 'windows31'
+            : 'light';
 
     setThemeVariant(newThemeVariant);
     localStorage.setItem('themeVariant', newThemeVariant);
@@ -53,6 +62,19 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
     setThemeVariant(variant);
     localStorage.setItem('themeVariant', variant);
   };
+
+  // Apply Windows 3.1 specific body class if applicable
+  useEffect(() => {
+    if (themeVariant === 'windows31') {
+      document.body.classList.add('windows31-theme');
+    } else {
+      document.body.classList.remove('windows31-theme');
+    }
+
+    return () => {
+      document.body.classList.remove('windows31-theme');
+    };
+  }, [themeVariant]);
 
   const theme = getTheme(themeVariant);
 

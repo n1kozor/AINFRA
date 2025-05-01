@@ -39,11 +39,11 @@ const LanguageSettings: React.FC = () => {
     >
       <Box sx={{
         width: '100%',
-        height: '100px', // FIXED HEIGHT - SAME AS APPEARANCE CARD
-        p: 2,
-        borderRadius: '8px',
+        p: theme.spacing(2),
+        borderRadius: "20px",
         bgcolor: alpha(theme.palette.info.main, 0.06),
         border: `1px solid ${alpha(theme.palette.info.main, 0.1)}`,
+        mb: theme.spacing(2),
       }}>
         <RadioGroup
           value={currentLanguage}
@@ -55,14 +55,14 @@ const LanguageSettings: React.FC = () => {
               control={<Radio color="info" />}
               label={
                 <Stack direction="row" spacing={1} alignItems="center">
-                  <span style={{ fontSize: '1.2rem' }}>🇬🇧</span>
+                  <span role="img" aria-label="English">🇬🇧</span>
                   <span>{t('settings:language.english')}</span>
                 </Stack>
               }
               sx={{
                 p: 0.5,
                 ml: 0,
-                borderRadius: '4px',
+                borderRadius: "20px",
               }}
             />
             <FormControlLabel
@@ -70,30 +70,26 @@ const LanguageSettings: React.FC = () => {
               control={<Radio color="info" />}
               label={
                 <Stack direction="row" spacing={1} alignItems="center">
-                  <span style={{ fontSize: '1.2rem' }}>🇭🇺</span>
+                  <span role="img" aria-label="Hungarian">🇭🇺</span>
                   <span>{t('settings:language.hungarian')}</span>
                 </Stack>
               }
               sx={{
                 p: 0.5,
                 ml: 0,
-                borderRadius: '4px',
+                borderRadius: "20px",
               }}
             />
           </Stack>
         </RadioGroup>
       </Box>
 
-      <Box sx={{ mt: 'auto', pt: 2 }}>
+      <Box sx={{ mt: 'auto' }}>
         <Button
           variant="contained"
           color="info"
           startIcon={<SaveIcon />}
-          sx={{
-            width: '100%',
-            height: '44px', // FIXED HEIGHT - SAME AS APPEARANCE CARD
-            borderRadius: '8px',
-          }}
+          fullWidth
           onClick={handleSaveLanguage}
         >
           {t('settings:buttons.saveLanguage')}
