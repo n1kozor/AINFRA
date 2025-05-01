@@ -63,7 +63,10 @@ app.add_middleware(
 )
 
 # Add MCP without customization
-mcp = FastApiMCP(app)
+mcp = FastApiMCP(app,
+                 exclude_operations=["delete_device", "create_new_device", "update_device",
+                                     "create_new_plugin", "update_plugin", "delete_plugin",
+                                     "update_sensor", "delete_sensor", "create_sensor"])
 mcp.mount()
 
 

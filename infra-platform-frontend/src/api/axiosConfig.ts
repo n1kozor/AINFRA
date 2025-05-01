@@ -3,6 +3,7 @@ import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
 const AVAILABILITY_API_URL = import.meta.env.VITE_AVAILABILITY_API_URL || 'http://localhost:8001';
+const LLM_API_URL = import.meta.env.VITE_LLM_API_URL || 'http://localhost:8002';
 
 // Create axios instance with base configuration
 export const axiosInstance = axios.create({
@@ -14,6 +15,13 @@ export const axiosInstance = axios.create({
 
 export const availabilityAxios = axios.create({
   baseURL: AVAILABILITY_API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+export const llmAxios = axios.create({
+  baseURL: LLM_API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -37,6 +45,16 @@ availabilityAxios.interceptors.response.use(
   (error) => {
     if (import.meta.env.DEV) {
       console.error('Availability API Error:', error);
+    }
+    return Promise.reject(error);
+  }
+);
+
+llmAxios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (import.meta.env.DEV) {
+      console.error('LLM API Error:', error);
     }
     return Promise.reject(error);
   }

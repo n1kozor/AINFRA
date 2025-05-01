@@ -5,7 +5,8 @@ from contextlib import asynccontextmanager
 from sqlalchemy.orm import Session
 import asyncio
 import time
-
+from sqlalchemy import func
+from datetime import datetime, timedelta
 from app.models.database import get_db, Base, engine
 from app.models.models import Device, AvailabilityCheck, MonitoringSettings
 from app.schemas.schemas import (
@@ -373,3 +374,120 @@ async def update_availability_settings(
         "message": f"Settings updated. New check interval: {settings.check_interval_minutes} minutes",
         "check_interval_minutes": settings.check_interval_minutes
     }
+
+
+@app.get("/stats")
+async def get_monitoring_statistics(db: Session = Depends(get_db)):
+    """
+    Get comprehensive monitoring statistics and system overview.
+
+    Returns aggregated data about device availability, response times,
+    errors, and historical trends.
+    """
+    try:
+        # Get total devices count
+        total_devices = db.query(func.count(Device.id)).scalar()
+        active_devices = db.query(func.count(Device.id)).filter(Device.is_active == True).scalar()
+
+        # Get latest availability data
+        latest_availability = await AvailabilityService.get_latest_availability(db)
+
+        # Calculate current availability metrics
+        devices_up = sum(1 for device in latest_availability if device["is_available"])
+        devices_down = sum(1 for device in latest_availability if not device["is_available"])
+
+        # Calculate availability percentage
+        availability_rate = (devices_up / len(latest_availability)) * 100 if latest_availability else 0
+
+        # Get average response time for available devices
+        response_times = [device["response_time"] for device in latest_availability
+                          if device["is_available"] and device["response_time"]]
+        avg_response_time = sum(response_times) / len(response_times) if response_times else 0
+
+        # Get check methods distribution
+        check_methods = {}
+        for device in latest_availability:
+            method = device["check_method"]
+            check_methods[method] = check_methods.get(method, 0) + 1
+
+        # Get recent errors (last 24 hours)
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        recent_errors = db.query(AvailabilityCheck).filter(
+            AvailabilityCheck.is_available == False,
+            AvailabilityCheck.timestamp >= yesterday,
+            AvailabilityCheck.error_message != None
+        ).order_by(AvailabilityCheck.timestamp.desc()).limit(50).all()
+
+        error_summary = []
+        for error in recent_errors:
+            device = db.query(Device).filter(Device.id == error.device_id).first()
+            if device:
+                error_summary.append({
+                    "device_id": error.device_id,
+                    "device_name": device.name,
+                    "error_message": error.error_message,
+                    "timestamp": error.timestamp.isoformat()
+                })
+
+        # Calculate 24-hour availability trend (hourly)
+        hourly_stats = []
+        for hour_offset in range(24, -1, -1):
+            hour_start = datetime.utcnow() - timedelta(hours=hour_offset)
+            hour_end = hour_start + timedelta(hours=1)
+
+            checks = db.query(AvailabilityCheck).filter(
+                AvailabilityCheck.timestamp >= hour_start,
+                AvailabilityCheck.timestamp < hour_end
+            ).all()
+
+            available_count = sum(1 for check in checks if check.is_available)
+            total_count = len(checks)
+
+            hourly_stats.append({
+                "hour": (datetime.utcnow() - timedelta(hours=hour_offset)).strftime("%Y-%m-%d %H:00"),
+                "availability_rate": (available_count / total_count * 100) if total_count > 0 else 0,
+                "check_count": total_count
+            })
+
+        # Get monitoring settings
+        interval = AvailabilityService.get_check_interval(db)
+
+        # Check if any background tasks are running
+        async with check_results_lock:
+            has_running_checks = background_check_status["in_progress"]
+
+        # Prepare the response
+        return {
+            "system_status": {
+                "timestamp": datetime.utcnow().isoformat(),
+                "service_name": "Availability Monitoring Microservice",
+                "version": "1.0.0",
+                "background_checks_running": has_running_checks,
+                "check_interval_minutes": interval
+            },
+            "device_summary": {
+                "total_devices": total_devices,
+                "active_devices": active_devices,
+                "inactive_devices": total_devices - active_devices
+            },
+            "availability_summary": {
+                "devices_available": devices_up,
+                "devices_unavailable": devices_down,
+                "availability_rate": round(availability_rate, 2),
+                "avg_response_time_ms": round(avg_response_time, 2) if avg_response_time else None
+            },
+            "check_methods": check_methods,
+            "hourly_trend": hourly_stats,
+            "recent_errors": error_summary,
+            "top_slowest_devices": sorted(
+                [d for d in latest_availability if d["is_available"] and d["response_time"]],
+                key=lambda x: x["response_time"],
+                reverse=True
+            )[:5]
+        }
+    except Exception as e:
+        print(f"Error generating monitoring statistics: {str(e)}")
+        return {
+            "error": f"Failed to generate statistics: {str(e)}",
+            "timestamp": datetime.utcnow().isoformat()
+        }

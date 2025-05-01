@@ -144,7 +144,7 @@ const DevicesPage = () => {
       }
     >
       {/* Main content container */}
-      <Box>
+      <Box sx={{ position: 'relative', overflow: 'visible' }}>
         {/* Devices display */}
         <AnimatePresence mode="wait">
           {isLoading ? (
@@ -161,7 +161,7 @@ const DevicesPage = () => {
           ) : (
             <>
               {devices && devices.length > 0 ? (
-                <Grid container spacing={3}>
+                <Grid container spacing={4} sx={{ mt: 1, overflow: 'visible' }}>
                   {devices.map((device) => (
                     <Grid
                       item
@@ -170,6 +170,7 @@ const DevicesPage = () => {
                       md={4}
                       lg={3}
                       key={device.id}
+                      sx={{ overflow: 'visible' }} // Important to prevent clipping
                     >
                       <DeviceCard device={device} />
                     </Grid>

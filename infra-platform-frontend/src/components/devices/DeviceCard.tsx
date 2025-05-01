@@ -10,6 +10,8 @@ import {
   Avatar,
   Divider,
   ButtonBase,
+  IconButton,
+  Badge,
 } from '@mui/material';
 import {
   ComputerRounded as StandardIcon,
@@ -22,6 +24,7 @@ import {
   LaptopMacRounded as MacOSIcon,
   LaptopWindowsRounded as WindowsIcon,
   LaptopRounded as LinuxIcon,
+  ChatRounded as ChatIcon,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -29,6 +32,7 @@ import { Device } from '../../types/device';
 import { formatDistanceToNow } from 'date-fns';
 import { motion } from 'framer-motion';
 import { availabilityApi } from '../../api/availability';
+import DeviceChatModal from '../chat/DeviceChatModal';
 
 interface DeviceCardProps {
   device: Device;
@@ -44,6 +48,7 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ device }) => {
   const navigate = useNavigate();
   const theme = useTheme();
   const [isAvailable, setIsAvailable] = useState<boolean>(false);
+  const [chatOpen, setChatOpen] = useState<boolean>(false);
 
   const isStandard = device.type === 'standard';
 
@@ -74,6 +79,12 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ device }) => {
   // Navigate to device details
   const handleCardClick = () => {
     navigate(`/devices/${device.id}`);
+  };
+
+  // Open chat modal
+  const handleChatClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent triggering card click
+    setChatOpen(true);
   };
 
   // Check device availability every 5 seconds
@@ -126,11 +137,39 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ device }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
+      style={{ position: 'relative', margin: '8px' }} // Added margin and relative positioning
     >
+      {/* Chat Button - Positioned relative to this container instead of the card */}
+      <IconButton
+        onClick={handleChatClick}
+        size="small"
+        aria-label="Chat with device"
+        sx={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          zIndex: 20, // Increased z-index
+          backgroundColor: alpha(colorScheme.main, 0.9),
+          color: '#fff',
+          width: 40,
+          height: 40,
+          transform: 'translate(8px, -8px)', // Adjusted positioning
+          boxShadow: `0 4px 12px ${alpha(colorScheme.main, 0.4)}`,
+          border: `2px solid ${theme.palette.background.default}`,
+          transition: 'all 0.3s',
+          '&:hover': {
+            backgroundColor: colorScheme.main,
+            transform: 'translate(8px, -8px) scale(1.1)',
+          },
+        }}
+      >
+        <ChatIcon fontSize="small" />
+      </IconButton>
+
       <Card
         elevation={0}
         sx={{
-          height: 360, // Increased height to ensure button is visible
+          height: 360,
           width: '100%',
           display: 'flex',
           flexDirection: 'column',
@@ -143,6 +182,7 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ device }) => {
             boxShadow: `0 8px 25px ${alpha(colorScheme.main, 0.2)}`,
             borderColor: alpha(colorScheme.main, 0.3),
           },
+          position: 'relative', // Added for absolute positioning within card
         }}
       >
         {/* Header section */}
@@ -349,6 +389,15 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ device }) => {
           </ButtonBase>
         </Box>
       </Card>
+
+      {/* Chat Modal */}
+      <DeviceChatModal
+        open={chatOpen}
+        onClose={() => setChatOpen(false)}
+        deviceId={device.id.toString()}
+        deviceName={device.name}
+        colorScheme={colorScheme}
+      />
     </motion.div>
   );
 };

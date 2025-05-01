@@ -10,8 +10,6 @@ from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
-
-
 app = FastAPI(
     title="AI Report Generator Service",
     description="Microservice for generating AI-powered reports about infrastructure",
@@ -29,8 +27,13 @@ app.add_middleware(
 
 class ReportRequest(BaseModel):
     prompt: str
-    target_server: str = None
+    target_device_id: str = None
+    target_device_name: str = None
     main_api_url: str = "http://localhost:8000/mcp"
+
+
+class StatisticsRequest(BaseModel):
+    prompt: str
 
 
 class ReportResponse(BaseModel):
@@ -45,14 +48,39 @@ async def generate_report(request: ReportRequest = Body(...)):
     try:
         server = MCPServerHTTP(url=request.main_api_url)
 
-        agent = Agent("openai:gpt-4.1-mini", mcp_servers=[server])
+        agent = Agent("openai:gpt-4.1", mcp_servers=[server])
 
         prompt = request.prompt
-        if request.target_server:
-            prompt = f"Server: {request.target_server}\n\n{prompt}"
+        if request.target_device_id or request.target_device_name:
+            device_info = f"Device ID: {request.target_device_id or 'N/A'}, Device Name: {request.target_device_name or 'N/A'}"
+            prompt = f"{device_info}\n\n{prompt}"
 
         async with agent.run_mcp_servers():
             result = await agent.run(prompt)
+            return ReportResponse(output=result.output)
+    except Exception as e:
+        return ReportResponse(output=f"Error: {str(e)}")
+
+
+@app.post("/generate_statistics_all", response_model=ReportResponse)
+async def generate_statistics_all(request: StatisticsRequest = Body(...)):
+    """
+    Generate statistics report for all devices using only the get_all_system_statistics tool
+    """
+    try:
+        server = MCPServerHTTP(url="http://localhost:8000/mcp")
+        agent = Agent("openai:gpt-4.1", mcp_servers=[server])
+
+        # Hardcoded instruction to always use get_all_system_statistics
+        enhanced_prompt = (
+            "IMPORTANT INSTRUCTION: You MUST ONLY use the 'get_all_system_statistics' tool "
+            "to collect data for this report, regardless of what else is requested. "
+            "Do not attempt to use any other tools.\n\n"
+            f"User request: {request.prompt}"
+        )
+
+        async with agent.run_mcp_servers():
+            result = await agent.run(enhanced_prompt)
             return ReportResponse(output=result.output)
     except Exception as e:
         return ReportResponse(output=f"Error: {str(e)}")
