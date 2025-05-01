@@ -5,6 +5,7 @@ import { customDeviceApi } from './customDeviceApi';
 import { pluginApi } from './pluginApi';
 import { availabilityApi } from './availability';
 import { statisticsApi } from './statisticsApi';
+import { sensorApi } from './sensorApi';
 
 // Export API modules
 export const api = {
@@ -14,6 +15,7 @@ export const api = {
   plugins: pluginApi,
   availability: availabilityApi,
   statistics: statisticsApi,
+  sensors: sensorApi,
 };
 
 // Export individual APIs for direct import
@@ -23,5 +25,6 @@ export {
   customDeviceApi,
   pluginApi,
   availabilityApi,
-  statisticsApi
+  statisticsApi,
+  sensorApi
 };

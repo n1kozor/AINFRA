@@ -239,7 +239,7 @@
   "nameHint": "A unique name to identify this device",
   "ipAddressHint": "IP address or hostname to connect to this device",
   "descriptionHint": "Optional description to provide additional information",
-  "hostnameHint": "Hostname or IP to connect via SSH",
+  "hostnameHint": "IP address",
   "usernameHint": "SSH username for authentication",
   "passwordHint": "SSH password for authentication",
   "portHint": "SSH port (default: 22)",

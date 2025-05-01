@@ -1,3 +1,4 @@
+# app/models/sensor.py
 from sqlalchemy import Column, Integer, String, ForeignKey, Enum, DateTime, Boolean, Text, JSON, Float
 from sqlalchemy.orm import relationship
 from datetime import datetime
@@ -11,6 +12,12 @@ class AlertLevel(str, enum.Enum):
     CRITICAL = "critical"
 
 
+class AlertStatus(str, enum.Enum):
+    NEW = "new"
+    ONGOING = "ongoing"
+    RESOLVED = "resolved"
+
+
 class Sensor(Base):
     __tablename__ = "sensors"
 
@@ -18,7 +25,7 @@ class Sensor(Base):
     name = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
     device_id = Column(Integer, ForeignKey("devices.id"))
-    metric_key = Column(String(255), nullable=False)  # A monitorozott metrika azonosítója
+    metric_key = Column(String(255), nullable=False)
     alert_condition = Column(String(255), nullable=False)  # pl. ">90", "<5"
     alert_level = Column(Enum(AlertLevel), default=AlertLevel.WARNING)
     created_at = Column(DateTime, default=datetime.utcnow)
@@ -38,5 +45,11 @@ class Alert(Base):
     message = Column(Text, nullable=False)
     timestamp = Column(DateTime, default=datetime.utcnow)
     is_resolved = Column(Boolean, default=False)
+
+    first_detected_at = Column(DateTime, default=datetime.utcnow)
+    last_checked_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    status = Column(Enum(AlertStatus), default=AlertStatus.NEW)
+    resolution_time = Column(DateTime, nullable=True)
+    consecutive_checks = Column(Integer, default=1)
 
     sensor = relationship("Sensor", back_populates="alerts")

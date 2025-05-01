@@ -7,27 +7,27 @@
     "standardDevices": "Standard Devices",
     "customDevices": "Custom Devices",
     "plugins": "Plugins",
-    "settings": "Settings"
+    "settings": "Settings",
+    "sensors": "Sensors"
   },
-  "actions": {
-    "add": "Add",
-    "edit": "Edit",
-    "delete": "Delete",
-    "save": "Save",
-    "cancel": "Cancel",
-    "confirm": "Confirm",
-    "back": "Back",
-    "refresh": "Refresh",
-    "search": "Search",
-    "more": "More",
-    "share": "Share",
-    "favorite": "Favorite",
-    "view": "View",
-    "next": "Next",
-    "sort": "Sort",
-    "retry": "Retry",
-    "clearFilters": "Clear Filters"
-  },
+  "add": "Add",
+  "edit": "Edit",
+  "delete": "Delete",
+  "save": "Save",
+  "cancel": "Cancel",
+  "confirm": "Confirm",
+  "back": "Back",
+  "refresh": "Refresh",
+  "search": "Search",
+  "more": "More",
+  "share": "Share",
+  "favorite": "Favorite",
+  "view": "View",
+  "next": "Next",
+  "sort": "Sort",
+  "retry": "Retry",
+  "clearFilters": "Clear Filters",
+  "actions": "Actions",
   "status": {
     "online": "Online",
     "offline": "Offline",
@@ -101,5 +101,9 @@
   "apps": {
     "title": "Applications"
   },
-  "home": "Home"
+  "home": "Home",
+  "unknown": "Unknown",
+  "value": "Value",
+  "loading": "Loading...",
+  "sensors": "Sensors"
 }

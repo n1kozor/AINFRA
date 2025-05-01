@@ -1,10 +1,18 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+// src/context/AppContext.tsx
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { sensorApi } from '../api/sensorApi';
+import { Alert, AlertStatus } from '../types/sensor';
 
 type AppContextType = {
   sidebarOpen: boolean;
   toggleSidebar: () => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
+  // Alert management
+  activeAlerts: Alert[];
+  loadingAlerts: boolean;
+  refreshAlerts: () => Promise<Alert[]>;
+  resolveAlert: (alertId: number) => Promise<boolean>;
 };
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -13,9 +21,57 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Alert state
+  const [activeAlerts, setActiveAlerts] = useState<Alert[]>([]);
+  const [loadingAlerts, setLoadingAlerts] = useState(false);
+
   const toggleSidebar = () => {
     setSidebarOpen((prev) => !prev);
   };
+
+  // Fetch active alerts
+  const refreshAlerts = async () => {
+    try {
+      setLoadingAlerts(true);
+      const alerts = await sensorApi.getActiveAlerts();
+      const filteredAlerts = alerts.filter(alert =>
+        alert.status === AlertStatus.NEW ||
+        alert.status === AlertStatus.ONGOING
+      );
+      setActiveAlerts(filteredAlerts);
+      return alerts;
+    } catch (error) {
+      console.error('Error fetching alerts:', error);
+      return [];
+    } finally {
+      setLoadingAlerts(false);
+    }
+  };
+
+  // Resolve an alert
+  const resolveAlert = async (alertId: number) => {
+    try {
+      await sensorApi.resolveAlert(alertId);
+      // Update local state without needing a refetch
+      setActiveAlerts(prevAlerts => prevAlerts.filter(alert => alert.id !== alertId));
+      return true;
+    } catch (error) {
+      console.error('Error resolving alert:', error);
+      return false;
+    }
+  };
+
+  // Initial alerts fetch
+  useEffect(() => {
+    refreshAlerts();
+
+    // Set up periodic refresh
+    const interval = setInterval(() => {
+      refreshAlerts();
+    }, 30000); // Refresh every 30 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <AppContext.Provider
@@ -24,6 +80,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         toggleSidebar,
         searchQuery,
         setSearchQuery,
+        activeAlerts,
+        loadingAlerts,
+        refreshAlerts,
+        resolveAlert,
       }}
     >
       {children}

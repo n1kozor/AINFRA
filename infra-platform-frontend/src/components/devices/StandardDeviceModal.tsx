@@ -21,7 +21,11 @@ import {
   Paper,
   Divider,
   IconButton,
-  Grid
+  Grid,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
 } from '@mui/material';
 import {
   Computer as ComputerIcon,
@@ -32,12 +36,13 @@ import {
   DevicesRounded as DeviceIcon,
   SubtitlesRounded as DescriptionIcon,
   Check as CheckIcon,
-  Save as SaveIcon
+  Save as SaveIcon,
+  Storage as OSIcon
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useMutation } from '@tanstack/react-query';
 import { api } from '../../api';
-import { DeviceCreate } from '../../types/device';
+import { DeviceCreate, OSType } from '../../types/device';
 import { motion } from 'framer-motion';
 
 // Custom connector for the stepper
@@ -173,6 +178,24 @@ const StandardDeviceModal: React.FC<StandardDeviceModalProps> = ({ open, onClose
         standard_device: {
           ...deviceData.standard_device!,
           hostname: value,
+        }
+      });
+    } else {
+      setDeviceData({
+        ...deviceData,
+        [name]: value,
+      });
+    }
+  };
+
+  const handleSelectChange = (e: any) => {
+    const { name, value } = e.target;
+    if (name === 'os_type') {
+      setDeviceData({
+        ...deviceData,
+        standard_device: {
+          ...deviceData.standard_device!,
+          os_type: value as OSType,
         }
       });
     } else {
@@ -419,28 +442,54 @@ const StandardDeviceModal: React.FC<StandardDeviceModalProps> = ({ open, onClose
                   </Paper>
                 </Box>
 
-                <TextField
-                  name="hostname"
-                  label={t('devices:hostname')}
-                  value={deviceData.standard_device?.hostname || ''}
-                  onChange={handleChange}
-                  fullWidth
-                  required
-                  error={!deviceData.standard_device?.hostname && deviceData.standard_device?.hostname !== undefined}
-                  helperText={
-                    !deviceData.standard_device?.hostname && deviceData.standard_device?.hostname !== undefined
-                      ? t('common:errors.required')
-                      : t('devices:hostnameHint')
-                  }
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <HostnameIcon sx={{ color: theme.palette.primary.main }} />
-                      </InputAdornment>
-                    ),
-                    sx: { borderRadius: '12px' }
-                  }}
-                />
+                <Grid container spacing={3}>
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      name="hostname"
+                      label={t('devices:hostname')}
+                      value={deviceData.standard_device?.hostname || ''}
+                      onChange={handleChange}
+                      fullWidth
+                      required
+                      error={!deviceData.standard_device?.hostname && deviceData.standard_device?.hostname !== undefined}
+                      helperText={
+                        !deviceData.standard_device?.hostname && deviceData.standard_device?.hostname !== undefined
+                          ? t('common:errors.required')
+                          : t('devices:hostnameHint')
+                      }
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <HostnameIcon sx={{ color: theme.palette.primary.main }} />
+                          </InputAdornment>
+                        ),
+                        sx: { borderRadius: '12px' }
+                      }}
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} md={6}>
+                    <FormControl fullWidth>
+                      <InputLabel id="os-type-label">{t('devices:osType')}</InputLabel>
+                      <Select
+                        labelId="os-type-label"
+                        name="os_type"
+                        value={deviceData.standard_device?.os_type || 'linux'}
+                        onChange={handleSelectChange}
+                        sx={{ borderRadius: '12px' }}
+                        startAdornment={
+                          <InputAdornment position="start">
+                            <OSIcon sx={{ color: theme.palette.primary.main }} />
+                          </InputAdornment>
+                        }
+                      >
+                        <MenuItem value="linux">Linux</MenuItem>
+                        <MenuItem value="windows">Windows</MenuItem>
+                        <MenuItem value="macos">macOS</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                </Grid>
               </Paper>
             </Box>
           )}
@@ -519,13 +568,26 @@ const StandardDeviceModal: React.FC<StandardDeviceModalProps> = ({ open, onClose
 
                 <Divider sx={{ mb: 2, opacity: 0.5 }} />
 
-                <Box>
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
-                    {t('devices:hostname')}
-                  </Typography>
-                  <Typography variant="body1" fontWeight={600}>
-                    {deviceData.standard_device?.hostname}
-                  </Typography>
+                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+                  <Box>
+                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                      {t('devices:hostname')}
+                    </Typography>
+                    <Typography variant="body1" fontWeight={600}>
+                      {deviceData.standard_device?.hostname}
+                    </Typography>
+                  </Box>
+
+                  <Box>
+                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                      {t('devices:osType')}
+                    </Typography>
+                    <Typography variant="body1" fontWeight={600}>
+                      {deviceData.standard_device?.os_type === 'linux' && 'Linux'}
+                      {deviceData.standard_device?.os_type === 'windows' && 'Windows'}
+                      {deviceData.standard_device?.os_type === 'macos' && 'macOS'}
+                    </Typography>
+                  </Box>
                 </Box>
               </Paper>
             </Box>

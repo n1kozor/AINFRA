@@ -14,7 +14,7 @@ import PluginDetails from './pages/Plugins/PluginDetails';
 import NewPlugin from './pages/Plugins/NewPlugin';
 import Settings from './pages/Settings';
 import DevicesPage from './pages/Devices/DevicesPage';
-
+import SensorsPage from './pages/sensors/SensorsPage';
 
 // Create React Query client
 const queryClient = new QueryClient({
@@ -38,7 +38,9 @@ const App = () => {
             <MainLayout>
               <Routes>
                 <Route path="/" element={<Dashboard />} />
+                <Route path="/sensors" element={<SensorsPage />} />
                 <Route path="/devices">
+
                 <Route path="/devices" element={<DevicesPage />} />
                   <Route path=":id" element={<DeviceDetails />} />
                 </Route>

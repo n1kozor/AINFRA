@@ -24,6 +24,7 @@ import {
   ExtensionRounded as PluginIcon,
   SettingsRounded as SettingsIcon,
   WorkspacePremiumRounded as ProIcon,
+  SensorsOutlined,
 } from '@mui/icons-material';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import { Link, useLocation } from 'react-router-dom';
@@ -70,6 +71,12 @@ useEffect(() => {
     icon: <DevicesIcon />,
     path: '/devices',
   },
+  {
+  icon: <SensorsOutlined />,
+  text: t('common:sensors'),
+  path: '/sensors',
+  active: location.pathname === '/sensors'
+},
     {
       id: 'plugins',
       text: t('navigation.plugins'),

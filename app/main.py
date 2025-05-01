@@ -1,5 +1,4 @@
-# main.py - Corrected implementation for Pydantic Tool objects
-
+# main.py
 from fastapi import FastAPI, Depends
 from contextlib import asynccontextmanager
 from .core.config import get_settings
@@ -11,6 +10,9 @@ from sqlalchemy.orm import Session
 from .core.database import get_db
 from fastapi_mcp import FastApiMCP
 from fastapi.middleware.cors import CORSMiddleware
+from .core.simple_scheduler import SimpleScheduler
+from .core.sensor_monitor import check_sensors
+import asyncio
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -32,14 +34,25 @@ async def lifespan(app: FastAPI):
         plugin_loader = PluginLoader()
         plugin_loader.load_plugins(db)
 
-        # Ez a rész törölve - itt volt a scheduler inicializálása
+        # Initialize and start scheduler
+        scheduler = SimpleScheduler()
+        scheduler.start()
+
+        # Schedule sensor checks every 30 seconds (0.5 minutes)
+        scheduler.schedule_task(
+            "sensor_monitoring",
+            check_sensors,
+            interval_minutes=0.5
+        )
+
     finally:
         db.close()
 
-    # Fontos: itt kell a yield-nek lennie, nem a try-finally blokkon belül!
     yield
 
-    # A shutdown actions rész is törölve - itt volt a scheduler leállítása
+    # Shutdown actions - stop scheduler
+    scheduler = SimpleScheduler()
+    scheduler.stop()
 
 
 # Create FastAPI app

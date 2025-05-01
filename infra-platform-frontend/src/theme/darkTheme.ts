@@ -165,14 +165,14 @@ export const darkTheme: ThemeOptions = {
           height: '8px',
         },
         '*::-webkit-scrollbar-track': {
-          background: 'transparent',
+          background: '#0f172a',
         },
         '*::-webkit-scrollbar-thumb': {
-          backgroundColor: alpha('#f1f5f9', 0.2),
+          backgroundColor: alpha('#475569', 0.6),
           borderRadius: '4px',
         },
         '*::-webkit-scrollbar-thumb:hover': {
-          backgroundColor: alpha('#f1f5f9', 0.3),
+          backgroundColor: alpha('#60a5fa', 0.5),
         },
         '@keyframes pulse': {
           '0%': {

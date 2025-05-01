@@ -1,3 +1,4 @@
+# app/schemas/sensor.py
 from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime
@@ -7,6 +8,11 @@ class AlertLevel(str, Enum):
     INFO = "info"
     WARNING = "warning"
     CRITICAL = "critical"
+
+class AlertStatus(str, Enum):
+    NEW = "new"
+    ONGOING = "ongoing"
+    RESOLVED = "resolved"
 
 # Base schemas
 class SensorBase(BaseModel):
@@ -42,6 +48,11 @@ class AlertResponse(AlertBase):
     id: int
     sensor_id: int
     timestamp: datetime
+    status: AlertStatus
+    first_detected_at: datetime
+    last_checked_at: datetime
+    resolution_time: Optional[datetime] = None
+    consecutive_checks: int = 1
 
     class Config:
         from_attributes = True

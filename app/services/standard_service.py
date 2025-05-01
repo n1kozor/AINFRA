@@ -50,6 +50,9 @@ class StandardDeviceService:
                         async with session.get(f"{base_url}/{endpoint}", timeout=10) as response:
                             if response.status == 200:
                                 data = await response.json()
+                                # Konvertáljuk a memória értékeket MB-ba, ha szükséges
+                                if endpoint in ["mem", "memswap"]:
+                                    data = StandardDeviceService._convert_memory_to_mb(data)
                                 result[endpoint] = data
                             elif required:
                                 # Log critical failure
@@ -252,9 +255,31 @@ class StandardDeviceService:
                         return {"error": f"Failed to fetch metric: HTTP {response.status}"}
 
                     data = await response.json()
+
+                    # Memóriával kapcsolatos metrikákat konvertáljuk MB-ba
+                    if metric in ["mem", "memswap"]:
+                        data = StandardDeviceService._convert_memory_to_mb(data)
+
                     return {metric: data}
             except Exception as e:
                 return {"error": f"Failed to fetch metric: {str(e)}"}
+
+    @staticmethod
+    def _convert_memory_to_mb(memory_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Convert memory values from bytes to megabytes
+        """
+        # Új metódus: A memória értékek konvertálása byte-ról MB-ba a könnyebb értelmezhetőség érdekében
+        bytes_to_mb = 1024 * 1024  # 1 MB = 1,048,576 bytes
+
+        converted_data = {}
+        for key, value in memory_data.items():
+            if isinstance(value, (int, float)) and key != "percent":
+                converted_data[key] = round(value / bytes_to_mb, 2)  # Kerekítjük 2 tizedesjegyre
+            else:
+                converted_data[key] = value
+
+        return converted_data
 
     @staticmethod
     async def get_all_available_metrics(db: Session, device_id: int) -> Dict[str, Any]:

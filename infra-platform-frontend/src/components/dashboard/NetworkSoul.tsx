@@ -626,21 +626,7 @@ const NetworkSoul: React.FC<NetworkSoulProps> = ({ healthScore, isLoading }) => 
           </motion.div>
         </Box>
 
-        {/* Status text */}
-        <motion.div
-          initial={{ y: 10, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.5, duration: 0.5 }}
-        >
-          <Typography
-            variant="h6"
-            fontWeight={600}
-            color={healthColor}
-            textAlign="center"
-          >
-            {getStatusText()}
-          </Typography>
-        </motion.div>
+
       </Box>
 
       {/* Chat Modal */}
