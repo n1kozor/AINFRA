@@ -143,7 +143,9 @@ export const lightTheme: ThemeOptions = {
     '0 38px 72px -19px rgba(0, 0, 0, 0.44), 0 19px 36px -18px rgba(0, 0, 0, 0.4)',
     '0 40px 80px -20px rgba(0, 0, 0, 0.46), 0 20px 38px -19px rgba(0, 0, 0, 0.42)',
     '0 9px 46px rgba(0, 0, 0, 0.12), 0 24px 38px rgba(0, 0, 0, 0.14), 0 11px 15px rgba(0, 0, 0, 0.1)',
+    '0 42px 94px -21px rgba(0, 0, 0, 0.48), 0 21px 40px -20px rgba(0, 0, 0, 0.44)'
   ],
+
   components: {
     MuiCssBaseline: {
       styleOverrides: {

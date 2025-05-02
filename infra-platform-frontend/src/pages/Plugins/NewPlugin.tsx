@@ -1,4 +1,5 @@
-import { useState } from 'react';
+// src/pages/NewPlugin.tsx
+import React, { useState } from 'react';
 import {
   Box,
   Typography,
@@ -22,252 +23,219 @@ import { motion } from 'framer-motion';
 import PageContainer from '../../components/common/PageContainer';
 import { usePluginActions } from '../../hooks/plugins/usePluginActions';
 
-// Helper function to safely display any value as string
-const safeDisplay = (value: null | undefined) => {
-  if (value === null || value === undefined) {
-    return '';
-  }
+// Match whatever your backend expects for creation
+interface PluginCreate {
+  name: string;
+  description: string;
+  version: string;
+  author: string;
+  ui_schema: any;
+  code: string;           // now required
+  [key: string]: any;
+}
+
+// Safely render any field
+const safeDisplay = (value: any): string => {
+  if (value == null) return '';
   if (typeof value === 'object') {
-    return JSON.stringify(value).length > 50
-      ? JSON.stringify(value).substring(0, 50) + '...'
-      : JSON.stringify(value);
+    const s = JSON.stringify(value);
+    return s.length > 50 ? s.slice(0, 50) + '…' : s;
   }
   return String(value);
 };
 
-const NewPlugin = () => {
+const NewPlugin: React.FC = () => {
   const { t } = useTranslation(['plugins', 'common']);
   const { createMutation } = usePluginActions();
 
-  const [pluginJson, setPluginJson] = useState('');
-  const [parsedPlugin, setParsedPlugin] = useState(null);
-  const [validationError, setValidationError] = useState('');
-  const [parseSuccess, setParseSuccess] = useState(false);
+  // If you ever pull initial JSON from props/location, do:
+  // const initial = props.location.state?.pluginJson ?? '';
+  // and then:
+  const [pluginJson, setPluginJson] = useState<string>('');
+  const [parsedPlugin, setParsedPlugin] = useState<PluginCreate | null>(null);
+  const [validationError, setValidationError] = useState<string>('');
+  const [parseSuccess, setParseSuccess] = useState<boolean>(false);
 
-  // Validate the plugin JSON
-  const validatePluginJson = (pluginData: { [x: string]: any; ui_schema: any; }) => {
-    // Check for required fields
-    const requiredFields = ['name', 'description', 'version', 'author'];
-    const missingFields = requiredFields.filter(field => !pluginData[field]);
-
-    if (missingFields.length > 0) {
-      return {
-        valid: false,
-        error: `Missing required fields: ${missingFields.join(', ')}`
-      };
+  // enforce that `code` is present (so createMutation gets a string)
+  const validatePluginJson = (data: any): { valid: boolean; error?: string } => {
+    const required = [
+      'name',
+      'description',
+      'version',
+      'author',
+      'code',
+      'ui_schema',
+    ];
+    const missing = required.filter((f) => data[f] == null);
+    if (missing.length) {
+      return { valid: false, error: `Missing required: ${missing.join(', ')}` };
     }
-
-    // Check if ui_schema exists
-    if (!pluginData.ui_schema) {
-      return {
-        valid: false,
-        error: 'Missing UI schema'
-      };
-    }
-
     return { valid: true };
   };
 
-  // Handle parsing the plugin JSON
   const handleParseJson = () => {
-    try {
-      setValidationError('');
-      setParseSuccess(false);
+    setValidationError('');
+    setParseSuccess(false);
 
-      if (!pluginJson.trim()) {
-        setValidationError('Please enter plugin JSON');
-        return;
-      }
-
-      const parsed = JSON.parse(pluginJson);
-      const validation = validatePluginJson(parsed);
-
-      if (!validation.valid) {
-        setValidationError(validation.error);
-        return;
-      }
-
-      setParsedPlugin(parsed);
-      setParseSuccess(true);
-    } catch (error) {
-      setValidationError(`Invalid JSON format: ${error.message}`);
+    if (!pluginJson.trim()) {
+      setValidationError('Please enter plugin JSON');
+      return;
     }
+
+    let data: any;
+    try {
+      data = JSON.parse(pluginJson);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setValidationError(`Invalid JSON format: ${msg}`);
+      return;
+    }
+
+    const { valid, error } = validatePluginJson(data);
+    if (!valid) {
+      setValidationError(error!);
+      return;
+    }
+
+    // Now safe to cast: code is a string, ui_schema exists, etc.
+    const ready: PluginCreate = {
+      ...data,
+      code: data.code as string,
+    };
+
+    setParsedPlugin(ready);
+    setParseSuccess(true);
   };
 
-  // Handle form submission
   const handleSubmit = () => {
     if (!parsedPlugin) {
       setValidationError('Please validate the plugin JSON first');
       return;
     }
-
     createMutation.mutate(parsedPlugin);
   };
 
+  // react-query style
+  const { status, error } = createMutation;
+  const isLoading = status === 'pending';
+  const isError = status === 'error';
+  const isSuccess = status === 'success';
+
   return (
-    <PageContainer
-      title={t('plugins:addPlugin')}
-      icon={<PluginIcon />}
-      breadcrumbs={[
-        { text: t('common:navigation.dashboard'), link: '/' },
-        { text: t('common:navigation.plugins'), link: '/plugins' },
-        { text: t('plugins:addPlugin') },
-      ]}
-    >
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
+      <PageContainer
+          title={t('plugins:addPlugin')}
+          icon={<PluginIcon />}
+          breadcrumbs={[
+            { text: t('common:navigation.dashboard'), link: '/' },
+            { text: t('common:navigation.plugins'), link: '/plugins' },
+            { text: t('plugins:addPlugin') },
+          ]}
       >
-        <Paper>
-          <Box p={3}>
-            <Typography variant="h6" gutterBottom>
-              {t('plugins:importPluginJson')}
-            </Typography>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+          <Paper>
+            <Box p={3}>
+              <Typography variant="h6" gutterBottom>
+                {t('plugins:importPluginJson')}
+              </Typography>
+              <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+                Paste the full plugin JSON (name, description, version, author, code, ui_schema).
+              </Typography>
 
-            <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
-              Paste the full plugin JSON configuration including name, description, version, author, code, and UI schema.
-            </Typography>
-
-            <TextField
-              label="Plugin JSON"
-              multiline
-              fullWidth
-              rows={15}
-              value={pluginJson}
-              onChange={(e) => setPluginJson(e.target.value)}
-              placeholder='{
-  "name": "Plugin Name",
-  "description": "Plugin Description",
+              <TextField
+                  label="Plugin JSON"
+                  multiline
+                  fullWidth
+                  rows={15}
+                  value={pluginJson}
+                  onChange={(e) => setPluginJson(e.target.value ?? '')}
+                  placeholder={`{
+  "name": "My Plugin",
+  "description": "What it does...",
   "version": "1.0.0",
-  "author": "Author Name",
-  "code": "...",
-  "ui_schema": {...}
-}'
-              sx={{ mb: 2, fontFamily: 'monospace' }}
-              error={!!validationError}
-              helperText={validationError}
-            />
+  "author": "Me",
+  "code": "function run() {…}",
+  "ui_schema": { … }
+}`}
+                  sx={{ mb: 2, fontFamily: 'monospace' }}
+                  error={!!validationError}
+                  helperText={validationError}
+              />
 
-            <Button
-              variant="outlined"
-              startIcon={<UploadIcon />}
-              onClick={handleParseJson}
-              sx={{ mb: 3 }}
-            >
-              Validate JSON
-            </Button>
-
-            {parseSuccess && (
-              <Alert severity="success" sx={{ mb: 3 }}>
-                Plugin JSON successfully validated
-              </Alert>
-            )}
-
-            {parsedPlugin && (
-              <>
-                <Divider sx={{ my: 3 }} />
-
-                <Typography variant="h6" gutterBottom>
-                  Plugin Details
-                </Typography>
-
-                <Box sx={{ mb: 3 }}>
-                  <Typography variant="subtitle2" color="textSecondary">
-                    Name
-                  </Typography>
-                  <Typography variant="body1">
-                    {safeDisplay(parsedPlugin.name)}
-                  </Typography>
-                </Box>
-
-                <Box sx={{ mb: 3 }}>
-                  <Typography variant="subtitle2" color="textSecondary">
-                    Description
-                  </Typography>
-                  <Typography variant="body1">
-                    {safeDisplay(parsedPlugin.description)}
-                  </Typography>
-                </Box>
-
-                <Box sx={{ mb: 3 }}>
-                  <Typography variant="subtitle2" color="textSecondary">
-                    Version
-                  </Typography>
-                  <Typography variant="body1">
-                    {safeDisplay(parsedPlugin.version)}
-                  </Typography>
-                </Box>
-
-                <Box sx={{ mb: 3 }}>
-                  <Typography variant="subtitle2" color="textSecondary">
-                    Author
-                  </Typography>
-                  <Typography variant="body1">
-                    {safeDisplay(parsedPlugin.author)}
-                  </Typography>
-                </Box>
-
-                <Box sx={{ mb: 3 }}>
-                  <Typography variant="subtitle2" color="textSecondary">
-                    UI Schema
-                  </Typography>
-                  <Typography variant="body1" sx={{ color: 'success.main' }}>
-                    UI Schema is valid and included
-                  </Typography>
-                </Box>
-
-                {parsedPlugin.code && (
-                  <Box sx={{ mb: 3 }}>
-                    <Typography variant="subtitle2" color="textSecondary">
-                      Code
-                    </Typography>
-                    <Typography variant="body1" sx={{ color: 'success.main' }}>
-                      Code is included ({typeof parsedPlugin.code === 'string' ? parsedPlugin.code.length : 'unknown'} characters)
-                    </Typography>
-                  </Box>
-                )}
-              </>
-            )}
-
-            {createMutation.isError && (
-              <Alert severity="error" sx={{ mt: 3 }}>
-                {typeof createMutation.error === 'string' ? createMutation.error : 'Failed to create plugin'}
-              </Alert>
-            )}
-
-            {createMutation.isSuccess && (
-              <Alert severity="success" sx={{ mt: 3 }}>
-                Plugin created successfully
-              </Alert>
-            )}
-
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
-              <Button
-                component={Link}
-                to="/plugins"
-                startIcon={<ArrowBackIcon />}
-                variant="outlined"
-              >
-                Cancel
+              <Button variant="outlined" startIcon={<UploadIcon />} onClick={handleParseJson} sx={{ mb: 3 }}>
+                Validate JSON
               </Button>
 
-              <Button
-                variant="contained"
-                startIcon={createMutation.isPending ?
-                  <CircularProgress size={20} color="inherit" /> :
-                  <SaveIcon />
-                }
-                onClick={handleSubmit}
-                disabled={createMutation.isPending || !parsedPlugin}
-              >
-                Save Plugin
-              </Button>
+              {parseSuccess && (
+                  <Alert severity="success" sx={{ mb: 3 }}>
+                    Plugin JSON successfully validated
+                  </Alert>
+              )}
+
+              {parsedPlugin && (
+                  <>
+                    <Divider sx={{ my: 3 }} />
+                    <Typography variant="h6" gutterBottom>
+                      Plugin Details
+                    </Typography>
+
+                    {(['name', 'description', 'version', 'author'] as const).map((field) => (
+                        <Box key={field} sx={{ mb: 3 }}>
+                          <Typography variant="subtitle2" color="textSecondary">
+                            {field.charAt(0).toUpperCase() + field.slice(1)}
+                          </Typography>
+                          <Typography variant="body1">{safeDisplay(parsedPlugin[field])}</Typography>
+                        </Box>
+                    ))}
+
+                    <Box sx={{ mb: 3 }}>
+                      <Typography variant="subtitle2" color="textSecondary">
+                        UI Schema
+                      </Typography>
+                      <Typography variant="body1" sx={{ color: 'success.main' }}>
+                        Present and valid
+                      </Typography>
+                    </Box>
+
+                    <Box sx={{ mb: 3 }}>
+                      <Typography variant="subtitle2" color="textSecondary">
+                        Code
+                      </Typography>
+                      <Typography variant="body1" sx={{ color: 'success.main' }}>
+                        {parsedPlugin.code.length} characters
+                      </Typography>
+                    </Box>
+                  </>
+              )}
+
+              {isError && (
+                  <Alert severity="error" sx={{ mt: 3 }}>
+                    {error instanceof Error ? error.message : 'Failed to create plugin'}
+                  </Alert>
+              )}
+
+              {isSuccess && (
+                  <Alert severity="success" sx={{ mt: 3 }}>
+                    Plugin created successfully
+                  </Alert>
+              )}
+
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
+                <Button component={Link} to="/plugins" startIcon={<ArrowBackIcon />} variant="outlined">
+                  Cancel
+                </Button>
+                <Button
+                    variant="contained"
+                    startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />}
+                    onClick={handleSubmit}
+                    disabled={isLoading || !parsedPlugin}
+                >
+                  Save Plugin
+                </Button>
+              </Box>
             </Box>
-          </Box>
-        </Paper>
-      </motion.div>
-    </PageContainer>
+          </Paper>
+        </motion.div>
+      </PageContainer>
   );
 };
 

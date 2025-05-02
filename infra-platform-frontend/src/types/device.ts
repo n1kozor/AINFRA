@@ -1,3 +1,4 @@
+// src/types/device.ts
 export type DeviceType = 'standard' | 'custom';
 export type OSType = 'windows' | 'macos' | 'linux';
 

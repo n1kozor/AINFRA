@@ -13,7 +13,7 @@ import {
     alpha,
     Paper,
     Avatar,
-    Grid, // Standard Grid import in MUI v7
+    Grid,
 } from '@mui/material';
 import {
     DeleteRounded as DeleteIcon,
