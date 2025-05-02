@@ -10,7 +10,6 @@ import {
   CircularProgress,
   ToggleButtonGroup,
   ToggleButton,
-  Divider,
   Avatar,
   List,
   ListItem,
@@ -18,10 +17,8 @@ import {
   ListItemAvatar,
   Paper,
   Chip,
-  IconButton,
   Tabs,
   Tab,
-  Tooltip,
   useMediaQuery
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
@@ -32,17 +29,13 @@ import {
   Speed as SpeedIcon,
   DevicesOther as DevicesIcon,
   Warning as WarningIcon,
-  Refresh as RefreshIcon,
   TrendingUp as TrendingUpIcon,
   History as HistoryIcon,
-  MoreHoriz as MoreHorizIcon
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { SystemStatistics, TimeRangeOption } from '../../types/statistics';
 import { formatDistanceToNow } from 'date-fns';
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -50,7 +43,6 @@ import {
   ResponsiveContainer,
   Area,
   AreaChart,
-  Legend
 } from 'recharts';
 
 interface StatusOverviewProps {
@@ -69,11 +61,11 @@ export const StatusOverview: React.FC<StatusOverviewProps> = ({
   const theme = useTheme();
   const { t } = useTranslation('dashboard');
   const [tabValue, setTabValue] = useState(0);
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  useMediaQuery(theme.breakpoints.down('md'));
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const handleTimeRangeChange = (
-    event: React.MouseEvent<HTMLElement>,
+      _event: React.MouseEvent<HTMLElement>,
     newRange: TimeRangeOption | null,
   ) => {
     if (newRange !== null) {
@@ -81,7 +73,7 @@ export const StatusOverview: React.FC<StatusOverviewProps> = ({
     }
   };
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 
@@ -234,41 +226,45 @@ export const StatusOverview: React.FC<StatusOverviewProps> = ({
             <>
               <Box sx={{ mb: 4, overflow: 'hidden' }}>
                 <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6} md={3}>
+                  <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                     <Paper
-                      elevation={0}
-                      sx={{
-                        p: 2.5,
-                        height: '100%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderRadius: 3,
-                        bgcolor: alpha(statusColor, 0.05),
-                        border: `1px solid ${alpha(statusColor, 0.2)}`,
-                        position: 'relative',
-                      }}
+                        elevation={0}
+                        sx={{
+                          p: 2.5,
+                          height: '100%',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          borderRadius: 3,
+                          bgcolor: alpha(statusColor, 0.05),
+                          border: `1px solid ${alpha(statusColor, 0.2)}`,
+                          position: 'relative',
+                        }}
                     >
-                      <Box sx={{
-                        position: 'relative',
-                        width: 80,
-                        height: 80,
-                        mb: 1,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}>
-                        <Box sx={{
-                          position: 'absolute',
-                          top: 0,
-                          left: 0,
-                          right: 0,
-                          bottom: 0,
-                          borderRadius: '50%',
-                          background: `radial-gradient(circle, ${alpha(statusColor, 0.15)} 0%, transparent 70%)`,
-                          animation: 'pulse 2s infinite',
-                        }} />
+                      <Box
+                          sx={{
+                            position: 'relative',
+                            width: 80,
+                            height: 80,
+                            mb: 1,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                      >
+                        <Box
+                            sx={{
+                              position: 'absolute',
+                              top: 0,
+                              left: 0,
+                              right: 0,
+                              bottom: 0,
+                              borderRadius: '50%',
+                              background: `radial-gradient(circle, ${alpha(statusColor, 0.15)} 0%, transparent 70%)`,
+                              animation: 'pulse 2s infinite',
+                            }}
+                        />
                         <Typography variant="h4" sx={{ fontWeight: 700, color: statusColor }}>
                           {Math.round(availabilityStatus.rate)}%
                         </Typography>
@@ -277,19 +273,19 @@ export const StatusOverview: React.FC<StatusOverviewProps> = ({
                         {t('systemStats.availability')}
                       </Typography>
                       <Chip
-                        label={t(`networkSoul.status.${availabilityStatus.status}`)}
-                        sx={{
-                          bgcolor: alpha(statusColor, 0.1),
-                          color: statusColor,
-                          mt: 1,
-                          fontWeight: 600
-                        }}
-                        size="small"
+                          label={t(`networkSoul.status.${availabilityStatus.status}`)}
+                          sx={{
+                            bgcolor: alpha(statusColor, 0.1),
+                            color: statusColor,
+                            mt: 1,
+                            fontWeight: 600,
+                          }}
+                          size="small"
                       />
                     </Paper>
                   </Grid>
 
-                  <Grid item xs={12} sm={6} md={3}>
+                  <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                     <Paper
                       elevation={0}
                       sx={{
@@ -319,7 +315,7 @@ export const StatusOverview: React.FC<StatusOverviewProps> = ({
                     </Paper>
                   </Grid>
 
-                  <Grid item xs={12} sm={6} md={3}>
+                  <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                     <Paper
                       elevation={0}
                       sx={{
@@ -349,7 +345,7 @@ export const StatusOverview: React.FC<StatusOverviewProps> = ({
                     </Paper>
                   </Grid>
 
-                  <Grid item xs={12} sm={6} md={3}>
+                  <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                     <Paper
                       elevation={0}
                       sx={{

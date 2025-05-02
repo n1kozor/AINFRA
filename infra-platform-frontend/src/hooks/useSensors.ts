@@ -1,7 +1,7 @@
 // src/hooks/useSensors.ts
 import { useState, useEffect, useCallback } from 'react';
-import { sensorApi } from '../api/sensorApi';
-import { Sensor, Alert, SensorCreate, SensorUpdate, AlertCreate } from '../types/sensor';
+import { Sensor, Alert, SensorCreate, SensorUpdate } from '../types/sensor';
+import { sensorApi } from '../api';
 
 export const useSensors = (deviceId?: number) => {
   const [sensors, setSensors] = useState<Sensor[]>([]);
@@ -41,7 +41,6 @@ export const useSensors = (deviceId?: number) => {
     fetchSensors();
     fetchActiveAlerts();
 
-    // Optional: Set up polling for active alerts
     const alertPollInterval = setInterval(fetchActiveAlerts, 30000); // Poll every 30 seconds
 
     return () => {

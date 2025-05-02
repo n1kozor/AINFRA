@@ -1,6 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../../../api';
-import { Device } from '../../../../types/device';
 
 export const useDeviceData = (deviceId: string) => {
   const queryClient = useQueryClient();
@@ -12,7 +11,7 @@ export const useDeviceData = (deviceId: string) => {
     error: statusError
   } = useQuery({
     queryKey: ['deviceStatus', deviceId],
-    queryFn: () => api.customDevices.getStatus(deviceId),
+    queryFn: () => api.customDevices.getStatus(Number(deviceId)),
     refetchInterval: 60000, // Refresh every minute
   });
 
@@ -23,7 +22,7 @@ export const useDeviceData = (deviceId: string) => {
     error: metricsError
   } = useQuery({
     queryKey: ['deviceMetrics', deviceId],
-    queryFn: () => api.customDevices.getMetrics(deviceId),
+    queryFn: () => api.customDevices.getMetrics(Number(deviceId)),
     refetchInterval: 30000, // Refresh every 30 seconds
   });
 

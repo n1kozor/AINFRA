@@ -1,5 +1,5 @@
 // src/context/ThemeContext.tsx
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import { getTheme, ThemeVariant } from '../theme';
 
@@ -26,16 +26,13 @@ interface ThemeProviderProps {
 export const ThemeProvider = ({ children }: ThemeProviderProps) => {
   const [themeVariant, setThemeVariant] = useState<ThemeVariant>('light');
 
-  // Determine the PaletteMode based on the themeVariant
   const mode = ['paper', 'windows31'].includes(themeVariant) ? 'light' : themeVariant as 'light' | 'dark';
 
   useEffect(() => {
-    // Check for stored theme
     const storedTheme = localStorage.getItem('themeVariant') as ThemeVariant | null;
     if (storedTheme && ['light', 'dark', 'paper', 'windows31'].includes(storedTheme)) {
       setThemeVariant(storedTheme);
     } else {
-      // Optional: Check for user's system preference if no theme is stored
       const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
       if (prefersDarkMode) {
         setThemeVariant('dark');
@@ -63,7 +60,6 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
     localStorage.setItem('themeVariant', variant);
   };
 
-  // Apply Windows 3.1 specific body class if applicable
   useEffect(() => {
     if (themeVariant === 'windows31') {
       document.body.classList.add('windows31-theme');

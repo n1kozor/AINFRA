@@ -1,6 +1,6 @@
 // src/hooks/dashboard/useSystemStatistics.ts
 import { useState, useCallback } from 'react';
-import { statisticsApi } from '../../api/statisticsApi';
+import { statisticsApi } from '../../api';
 import type { SystemStatistics, TimeRangeOption } from '../../types/statistics';
 
 export const useSystemStatistics = () => {

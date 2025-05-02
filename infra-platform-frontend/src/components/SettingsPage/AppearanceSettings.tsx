@@ -2,11 +2,8 @@
 import React from 'react';
 import {
   Box,
-  Typography,
-  Switch,
   Button,
   useTheme,
-  alpha,
 } from '@mui/material';
 import {
   DarkMode as DarkModeIcon,
@@ -22,7 +19,7 @@ import SettingsCard from './SettingsCard';
 const AppearanceSettings: React.FC = () => {
   const { t } = useTranslation(['settings', 'common']);
   const theme = useTheme();
-  const { themeVariant, toggleMode, setThemeVariant } = useThemeContext();
+  const { themeVariant, setThemeVariant } = useThemeContext();
 
   const getThemeIcon = () => {
     switch (themeVariant) {

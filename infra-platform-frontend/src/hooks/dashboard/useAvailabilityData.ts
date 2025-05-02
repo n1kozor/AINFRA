@@ -1,6 +1,6 @@
 // src/hooks/dashboard/useAvailabilityData.ts
 import { useState, useCallback } from 'react';
-import { availabilityApi } from '../../api/availability';
+import { availabilityApi } from '../../api';
 import { DeviceAvailabilityStats } from '../../types/availability';
 
 export const useAvailabilityData = () => {

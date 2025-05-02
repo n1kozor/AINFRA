@@ -1,6 +1,6 @@
 // src/hooks/useDevices.ts
 import { useState, useEffect } from 'react';
-import { deviceApi } from '../api/deviceApi';
+import { deviceApi } from '../api';
 import { Device } from '../types/device';
 
 export const useDevices = () => {

@@ -8,31 +8,26 @@ export const usePluginData = (pluginId?: string) => {
     isLoading: pluginLoading
   } = useQuery({
     queryKey: ['plugin', pluginId],
-    queryFn: () => (pluginId ? api.plugins.getById(pluginId) : null),
+    queryFn: () => (pluginId ? api.plugins.getById(Number(pluginId)) : null),
     enabled: !!pluginId,
   });
 
-  // Extract operations from plugin
-  const extractOperations = (plugin: Plugin | undefined) => {
-    if (!plugin) return [];
+  const extractOperations = (pluginData: Plugin | null | undefined) => {
+    if (!pluginData) return [];
 
-    // First check if operations are directly available in the plugin object
-    if (plugin.operations && Array.isArray(plugin.operations)) {
-      return plugin.operations;
+    if (pluginData.ui_schema?.operations && Array.isArray(pluginData.ui_schema.operations)) {
+      return pluginData.ui_schema.operations;
     }
 
-    // Try to extract operations from code
-    if (plugin.code) {
+    if (pluginData.code) {
       try {
-        // Look for get_operations method in the code
-        const operationsMatch = plugin.code.match(/get_operations\(\)[\s\S]*?return\s+([\s\S]*?)\n\s*\}/);
+        const operationsMatch = pluginData.code.match(/get_operations\(\)[\s\S]*?return\s+([\s\S]*?)\n\s*\}/);
         if (operationsMatch && operationsMatch[1]) {
-          // Basic parser
           const operationsStr = operationsMatch[1]
-            .replace(/'/g, '"')
-            .replace(/(\w+):/g, '"$1":')
-            .replace(/,\s*}/g, '}')  // Fix trailing commas
-            .replace(/,\s*]/g, ']'); // Fix trailing commas in arrays
+              .replace(/'/g, '"')
+              .replace(/(\w+):/g, '"$1":')
+              .replace(/,\s*}/g, '}')
+              .replace(/,\s*]/g, ']');
 
           try {
             return JSON.parse(operationsStr);
@@ -49,7 +44,6 @@ export const usePluginData = (pluginId?: string) => {
     return [];
   };
 
-  // Get quick action buttons from plugin UI schema
   const getQuickActionButtons = () => {
     if (!plugin?.ui_schema?.buttons) return [];
     return plugin.ui_schema.buttons.map((button: any) => ({

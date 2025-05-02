@@ -1,6 +1,6 @@
 // src/context/AppContext.tsx
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { sensorApi } from '../api/sensorApi';
+import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { sensorApi } from '../api';
 import { Alert, AlertStatus } from '../types/sensor';
 
 type AppContextType = {

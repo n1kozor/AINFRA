@@ -5,7 +5,7 @@ export const usePlugins = (filterOptions = {}) => {
   return useQuery({
     queryKey: ['plugins', filterOptions],
     queryFn: api.plugins.getAll,
-    refetchInterval: 30000, // Auto refresh every 30 seconds
+    refetchInterval: 30000,
   });
 };
 

@@ -316,7 +316,7 @@ const DeviceChatModal: React.FC<DeviceChatModalProps> = ({
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, ml: 7 }}>
               <CircularProgress size={24} sx={{ color: colorScheme.main }} />
               <Typography variant="body2" sx={{ ml: 2, color: alpha(theme.palette.text.primary, 0.6) }}>
-                {t('typing', { deviceName: deviceName }, "{{deviceName}} is typing...")}
+                {t('typing', "{{deviceName}} is typing...", { deviceName: deviceName })}
               </Typography>
             </Box>
           )}
@@ -330,7 +330,7 @@ const DeviceChatModal: React.FC<DeviceChatModalProps> = ({
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <TextField
               fullWidth
-              placeholder={t('deviceMessagePlaceholder', { deviceName: deviceName }, "Message {{deviceName}}...")}
+              placeholder={t('deviceMessagePlaceholder', "Message {{deviceName}}...", { deviceName: deviceName })}
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyPress={handleKeyPress}

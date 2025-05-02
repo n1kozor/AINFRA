@@ -17,7 +17,7 @@ export const useOperations = (deviceId: string) => {
   // Setup mutation for executing operations
   const operationMutation = useMutation({
     mutationFn: ({ operationId, params }: { operationId: string; params: any }) =>
-      api.customDevices.executeOperation(deviceId, operationId, params),
+        api.customDevices.executeOperation(Number(deviceId), operationId, params),
     onSuccess: (data, variables) => {
       // Handle textual data that should be displayed in modal
       if (data && (data.logs || data.output || data.result)) {

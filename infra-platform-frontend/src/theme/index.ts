@@ -1,4 +1,4 @@
-import { createTheme, ThemeOptions, PaletteMode, Theme } from '@mui/material';
+import { createTheme, ThemeOptions, PaletteMode, Theme, CSSObject } from '@mui/material';
 import { lightTheme } from './lightTheme';
 import { darkTheme } from './darkTheme';
 import { paperTheme } from './paperTheme';
@@ -112,13 +112,25 @@ export const getTheme = (themeVariant: ThemeVariant) => {
       MuiCssBaseline: {
         ...(themeOptions.components?.MuiCssBaseline ?? {}),
         styleOverrides: (themeParam: Theme) => {
-          const overrides = themeOptions.components?.MuiCssBaseline?.styleOverrides;
-          const resolvedOverrides =
-              typeof overrides === 'function' ? overrides(themeParam) : overrides || {};
+          const baseOverrides = themeOptions.components?.MuiCssBaseline?.styleOverrides;
+          let resolvedStyles: CSSObject = {};
+
+          if (typeof baseOverrides === 'function') {
+            const result = baseOverrides(themeParam);
+            if (result && typeof result === 'object') {
+              resolvedStyles = result as CSSObject;
+            }
+          } else if (baseOverrides && typeof baseOverrides === 'object') {
+            resolvedStyles = baseOverrides as CSSObject;
+          }
+
+          // Create a properly typed body styles object
+          const bodyStyles = resolvedStyles.body as CSSObject || {};
+
           return {
-            ...resolvedOverrides,
+            ...resolvedStyles,
             body: {
-              ...(resolvedOverrides.body || {}),
+              ...bodyStyles,
               ...customBodyStyles,
             },
           };

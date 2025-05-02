@@ -1,6 +1,6 @@
 // src/components/NetworkSoul.tsx
 import React, { useState, useEffect, useRef } from 'react';
-import { Box, Typography, useTheme, alpha, Skeleton } from '@mui/material';
+import { Box, useTheme, alpha, Skeleton } from '@mui/material';
 import { motion } from 'framer-motion';
 import Lottie from 'react-lottie-player';
 import SoulChatModal from '../chat/SoulChatModal';
@@ -26,14 +26,7 @@ const NetworkSoul: React.FC<NetworkSoulProps> = ({ healthScore, isLoading }) => 
 
   const healthColor = getHealthColor();
 
-  // Get status text based on health score
-  const getStatusText = () => {
-    if (healthScore > 80) return 'Excellent';
-    if (healthScore > 50) return 'Good';
-    return 'Critical';
-  };
 
-  // Load the animation data
   useEffect(() => {
     // Simple fallback animation data
     const fallbackAnimation = {
@@ -256,7 +249,7 @@ const NetworkSoul: React.FC<NetworkSoulProps> = ({ healthScore, isLoading }) => 
         .then(data => {
           setAnimationData(data);
         })
-        .catch(error => {
+        .catch(() => {
           console.log('Using fallback animation instead');
         });
     } catch (error) {

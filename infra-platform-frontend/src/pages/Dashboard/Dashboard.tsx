@@ -18,11 +18,11 @@ import { TimeRangeOption } from '../../types/statistics';
 
 const Dashboard: React.FC = () => {
   const { t } = useTranslation('dashboard');
-  const [refreshTimestamp, setRefreshTimestamp] = useState<Date>(new Date());
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [, setRefreshTimestamp] = useState<Date>(new Date());
+  const [, setIsRefreshing] = useState(false);
   const [timeRange, setTimeRange] = useState<TimeRangeOption>('24h');
 
-  const { deviceStats, isLoading: isStatsLoading, fetchDeviceStats } = useDeviceStats();
+  const {fetchDeviceStats } = useDeviceStats();
   const {
     availabilityStats,
     isLoading: isAvailabilityLoading,
