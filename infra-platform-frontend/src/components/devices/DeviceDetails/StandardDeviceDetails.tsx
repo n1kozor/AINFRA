@@ -272,7 +272,7 @@ const StandardDeviceDetails: React.FC<StandardDeviceDetailsProps> = ({ device })
                 <Box sx={{ textAlign: 'center' }}>
                   <Tooltip title={t('devices:cpuInfo.title')}>
                     <Box>
-                      <CircularProgressWithLabel value={cpu.usage || 0} size={70} />
+                      <CircularProgressWithLabel value={cpu.total || 0} size={70} />
                     </Box>
                   </Tooltip>
                   <Typography variant="body2" sx={{ mt: 1 }}>
@@ -393,8 +393,8 @@ const StandardDeviceDetails: React.FC<StandardDeviceDetailsProps> = ({ device })
                     <Typography variant="body1" fontWeight={500}>
                       {t('devices:cpuInfo.usage')}
                     </Typography>
-                    <Typography variant="body1" fontWeight={700} sx={{ color: getColorByUsage(cpu.usage || 0) }}>
-                      {(cpu.usage || 0).toFixed(1)}%
+                    <Typography variant="body1" fontWeight={700} sx={{ color: getColorByUsage(cpu.total || 0) }}>
+                      {(cpu.total || 0).toFixed(1)}%
                     </Typography>
                   </Box>
                   <LinearProgress
@@ -406,7 +406,7 @@ const StandardDeviceDetails: React.FC<StandardDeviceDetailsProps> = ({ device })
                         bgcolor: alpha(theme.palette.primary.main, 0.1),
                         mb: 2,
                         '& .MuiLinearProgress-bar': {
-                          bgcolor: getColorByUsage(cpu.usage || 0),
+                          bgcolor: getColorByUsage(cpu.total || 0),
                         },
                       }}
                   />
