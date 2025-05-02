@@ -48,6 +48,7 @@ interface TabPanelProps {
   index: number;
 }
 
+
 function TabPanel({ children, value, index, ...other }: TabPanelProps) {
   return (
       <div
@@ -149,7 +150,7 @@ const StandardDeviceDetails: React.FC<StandardDeviceDetailsProps> = ({ device })
     error,
     refetch,
     isRefetching
-  } = useQuery({
+  } = useQuery<DeviceStats>({
     queryKey: ['deviceStats', device.id],
     queryFn: () => api.standardDevices.getStats(device.id),
     refetchInterval: 30000,
@@ -210,13 +211,13 @@ const StandardDeviceDetails: React.FC<StandardDeviceDetailsProps> = ({ device })
     );
   }
 
-  const system = stats.system || {};
-  const cpu = stats.cpu || {};
-  const memory = stats.memory || {};
-  const disk = stats.disk || [];
-  const network = stats.network || [];
-  const processes = stats.processes || {};
-  const containers = stats.containers || [];
+  const system = (stats?.system || {}) as { hostname?: string, os_name?: string, platform?: string, linux_distro?: string, uptime?: string };
+  const cpu = (stats?.cpu || {}) as { [key: string]: any };
+  const memory = (stats?.memory || {}) as { [key: string]: any };
+  const disk = (stats?.disk || []) as { [key: string]: any }[];
+  const network = (stats?.network || []) as { [key: string]: any }[];
+  const processes = (stats?.processes || {}) as { [key: string]: any };
+  const containers = stats?.containers || [];
 
   return (
       <Box>
@@ -246,12 +247,7 @@ const StandardDeviceDetails: React.FC<StandardDeviceDetailsProps> = ({ device })
           <Divider sx={{ mb: 2 }} />
 
           <Grid container spacing={2}>
-            <Grid
-                size={{
-                  xs: 12,
-                  md: 4,
-                }}
-            >
+            <Grid size={{ xs: 12, md: 4 }}>
               <Box>
                 <Typography variant="subtitle2" color="text.secondary">
                   {t('devices:systemInfo.platform')}
@@ -270,88 +266,63 @@ const StandardDeviceDetails: React.FC<StandardDeviceDetailsProps> = ({ device })
             </Grid>
 
 
-            <Grid
-                size={{
-                  xs: 12,
-                  md: 8,
-                }}
-            >
-              <Grid container spacing={2}>
-                <Grid
-                    size={{
-                      xs: 6,
-                      sm: 3,
-                    }}
-                >
-                  <Box sx={{ textAlign: 'center' }}>
-                    <Tooltip title={t('devices:cpuInfo.title')}>
-                      <Box>
-                        <CircularProgressWithLabel value={cpu.usage || 0} size={70} />
-                      </Box>
-                    </Tooltip>
-                    <Typography variant="body2" sx={{ mt: 1 }}>
-                      CPU
-                    </Typography>
-                  </Box>
-                </Grid>
 
-                <Grid
-                    size={{
-                      xs: 6,
-                      sm: 3,
-                    }}
-                >
-                  <Box sx={{ textAlign: 'center' }}>
-                    <Tooltip title={t('devices:memoryInfo.title')}>
-                      <Box>
-                        <CircularProgressWithLabel value={memory.percent || 0} size={70} />
-                      </Box>
-                    </Tooltip>
-                    <Typography variant="body2" sx={{ mt: 1 }}>
-                      RAM
-                    </Typography>
-                  </Box>
-                </Grid>
+            <Grid container spacing={2} size={{ xs: 12, md: 8 }}>
+              <Grid size={{ xs: 6, sm: 3 }}>
+                <Box sx={{ textAlign: 'center' }}>
+                  <Tooltip title={t('devices:cpuInfo.title')}>
+                    <Box>
+                      <CircularProgressWithLabel value={cpu.usage || 0} size={70} />
+                    </Box>
+                  </Tooltip>
+                  <Typography variant="body2" sx={{ mt: 1 }}>
+                    CPU
+                  </Typography>
+                </Box>
+              </Grid>
 
-                {(memory.swap_total || 0) > 0 && (
-                    <Grid
-                        size={{
-                          xs: 6,
-                          sm: 3,
-                        }}
-                    >
-                      <Box sx={{ textAlign: 'center' }}>
-                        <Tooltip title={t('devices:memoryInfo.swap')}>
-                          <Box>
-                            <CircularProgressWithLabel value={memory.swap_percent || 0} size={70} />
-                          </Box>
-                        </Tooltip>
-                        <Typography variant="body2" sx={{ mt: 1 }}>
-                          SWAP
-                        </Typography>
-                      </Box>
-                    </Grid>
-                )}
+              <Grid size={{ xs: 6, sm: 3 }}>
+                <Box sx={{ textAlign: 'center' }}>
+                  <Tooltip title={t('devices:memoryInfo.title')}>
+                    <Box>
+                      <CircularProgressWithLabel value={memory.percent || 0} size={70} />
+                    </Box>
+                  </Tooltip>
+                  <Typography variant="body2" sx={{ mt: 1 }}>
+                    RAM
+                  </Typography>
+                </Box>
+              </Grid>
 
-                <Grid
-                    size={{
-                      xs: 6,
-                      sm: 3,
-                    }}
-                >
-                  <Box sx={{ textAlign: 'center' }}>
-                    <Box sx={{ height: 70, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Typography variant="h5" fontWeight="bold" color="text.secondary">
-                        {processes.total || 0}
+              {(memory.swap_total || 0) > 0 && (
+                  <Grid size={{ xs: 6, sm: 3 }}>
+                    <Box sx={{ textAlign: 'center' }}>
+                      <Tooltip title={t('devices:memoryInfo.swap')}>
+                        <Box>
+                          <CircularProgressWithLabel value={memory.swap_percent || 0} size={70} />
+                        </Box>
+                      </Tooltip>
+                      <Typography variant="body2" sx={{ mt: 1 }}>
+                        SWAP
                       </Typography>
                     </Box>
-                    <Typography variant="body2" sx={{ mt: 1 }}>
-                      {t('devices:processInfo.processes')}
+                  </Grid>
+              )}
+
+              <Grid size={{ xs: 6, sm: 3 }}>
+                <Box sx={{ textAlign: 'center' }}>
+                  <Box sx={{ height: 70, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Typography variant="h5" fontWeight="bold" color="text.secondary">
+                      {processes.total || 0}
                     </Typography>
                   </Box>
-                </Grid>
+                  <Typography variant="body2" sx={{ mt: 1 }}>
+                    {t('devices:processInfo.processes')}
+                  </Typography>
+                </Box>
               </Grid>
             </Grid>
+
 
           </Grid>
         </Paper>
@@ -407,6 +378,7 @@ const StandardDeviceDetails: React.FC<StandardDeviceDetailsProps> = ({ device })
                   md: 6,
                 }}
             >
+              {/* CPU Paper */}
               <Paper sx={{ p: 3, borderRadius: 2, height: '100%' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   <CpuIcon color="primary" sx={{ mr: 1 }} />
@@ -421,7 +393,7 @@ const StandardDeviceDetails: React.FC<StandardDeviceDetailsProps> = ({ device })
                     <Typography variant="body1" fontWeight={500}>
                       {t('devices:cpuInfo.usage')}
                     </Typography>
-                    <Typography variant="body1" fontWeight={700} sx={{ color: getColorByUsage(cpu.usage) }}>
+                    <Typography variant="body1" fontWeight={700} sx={{ color: getColorByUsage(cpu.usage || 0) }}>
                       {(cpu.usage || 0).toFixed(1)}%
                     </Typography>
                   </Box>
@@ -448,7 +420,6 @@ const StandardDeviceDetails: React.FC<StandardDeviceDetailsProps> = ({ device })
                         {(cpu.user || 0).toFixed(1)}%
                       </Typography>
                     </Grid>
-
                     <Grid size={{ xs: 4 }}>
                       <Typography variant="body2" color="text.secondary">
                         {t('devices:cpuInfo.system')}
@@ -457,7 +428,6 @@ const StandardDeviceDetails: React.FC<StandardDeviceDetailsProps> = ({ device })
                         {(cpu.system || 0).toFixed(1)}%
                       </Typography>
                     </Grid>
-
                     <Grid size={{ xs: 4 }}>
                       <Typography variant="body2" color="text.secondary">
                         {t('devices:cpuInfo.idle')}
@@ -469,18 +439,14 @@ const StandardDeviceDetails: React.FC<StandardDeviceDetailsProps> = ({ device })
                   </Grid>
 
                   <Divider sx={{ my: 2 }} />
-
                   <Typography variant="subtitle2" gutterBottom>
                     {t('devices:cpuInfo.cores')}
                   </Typography>
 
-                  {cpu.cores && cpu.cores.length > 0 ? (
+                  {cpu.cores?.length > 0 ? (
                       <Grid container spacing={2}>
                         {cpu.cores.map((core, index) => (
-                            <Grid
-                                size={{ xs: 6, sm: 3 }}
-                                key={index}
-                            >
+                            <Grid key={index} size={{ xs: 6, sm: 3 }}>
                               <Box
                                   sx={{
                                     p: 1.5,
@@ -524,15 +490,14 @@ const StandardDeviceDetails: React.FC<StandardDeviceDetailsProps> = ({ device })
               </Paper>
             </Grid>
 
-
             <Grid
                 size={{
                   xs: 12,
                   md: 6,
                 }}
             >
-
-            <Paper sx={{ p: 3, borderRadius: 2, height: '100%' }}>
+              {/* Memory Paper */}
+              <Paper sx={{ p: 3, borderRadius: 2, height: '100%' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   <MemoryIcon color="secondary" sx={{ mr: 1 }} />
                   <Typography variant="h6">
@@ -546,7 +511,11 @@ const StandardDeviceDetails: React.FC<StandardDeviceDetailsProps> = ({ device })
                     <Typography variant="body1" fontWeight={500}>
                       {t('devices:memoryInfo.ramUsage')}
                     </Typography>
-                    <Typography variant="body1" fontWeight={700} sx={{ color: getColorByUsage(memory.percent || 0) }}>
+                    <Typography
+                        variant="body1"
+                        fontWeight={700}
+                        sx={{ color: getColorByUsage(memory.percent || 0) }}
+                    >
                       {(memory.percent || 0).toFixed(1)}%
                     </Typography>
                   </Box>
@@ -560,121 +529,68 @@ const StandardDeviceDetails: React.FC<StandardDeviceDetailsProps> = ({ device })
                         mb: 1,
                         '& .MuiLinearProgress-bar': {
                           bgcolor: getColorByUsage(memory.percent || 0),
-                        }
+                        },
                       }}
                   />
-
                   <Typography variant="body2" sx={{ textAlign: 'right', mb: 3 }}>
                     {formatBytes(memory.used || 0)} / {formatBytes(memory.total || 0)}
                   </Typography>
 
                   <Grid container spacing={2}>
-                    <Grid
-                        size={{
-                          xs: 6,
-                          sm: 3,
-                        }}
-                    >
-                      <Box
-                          sx={{
-                            p: 2,
-                            borderRadius: 2,
-                            bgcolor: alpha(theme.palette.success.main, 0.1),
-                            height: '100%',
-                          }}
-                      >
-                        <Typography variant="caption" color="text.secondary">
-                          {t('devices:memoryInfo.free')}
-                        </Typography>
-                        <Typography variant="body1" fontWeight={600} color="success.main">
-                          {formatBytes(memory.free || 0)}
-                        </Typography>
-                      </Box>
-                    </Grid>
-
-                    <Grid
-                        size={{
-                          xs: 6,
-                          sm: 3,
-                        }}
-                    >
-                      <Box
-                          sx={{
-                            p: 2,
-                            borderRadius: 2,
-                            bgcolor: alpha(theme.palette.info.main, 0.1),
-                            height: '100%',
-                          }}
-                      >
-                        <Typography variant="caption" color="text.secondary">
-                          {t('devices:memoryInfo.cached')}
-                        </Typography>
-                        <Typography variant="body1" fontWeight={600} color="info.main">
-                          {formatBytes(memory.cached || 0)}
-                        </Typography>
-                      </Box>
-                    </Grid>
-
-                    <Grid
-                        size={{
-                          xs: 6,
-                          sm: 3,
-                        }}
-                    >
-                      <Box
-                          sx={{
-                            p: 2,
-                            borderRadius: 2,
-                            bgcolor: alpha(theme.palette.warning.main, 0.1),
-                            height: '100%',
-                          }}
-                      >
-                        <Typography variant="caption" color="text.secondary">
-                          {t('devices:memoryInfo.buffers')}
-                        </Typography>
-                        <Typography variant="body1" fontWeight={600} color="warning.main">
-                          {formatBytes(memory.buffers || 0)}
-                        </Typography>
-                      </Box>
-                    </Grid>
-
-                    <Grid
-                        size={{
-                          xs: 6,
-                          sm: 3,
-                        }}
-                    >
-                      <Box
-                          sx={{
-                            p: 2,
-                            borderRadius: 2,
-                            bgcolor: alpha(theme.palette.error.main, 0.1),
-                            height: '100%',
-                          }}
-                      >
-                        <Typography variant="caption" color="text.secondary">
-                          {t('devices:memoryInfo.used')}
-                        </Typography>
-                        <Typography variant="body1" fontWeight={600} color="error.main">
-                          {formatBytes(memory.used || 0)}
-                        </Typography>
-                      </Box>
-                    </Grid>
+                    {[
+                      {
+                        label: t('devices:memoryInfo.free'),
+                        value: memory.free,
+                        color: 'success.main',
+                        bg: alpha(theme.palette.success.main, 0.1),
+                      },
+                      {
+                        label: t('devices:memoryInfo.cached'),
+                        value: memory.cached,
+                        color: 'info.main',
+                        bg: alpha(theme.palette.info.main, 0.1),
+                      },
+                      {
+                        label: t('devices:memoryInfo.buffers'),
+                        value: memory.buffers,
+                        color: 'warning.main',
+                        bg: alpha(theme.palette.warning.main, 0.1),
+                      },
+                      {
+                        label: t('devices:memoryInfo.used'),
+                        value: memory.used,
+                        color: 'error.main',
+                        bg: alpha(theme.palette.error.main, 0.1),
+                      },
+                    ].map((mem, i) => (
+                        <Grid key={i} size={{ xs: 6, sm: 3 }}>
+                          <Box sx={{ p: 2, borderRadius: 2, bgcolor: mem.bg, height: '100%' }}>
+                            <Typography variant="caption" color="text.secondary">
+                              {mem.label}
+                            </Typography>
+                            <Typography variant="body1" fontWeight={600} color={mem.color}>
+                              {formatBytes(mem.value || 0)}
+                            </Typography>
+                          </Box>
+                        </Grid>
+                    ))}
                   </Grid>
-
                 </Box>
 
-                {(memory.swap_total || 0) > 0 && (
+                {memory.swap_total > 0 && (
                     <Box sx={{ mt: 4 }}>
                       <Typography variant="subtitle1" fontWeight={500} gutterBottom>
                         {t('devices:memoryInfo.swap')}
                       </Typography>
-
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                         <Typography variant="body2" color="text.secondary">
                           {t('devices:memoryInfo.swapUsage')}
                         </Typography>
-                        <Typography variant="body2" fontWeight={600} sx={{ color: getColorByUsage(memory.swap_percent || 0) }}>
+                        <Typography
+                            variant="body2"
+                            fontWeight={600}
+                            sx={{ color: getColorByUsage(memory.swap_percent || 0) }}
+                        >
                           {(memory.swap_percent || 0).toFixed(1)}%
                         </Typography>
                       </Box>
@@ -688,10 +604,9 @@ const StandardDeviceDetails: React.FC<StandardDeviceDetailsProps> = ({ device })
                             mb: 1,
                             '& .MuiLinearProgress-bar': {
                               bgcolor: getColorByUsage(memory.swap_percent || 0),
-                            }
+                            },
                           }}
                       />
-
                       <Typography variant="caption" sx={{ display: 'block', textAlign: 'right' }}>
                         {formatBytes(memory.swap_used || 0)} / {formatBytes(memory.swap_total || 0)}
                       </Typography>
@@ -700,6 +615,7 @@ const StandardDeviceDetails: React.FC<StandardDeviceDetailsProps> = ({ device })
               </Paper>
             </Grid>
           </Grid>
+
         </TabPanel>
 
         <TabPanel value={tabValue} index={1}>
@@ -715,7 +631,13 @@ const StandardDeviceDetails: React.FC<StandardDeviceDetailsProps> = ({ device })
             {disk && disk.length > 0 ? (
                 <Grid container spacing={3}>
                   {disk.map((diskItem, index) => (
-                      <Grid xs={12} md={6} key={index}>
+                      <Grid
+                          size={{
+                            xs: 12,
+                            md: 6,
+                          }}
+                          key={index}
+                      >
                         <Paper
                             elevation={2}
                             sx={{
@@ -724,25 +646,18 @@ const StandardDeviceDetails: React.FC<StandardDeviceDetailsProps> = ({ device })
                               transition: 'all 0.3s',
                               '&:hover': {
                                 boxShadow: 6,
-                                transform: 'translateY(-2px)'
-                              }
+                                transform: 'translateY(-2px)',
+                              },
                             }}
                         >
                           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                              <LayersIcon
-                                  fontSize="small"
-                                  sx={{ mr: 1, color: theme.palette.warning.main }}
-                              />
+                              <LayersIcon fontSize="small" sx={{ mr: 1, color: theme.palette.warning.main }} />
                               <Typography variant="subtitle1" fontWeight={600}>
                                 {diskItem.device}
                               </Typography>
                             </Box>
-                            <Chip
-                                label={diskItem.fs_type}
-                                size="small"
-                                variant="outlined"
-                            />
+                            <Chip label={diskItem.fs_type} size="small" variant="outlined" />
                           </Box>
 
                           <Typography variant="body2" color="text.secondary" gutterBottom>
@@ -771,7 +686,7 @@ const StandardDeviceDetails: React.FC<StandardDeviceDetailsProps> = ({ device })
                                   bgcolor: alpha(theme.palette.warning.main, 0.1),
                                   '& .MuiLinearProgress-bar': {
                                     bgcolor: getColorByUsage(diskItem.percent || 0),
-                                  }
+                                  },
                                 }}
                             />
                           </Box>
@@ -804,6 +719,7 @@ const StandardDeviceDetails: React.FC<StandardDeviceDetailsProps> = ({ device })
                           </Box>
                         </Paper>
                       </Grid>
+
                   ))}
                 </Grid>
             ) : (
@@ -827,19 +743,13 @@ const StandardDeviceDetails: React.FC<StandardDeviceDetailsProps> = ({ device })
             {network && network.length > 0 ? (
                 <Grid container spacing={3}>
                   {network.map((iface, index) => (
-                      <Grid
-                          size={{
-                            xs: 12,
-                            sm: 6,
-                          }}
-                          key={index}
-                      >
+                      <Grid size={{ xs: 12, sm: 6 }} key={index}>
                         <Paper
                             elevation={3}
                             sx={{
                               p: 2.5,
                               borderRadius: 2,
-                              transition: 'all 0.3s',
+                              transition: 'all 0.3s ease',
                               '&:hover': {
                                 boxShadow: 8,
                                 transform: 'translateY(-2px)',
@@ -849,17 +759,17 @@ const StandardDeviceDetails: React.FC<StandardDeviceDetailsProps> = ({ device })
                           <Typography variant="subtitle1" fontWeight={600} gutterBottom>
                             <NetworkIcon
                                 fontSize="small"
-                                sx={{ mr: 1, verticalAlign: 'text-bottom', color: theme.palette.info.main }}
+                                sx={{
+                                  mr: 1,
+                                  verticalAlign: 'text-bottom',
+                                  color: theme.palette.info.main,
+                                }}
                             />
                             {iface.interface}
                           </Typography>
 
                           <Grid container spacing={2} sx={{ mt: 1 }}>
-                            <Grid
-                                size={{
-                                  xs: 6,
-                                }}
-                            >
+                            <Grid size={{ xs: 6 }}>
                               <Box
                                   sx={{
                                     p: 2,
@@ -880,11 +790,7 @@ const StandardDeviceDetails: React.FC<StandardDeviceDetailsProps> = ({ device })
                               </Box>
                             </Grid>
 
-                            <Grid
-                                size={{
-                                  xs: 6,
-                                }}
-                            >
+                            <Grid size={{ xs: 6 }}>
                               <Box
                                   sx={{
                                     p: 2,
@@ -907,6 +813,7 @@ const StandardDeviceDetails: React.FC<StandardDeviceDetailsProps> = ({ device })
                           </Grid>
                         </Paper>
                       </Grid>
+
 
                   ))}
                 </Grid>
@@ -1021,6 +928,7 @@ const StandardDeviceDetails: React.FC<StandardDeviceDetailsProps> = ({ device })
                 </Box>
               </Grid>
             </Grid>
+
 
 
             {processes.list && processes.list.length > 0 ? (
@@ -1230,9 +1138,9 @@ const StandardDeviceDetails: React.FC<StandardDeviceDetailsProps> = ({ device })
                           </Box>
                         </Paper>
                       </Grid>
-
                   ))}
                 </Grid>
+
               </Paper>
             </TabPanel>
         )}
