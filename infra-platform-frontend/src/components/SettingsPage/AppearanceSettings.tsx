@@ -1,4 +1,4 @@
-// src/components/settingspage/AppearanceSettings.tsx
+// src/components/SettingsPage/AppearanceSettings.tsx
 import React from 'react';
 import {
   Box,

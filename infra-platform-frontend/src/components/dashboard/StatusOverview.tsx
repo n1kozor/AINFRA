@@ -85,7 +85,6 @@ export const StatusOverview: React.FC<StatusOverviewProps> = ({
     setTabValue(newValue);
   };
 
-  // Format time label for the selected time range
   const getTimeRangeLabel = (range: TimeRangeOption): string => {
     switch (range) {
       case '30m': return t('timeRange.thirtyMinutes');
@@ -98,20 +97,17 @@ export const StatusOverview: React.FC<StatusOverviewProps> = ({
     }
   };
 
-  // Transform data for improved chart visualization
   const chartData = useMemo(() => {
     if (!statistics) return [];
 
-    // Filter out entries with no data and ensure minimum 2 data points
     const filteredData = statistics.hourly_trend
       .filter(h => h.check_count > 0)
       .map(item => ({
         ...item,
-        hour: item.hour.split(' ')[1], // Only show time part for clearer labels
-        availability: item.availability_rate  // Renamed for clarity in chart
+        hour: item.hour.split(' ')[1],
+        availability: item.availability_rate
       }));
 
-    // If we have only 1 data point, duplicate it with slight offset for better visualization
     if (filteredData.length === 1) {
       const singlePoint = filteredData[0];
       return [
@@ -123,26 +119,22 @@ export const StatusOverview: React.FC<StatusOverviewProps> = ({
     return filteredData;
   }, [statistics]);
 
-  // Get current availability rate with visual indicator
   const availabilityStatus = useMemo(() => {
     if (!statistics) return { rate: 0, status: 'unknown' };
 
     const rate = statistics.availability_summary.availability_rate;
     let status = 'critical';
 
-    if (rate >= 99) status = 'excellent';
-    else if (rate >= 90) status = 'good';
-    else if (rate >= 75) status = 'fair';
+    if (rate > 80) status = 'excellent';
+    else if (rate > 50) status = 'good';
 
     return { rate, status };
   }, [statistics]);
 
-  // Get color based on availability status
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'excellent': return theme.palette.success.main;
-      case 'good': return theme.palette.info.main;
-      case 'fair': return theme.palette.warning.main;
+      case 'good': return theme.palette.warning.main;
       case 'critical': return theme.palette.error.main;
       default: return theme.palette.grey[500];
     }
@@ -164,7 +156,6 @@ export const StatusOverview: React.FC<StatusOverviewProps> = ({
         }}
       >
         <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
-          {/* Header with time range selector */}
           <Box sx={{
             display: 'flex',
             flexDirection: { xs: 'column', sm: 'row' },
@@ -241,10 +232,8 @@ export const StatusOverview: React.FC<StatusOverviewProps> = ({
             </Box>
           ) : statistics ? (
             <>
-              {/* Key Metrics Card Row */}
               <Box sx={{ mb: 4, overflow: 'hidden' }}>
                 <Grid container spacing={2}>
-                  {/* Current Status */}
                   <Grid item xs={12} sm={6} md={3}>
                     <Paper
                       elevation={0}
@@ -280,7 +269,7 @@ export const StatusOverview: React.FC<StatusOverviewProps> = ({
                           background: `radial-gradient(circle, ${alpha(statusColor, 0.15)} 0%, transparent 70%)`,
                           animation: 'pulse 2s infinite',
                         }} />
-                        <Typography variant="h3" sx={{ fontWeight: 700, color: statusColor }}>
+                        <Typography variant="h4" sx={{ fontWeight: 700, color: statusColor }}>
                           {Math.round(availabilityStatus.rate)}%
                         </Typography>
                       </Box>
@@ -300,7 +289,6 @@ export const StatusOverview: React.FC<StatusOverviewProps> = ({
                     </Paper>
                   </Grid>
 
-                  {/* Device Statistics */}
                   <Grid item xs={12} sm={6} md={3}>
                     <Paper
                       elevation={0}
@@ -331,7 +319,6 @@ export const StatusOverview: React.FC<StatusOverviewProps> = ({
                     </Paper>
                   </Grid>
 
-                  {/* Response Time */}
                   <Grid item xs={12} sm={6} md={3}>
                     <Paper
                       elevation={0}
@@ -362,7 +349,6 @@ export const StatusOverview: React.FC<StatusOverviewProps> = ({
                     </Paper>
                   </Grid>
 
-                  {/* Checks Status */}
                   <Grid item xs={12} sm={6} md={3}>
                     <Paper
                       elevation={0}
@@ -397,7 +383,6 @@ export const StatusOverview: React.FC<StatusOverviewProps> = ({
                 </Grid>
               </Box>
 
-              {/* Tabs for Chart, Errors, and Devices */}
               <Paper
                 elevation={0}
                 sx={{
@@ -437,9 +422,7 @@ export const StatusOverview: React.FC<StatusOverviewProps> = ({
                   />
                 </Tabs>
 
-                {/* Tab Panel Content */}
                 <Box sx={{ p: { xs: 2, md: 3 } }}>
-                  {/* Chart Panel */}
                   {tabValue === 0 && (
                     <>
                       <Box sx={{ height: 350, width: '100%' }}>
@@ -509,7 +492,6 @@ export const StatusOverview: React.FC<StatusOverviewProps> = ({
                         )}
                       </Box>
 
-                      {/* Chart legend */}
                       {chartData.length > 0 && (
                         <Box sx={{
                           display: 'flex',
@@ -542,7 +524,6 @@ export const StatusOverview: React.FC<StatusOverviewProps> = ({
                     </>
                   )}
 
-                  {/* Errors Panel */}
                   {tabValue === 1 && (
                     <>
                       {statistics.recent_errors.length > 0 ? (
@@ -637,7 +618,6 @@ export const StatusOverview: React.FC<StatusOverviewProps> = ({
                     </>
                   )}
 
-                  {/* Slowest Devices Panel */}
                   {tabValue === 2 && (
                     <>
                       {statistics.top_slowest_devices.length > 0 ? (

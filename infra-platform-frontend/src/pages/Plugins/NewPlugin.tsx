@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Box,
   Typography,
   Button,
   CircularProgress,
   Alert,
-  useTheme,
-  alpha,
   Paper,
   TextField,
   Divider,
@@ -25,7 +23,7 @@ import PageContainer from '../../components/common/PageContainer';
 import { usePluginActions } from '../../hooks/plugins/usePluginActions';
 
 // Helper function to safely display any value as string
-const safeDisplay = (value) => {
+const safeDisplay = (value: null | undefined) => {
   if (value === null || value === undefined) {
     return '';
   }
@@ -39,7 +37,6 @@ const safeDisplay = (value) => {
 
 const NewPlugin = () => {
   const { t } = useTranslation(['plugins', 'common']);
-  const theme = useTheme();
   const { createMutation } = usePluginActions();
 
   const [pluginJson, setPluginJson] = useState('');
@@ -48,7 +45,7 @@ const NewPlugin = () => {
   const [parseSuccess, setParseSuccess] = useState(false);
 
   // Validate the plugin JSON
-  const validatePluginJson = (pluginData) => {
+  const validatePluginJson = (pluginData: { [x: string]: any; ui_schema: any; }) => {
     // Check for required fields
     const requiredFields = ['name', 'description', 'version', 'author'];
     const missingFields = requiredFields.filter(field => !pluginData[field]);
@@ -122,31 +119,24 @@ const NewPlugin = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <Paper
-          elevation={0}
-          sx={{
-            p: 3,
-            borderRadius: '16px',
-            border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-            mb: 3
-          }}
-        >
-          <Typography variant="h6" gutterBottom>
-            {t('plugins:importPluginJson')}
-          </Typography>
+        <Paper>
+          <Box p={3}>
+            <Typography variant="h6" gutterBottom>
+              {t('plugins:importPluginJson')}
+            </Typography>
 
-          <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
-            Paste the full plugin JSON configuration including name, description, version, author, code, and UI schema.
-          </Typography>
+            <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+              Paste the full plugin JSON configuration including name, description, version, author, code, and UI schema.
+            </Typography>
 
-          <TextField
-            label="Plugin JSON"
-            multiline
-            fullWidth
-            rows={15}
-            value={pluginJson}
-            onChange={(e) => setPluginJson(e.target.value)}
-            placeholder='{
+            <TextField
+              label="Plugin JSON"
+              multiline
+              fullWidth
+              rows={15}
+              value={pluginJson}
+              onChange={(e) => setPluginJson(e.target.value)}
+              placeholder='{
   "name": "Plugin Name",
   "description": "Plugin Description",
   "version": "1.0.0",
@@ -154,142 +144,126 @@ const NewPlugin = () => {
   "code": "...",
   "ui_schema": {...}
 }'
-            sx={{
-              mb: 2,
-              fontFamily: 'monospace',
-              '& .MuiOutlinedInput-root': {
-                borderRadius: '10px'
-              }
-            }}
-            error={!!validationError}
-            helperText={validationError}
-          />
+              sx={{ mb: 2, fontFamily: 'monospace' }}
+              error={!!validationError}
+              helperText={validationError}
+            />
 
-          <Button
-            variant="outlined"
-            startIcon={<UploadIcon />}
-            onClick={handleParseJson}
-            sx={{ borderRadius: '10px', mb: 3 }}
-          >
-            Validate JSON
-          </Button>
-
-          {parseSuccess && (
-            <Alert
-              severity="success"
-              sx={{ mb: 3, borderRadius: '10px' }}
+            <Button
+              variant="outlined"
+              startIcon={<UploadIcon />}
+              onClick={handleParseJson}
+              sx={{ mb: 3 }}
             >
-              Plugin JSON successfully validated
-            </Alert>
-          )}
+              Validate JSON
+            </Button>
 
-          {parsedPlugin && (
-            <>
-              <Divider sx={{ my: 3 }} />
+            {parseSuccess && (
+              <Alert severity="success" sx={{ mb: 3 }}>
+                Plugin JSON successfully validated
+              </Alert>
+            )}
 
-              <Typography variant="h6" gutterBottom>
-                Plugin Details
-              </Typography>
+            {parsedPlugin && (
+              <>
+                <Divider sx={{ my: 3 }} />
 
-              <Box sx={{ mb: 3 }}>
-                <Typography variant="subtitle2" color="textSecondary">
-                  Name
+                <Typography variant="h6" gutterBottom>
+                  Plugin Details
                 </Typography>
-                <Typography variant="body1">
-                  {safeDisplay(parsedPlugin.name)}
-                </Typography>
-              </Box>
 
-              <Box sx={{ mb: 3 }}>
-                <Typography variant="subtitle2" color="textSecondary">
-                  Description
-                </Typography>
-                <Typography variant="body1">
-                  {safeDisplay(parsedPlugin.description)}
-                </Typography>
-              </Box>
-
-              <Box sx={{ mb: 3 }}>
-                <Typography variant="subtitle2" color="textSecondary">
-                  Version
-                </Typography>
-                <Typography variant="body1">
-                  {safeDisplay(parsedPlugin.version)}
-                </Typography>
-              </Box>
-
-              <Box sx={{ mb: 3 }}>
-                <Typography variant="subtitle2" color="textSecondary">
-                  Author
-                </Typography>
-                <Typography variant="body1">
-                  {safeDisplay(parsedPlugin.author)}
-                </Typography>
-              </Box>
-
-              <Box sx={{ mb: 3 }}>
-                <Typography variant="subtitle2" color="textSecondary">
-                  UI Schema
-                </Typography>
-                <Typography variant="body1" sx={{ color: 'success.main' }}>
-                  UI Schema is valid and included
-                </Typography>
-              </Box>
-
-              {parsedPlugin.code && (
                 <Box sx={{ mb: 3 }}>
                   <Typography variant="subtitle2" color="textSecondary">
-                    Code
+                    Name
                   </Typography>
-                  <Typography variant="body1" sx={{ color: 'success.main' }}>
-                    Code is included ({typeof parsedPlugin.code === 'string' ? parsedPlugin.code.length : 'unknown'} characters)
+                  <Typography variant="body1">
+                    {safeDisplay(parsedPlugin.name)}
                   </Typography>
                 </Box>
-              )}
-            </>
-          )}
 
-          {createMutation.isError && (
-            <Alert
-              severity="error"
-              sx={{ mt: 3, borderRadius: '10px' }}
-            >
-              {typeof createMutation.error === 'string' ? createMutation.error : 'Failed to create plugin'}
-            </Alert>
-          )}
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="subtitle2" color="textSecondary">
+                    Description
+                  </Typography>
+                  <Typography variant="body1">
+                    {safeDisplay(parsedPlugin.description)}
+                  </Typography>
+                </Box>
 
-          {createMutation.isSuccess && (
-            <Alert
-              severity="success"
-              sx={{ mt: 3, borderRadius: '10px' }}
-            >
-              Plugin created successfully
-            </Alert>
-          )}
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="subtitle2" color="textSecondary">
+                    Version
+                  </Typography>
+                  <Typography variant="body1">
+                    {safeDisplay(parsedPlugin.version)}
+                  </Typography>
+                </Box>
 
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
-            <Button
-              component={Link}
-              to="/plugins"
-              startIcon={<ArrowBackIcon />}
-              variant="outlined"
-              sx={{ borderRadius: '10px' }}
-            >
-              Cancel
-            </Button>
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="subtitle2" color="textSecondary">
+                    Author
+                  </Typography>
+                  <Typography variant="body1">
+                    {safeDisplay(parsedPlugin.author)}
+                  </Typography>
+                </Box>
 
-            <Button
-              variant="contained"
-              startIcon={createMutation.isPending ?
-                <CircularProgress size={20} color="inherit" /> :
-                <SaveIcon />
-              }
-              onClick={handleSubmit}
-              disabled={createMutation.isPending || !parsedPlugin}
-              sx={{ borderRadius: '10px' }}
-            >
-              Save Plugin
-            </Button>
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="subtitle2" color="textSecondary">
+                    UI Schema
+                  </Typography>
+                  <Typography variant="body1" sx={{ color: 'success.main' }}>
+                    UI Schema is valid and included
+                  </Typography>
+                </Box>
+
+                {parsedPlugin.code && (
+                  <Box sx={{ mb: 3 }}>
+                    <Typography variant="subtitle2" color="textSecondary">
+                      Code
+                    </Typography>
+                    <Typography variant="body1" sx={{ color: 'success.main' }}>
+                      Code is included ({typeof parsedPlugin.code === 'string' ? parsedPlugin.code.length : 'unknown'} characters)
+                    </Typography>
+                  </Box>
+                )}
+              </>
+            )}
+
+            {createMutation.isError && (
+              <Alert severity="error" sx={{ mt: 3 }}>
+                {typeof createMutation.error === 'string' ? createMutation.error : 'Failed to create plugin'}
+              </Alert>
+            )}
+
+            {createMutation.isSuccess && (
+              <Alert severity="success" sx={{ mt: 3 }}>
+                Plugin created successfully
+              </Alert>
+            )}
+
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
+              <Button
+                component={Link}
+                to="/plugins"
+                startIcon={<ArrowBackIcon />}
+                variant="outlined"
+              >
+                Cancel
+              </Button>
+
+              <Button
+                variant="contained"
+                startIcon={createMutation.isPending ?
+                  <CircularProgress size={20} color="inherit" /> :
+                  <SaveIcon />
+                }
+                onClick={handleSubmit}
+                disabled={createMutation.isPending || !parsedPlugin}
+              >
+                Save Plugin
+              </Button>
+            </Box>
           </Box>
         </Paper>
       </motion.div>

@@ -40,5 +40,22 @@
   "pleaseEnterName": "Please enter a sensor name",
   "pleaseSelectMetric": "Please select a metric to monitor",
   "pleaseEnterCondition": "Please enter a condition",
-  "deleteConfirmation": "Delete Confirmation"
+  "deleteConfirmation": "Delete Confirmation",
+  "actions": {
+    "edit": "Edit",
+    "delete": "Delete",
+    "search": "Search",
+    "cancel": "Cancel"
+  },
+  "tableActions": "Actions",
+  "tableHeaders": {
+    "name": "Name",
+    "description": "Description",
+    "device": "Device",
+    "metricKey": "Metric Key",
+    "alertCondition": "Alert Condition",
+    "alertLevel": "Alert Level",
+    "status": "Status",
+    "actions": "Actions"
+  }
 }

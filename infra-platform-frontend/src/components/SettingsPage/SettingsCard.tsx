@@ -1,4 +1,4 @@
-// src/components/settingspage/SettingsCard.tsx
+// src/components/SettingsPage/SettingsCard.tsx
 import React, { ReactNode } from 'react';
 import { Box, Paper, Typography, useTheme } from '@mui/material';
 

@@ -175,7 +175,7 @@ const SoulChatModal: React.FC<SoulChatModalProps> = ({
 
     try {
       // Use the LLM API with statistics focus
-      const prompt = networkSoulPrompt();
+      networkSoulPrompt();
       const response = await llmApi.generateStatisticsReport(newMessage);
 
       // Update the soul's message with the actual response

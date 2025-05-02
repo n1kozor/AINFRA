@@ -29,20 +29,3 @@ export interface PluginUpdate {
   ui_schema?: Record<string, any>;
   is_active?: boolean;
 }
-
-export interface PluginOperation {
-  id: string;
-  name: string;
-  description: string;
-  params: string[];
-}
-
-export interface PluginTemplate {
-  id: string;
-  name: string;
-  description: string;
-  type: 'http' | 'ssh' | 'snmp' | 'mqtt' | 'custom';
-  code: string;
-  ui_schema: any;
-  icon: string;
-}

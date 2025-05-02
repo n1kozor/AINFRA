@@ -1,4 +1,4 @@
-// src/components/settingspage/LanguageSettings.tsx
+// src/components/SettingsPage/LanguageSettings.tsx
 import React from 'react';
 import {
   Box,

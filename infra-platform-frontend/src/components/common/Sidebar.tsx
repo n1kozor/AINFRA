@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   Drawer,
@@ -33,8 +33,8 @@ const Sidebar = () => {
   const { t } = useTranslation();
   const location = useLocation();
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('lg'));
-  const [hasAnimated, setHasAnimated] = useState(false);
+    useMediaQuery(theme.breakpoints.down('lg'));
+    const [hasAnimated, setHasAnimated] = useState(false);
 
   useEffect(() => {
     setHasAnimated(true);

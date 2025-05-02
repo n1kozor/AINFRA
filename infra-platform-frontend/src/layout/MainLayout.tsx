@@ -1,5 +1,5 @@
-import React, { ReactNode, useEffect } from 'react';
-import { Box, CssBaseline, Toolbar, alpha, useTheme } from '@mui/material';
+import { ReactNode, useEffect } from 'react';
+import { Box, CssBaseline, alpha, useTheme } from '@mui/material';
 import Header from '../components/common/Header';
 import Sidebar from '../components/common/Sidebar';
 import { useAppContext } from '../context/AppContext';

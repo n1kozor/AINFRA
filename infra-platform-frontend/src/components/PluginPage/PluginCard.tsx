@@ -17,11 +17,9 @@ import {
   EditRounded as EditIcon,
   VerifiedUserRounded as VerifiedIcon,
   VisibilityRounded as ViewIcon,
-  CheckCircleRounded as CheckIcon,
-  CancelRounded as CancelIcon,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 import { motion } from 'framer-motion';
 
@@ -56,60 +54,22 @@ const PluginCard: React.FC<PluginCardProps> = ({ plugin, onDelete, index, compac
           display: 'flex',
           flexDirection: 'column',
           height: '100%',
-          borderRadius: '16px',
-          transition: 'all 0.25s',
-          overflow: 'hidden',
           cursor: 'pointer',
           border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-          bgcolor: alpha(theme.palette.background.paper, 0.7),
-          backdropFilter: 'blur(8px)',
-          '&:hover': {
-            transform: 'translateY(-5px)',
-            boxShadow: `0 12px 20px ${alpha(theme.palette.common.black, 0.08)}`,
-            borderColor: alpha(theme.palette.primary.main, 0.2),
-          },
         }}
       >
-        {/* Card Header */}
-        <Box sx={{
-          p: 2,
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'flex-start',
-          background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.05)}, transparent)`,
-        }}>
+        <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
-            <Avatar
-              variant="rounded"
-              sx={{
-                width: 42,
-                height: 42,
-                borderRadius: '12px',
-                bgcolor: alpha(theme.palette.primary.main, 0.12),
-                color: theme.palette.primary.main,
-                border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
-                mr: 1.5,
-              }}
-            >
+            <Avatar variant="rounded" sx={{ mr: 1.5 }}>
               <CodeIcon />
             </Avatar>
 
             <Box>
-              <Typography
-                variant="h6"
-                fontWeight={700}
-                sx={{
-                  fontSize: '1rem',
-                  lineHeight: 1.2,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 0.5,
-                }}
-              >
+              <Typography variant="h6" fontWeight={700} sx={{ fontSize: '1rem', lineHeight: 1.2, display: 'flex', alignItems: 'center', gap: 0.5 }}>
                 {plugin.name}
                 {plugin.verified && (
                   <Tooltip title={t('plugins:verifiedPlugin')} arrow>
-                    <VerifiedIcon sx={{ color: theme.palette.info.main, fontSize: '0.9rem' }} />
+                    <VerifiedIcon sx={{ fontSize: '0.9rem' }} />
                   </Tooltip>
                 )}
               </Typography>
@@ -118,15 +78,7 @@ const PluginCard: React.FC<PluginCardProps> = ({ plugin, onDelete, index, compac
                 <Chip
                   size="small"
                   label={`v${plugin.version}`}
-                  sx={{
-                    height: 20,
-                    fontWeight: 600,
-                    fontSize: '0.7rem',
-                    borderRadius: '4px',
-                    bgcolor: alpha(theme.palette.primary.main, 0.1),
-                    color: theme.palette.primary.main,
-                    mr: 1,
-                  }}
+                  sx={{ mr: 1 }}
                 />
 
                 <Badge
@@ -134,8 +86,6 @@ const PluginCard: React.FC<PluginCardProps> = ({ plugin, onDelete, index, compac
                   invisible={!plugin.is_active}
                   sx={{
                     '& .MuiBadge-dot': {
-                      backgroundColor: theme.palette.success.main,
-                      boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
                       width: 6,
                       height: 6,
                       borderRadius: '50%',
@@ -145,18 +95,7 @@ const PluginCard: React.FC<PluginCardProps> = ({ plugin, onDelete, index, compac
                   <Chip
                     size="small"
                     label={plugin.is_active ? t('plugins:active') : t('plugins:inactive')}
-                    sx={{
-                      height: 20,
-                      fontWeight: 600,
-                      fontSize: '0.7rem',
-                      borderRadius: '4px',
-                      bgcolor: plugin.is_active
-                        ? alpha(theme.palette.success.main, 0.1)
-                        : alpha(theme.palette.text.secondary, 0.1),
-                      color: plugin.is_active
-                        ? theme.palette.success.main
-                        : theme.palette.text.secondary,
-                    }}
+                    color={plugin.is_active ? "success" : "default"}
                   />
                 </Badge>
               </Box>
@@ -164,7 +103,6 @@ const PluginCard: React.FC<PluginCardProps> = ({ plugin, onDelete, index, compac
           </Box>
         </Box>
 
-        {/* Card Content */}
         <Box sx={{ px: 2, py: 1.5, flexGrow: 1 }}>
           <Typography
             variant="body2"
@@ -190,19 +128,12 @@ const PluginCard: React.FC<PluginCardProps> = ({ plugin, onDelete, index, compac
             <Chip
               size="small"
               label={plugin.author}
-              sx={{
-                mt: 1.5,
-                height: 22,
-                fontSize: '0.75rem',
-                bgcolor: alpha(theme.palette.info.main, 0.1),
-                color: theme.palette.info.main,
-                fontWeight: 500,
-              }}
+              sx={{ mt: 1.5 }}
+              color="info"
             />
           )}
         </Box>
 
-        {/* Card Footer */}
         <Box
           sx={{
             display: 'flex',
@@ -211,7 +142,6 @@ const PluginCard: React.FC<PluginCardProps> = ({ plugin, onDelete, index, compac
             p: 1.5,
             mt: 'auto',
             borderTop: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-            bgcolor: alpha(theme.palette.background.default, 0.3),
           }}
         >
           <Typography
@@ -228,13 +158,6 @@ const PluginCard: React.FC<PluginCardProps> = ({ plugin, onDelete, index, compac
                 size="small"
                 color="info"
                 onClick={(e) => { e.stopPropagation(); navigate(`/plugins/${plugin.id}`); }}
-                sx={{
-                  mr: 0.5,
-                  width: 28,
-                  height: 28,
-                  borderRadius: '8px',
-                  bgcolor: alpha(theme.palette.info.main, 0.1),
-                }}
               >
                 <ViewIcon fontSize="small" />
               </IconButton>
@@ -245,13 +168,6 @@ const PluginCard: React.FC<PluginCardProps> = ({ plugin, onDelete, index, compac
                 size="small"
                 color="primary"
                 onClick={(e) => { e.stopPropagation(); navigate(`/plugins/${plugin.id}/edit`); }}
-                sx={{
-                  mr: 0.5,
-                  width: 28,
-                  height: 28,
-                  borderRadius: '8px',
-                  bgcolor: alpha(theme.palette.primary.main, 0.1),
-                }}
               >
                 <EditIcon fontSize="small" />
               </IconButton>
@@ -262,12 +178,6 @@ const PluginCard: React.FC<PluginCardProps> = ({ plugin, onDelete, index, compac
                 size="small"
                 color="error"
                 onClick={(e) => onDelete(plugin.id, e)}
-                sx={{
-                  width: 28,
-                  height: 28,
-                  borderRadius: '8px',
-                  bgcolor: alpha(theme.palette.error.main, 0.1),
-                }}
               >
                 <DeleteIcon fontSize="small" />
               </IconButton>

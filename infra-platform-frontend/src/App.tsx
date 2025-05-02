@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { CssBaseline } from '@mui/material';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -15,6 +14,8 @@ import NewPlugin from './pages/Plugins/NewPlugin';
 import Settings from './pages/Settings/Settings';
 import DevicesPage from './pages/Devices/DevicesPage';
 import SensorsPage from './pages/sensors/SensorsPage';
+import EditPlugin from "./pages/Plugins/EditPlugin";
+
 
 // Create React Query client
 const queryClient = new QueryClient({
@@ -48,6 +49,7 @@ const App = () => {
                   <Route index element={<Plugins />} />
                   <Route path=":id" element={<PluginDetails />} />
                   <Route path="new" element={<NewPlugin />} />
+                  <Route path=":id/edit" element={<EditPlugin />} />
                 </Route>
                 <Route path="/settings" element={<Settings />} />
                 <Route path="*" element={<Navigate to="/" replace />} />

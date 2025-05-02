@@ -21,11 +21,10 @@ import {
   SmartToyRounded,
   PersonRounded
 } from '@mui/icons-material';
-import { motion } from 'framer-motion';
 import { llmApi } from '../../api/llmApi';
 import { deviceChatPrompt, getDeviceWelcomeMessage } from '../../utils/chatPrompts';
 import { useTranslation } from 'react-i18next';
-import { DeviceType } from '../../types';
+import {DeviceType} from "../../types/device.ts";
 
 interface ChatMessage {
   id: string;
@@ -39,7 +38,7 @@ interface DeviceChatModalProps {
   onClose: () => void;
   deviceId: string;
   deviceName: string;
-  deviceType: DeviceType; // Required device type property
+  deviceType: DeviceType;
   colorScheme: any;
 }
 
@@ -48,7 +47,7 @@ const DeviceChatModal: React.FC<DeviceChatModalProps> = ({
   onClose,
   deviceId,
   deviceName,
-  deviceType, // Make sure this prop is passed from the parent component
+  deviceType,
   colorScheme
 }) => {
   const { t, i18n } = useTranslation(['chat', 'common']);

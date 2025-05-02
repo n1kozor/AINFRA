@@ -1,6 +1,6 @@
 // src/api/llmApi.ts
 import { llmAxios } from './axiosConfig';
-import { DeviceType } from '../types';
+import {DeviceType} from "../types/device";
 
 // Function to map frontend DeviceType to backend format
 const mapDeviceTypeForBackend = (deviceType: DeviceType): string => {
@@ -59,15 +59,6 @@ export const llmApi = {
     const response = await llmAxios.post<GenerateReportResponse>('/generate', request);
     return response.data.output;
   },
-
-  /**
-   * Alternative method accepting a config object
-   */
-  generateReportWithConfig: async (config: GenerateReportRequest): Promise<string> => {
-    const response = await llmAxios.post<GenerateReportResponse>('/generate', config);
-    return response.data.output;
-  },
-
   /**
    * Generate an AI report focused on system statistics for all devices
    * This endpoint specifically uses only the get_all_system_statistics tool

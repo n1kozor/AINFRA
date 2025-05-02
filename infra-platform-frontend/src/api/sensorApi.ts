@@ -1,6 +1,6 @@
 // src/api/sensorApi.ts
 import { axiosInstance } from './axiosConfig';
-import { Sensor, SensorCreate, SensorUpdate, Alert, AlertCreate, AlertFilter } from '../types/sensor';
+import { Sensor, SensorCreate, SensorUpdate, Alert, AlertFilter } from '../types/sensor';
 
 export const sensorApi = {
   // Sensor operations
@@ -32,19 +32,11 @@ export const sensorApi = {
   deleteSensor: async (id: number): Promise<void> => {
     await axiosInstance.delete(`/sensors/${id}`);
   },
-
-  // Alert operations
-  createAlert: async (alert: AlertCreate): Promise<Alert> => {
-    const response = await axiosInstance.post('/sensors/alerts', alert);
-    return response.data;
-  },
-
   getActiveAlerts: async (deviceId?: number): Promise<Alert[]> => {
     const params = deviceId ? { device_id: deviceId } : undefined;
     const response = await axiosInstance.get('/sensors/alerts/active', { params });
     return response.data;
   },
-
   getAlertHistory: async (filter?: AlertFilter): Promise<Alert[]> => {
     const response = await axiosInstance.get('/sensors/alerts/history', {
       params: filter

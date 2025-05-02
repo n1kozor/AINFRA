@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Grid, Snackbar, Alert as MuiAlert, useTheme } from '@mui/material';
+import { Button, Snackbar, Alert as MuiAlert } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import { AddCircleOutlined, SensorsOutlined } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '@mui/material/styles';
 
 import PageContainer from '../../components/common/PageContainer';
-import SensorFilter from '../../components/sensorpage/SensorFilter';
-import SensorTable from '../../components/sensorpage/SensorTable';
-import AlertsList from '../../components/sensorpage/AlertsList';
-import SensorFormDialog from '../../components/sensorpage/SensorFormDialog';
-import ConfirmDialog from '../../components/sensorpage/ConfirmDialog';
+import SensorFilter from '../../components/SensorPage/SensorFilter';
+import SensorTable from '../../components/SensorPage/SensorTable';
+import AlertsList from '../../components/SensorPage/AlertsList';
+import SensorFormDialog from '../../components/SensorPage/SensorFormDialog';
+import ConfirmDialog from '../../components/SensorPage/ConfirmDialog';
 
 import { useSensors } from '../../hooks/useSensors';
 import { useDevices } from '../../hooks/useSensorDevices';
@@ -17,10 +19,9 @@ import { Sensor, SensorCreate, SensorUpdate } from '../../types/sensor';
 
 const SensorsPage: React.FC = () => {
   const { t } = useTranslation(['sensors', 'common']);
+  useTheme();
   const { activeAlerts, resolveAlert, refreshAlerts } = useAppContext();
-  const theme = useTheme();
 
-  // State variables
   const [selectedDeviceId, setSelectedDeviceId] = useState<number | null>(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [dialogMode, setDialogMode] = useState<'create' | 'edit'>('create');
@@ -32,8 +33,7 @@ const SensorsPage: React.FC = () => {
     severity: 'success'
   });
 
-  // Get data from hooks
-  const { devices, loading: devicesLoading } = useDevices();
+  const { devices} = useDevices();
   const {
     sensors,
     loading: sensorsLoading,
@@ -43,41 +43,34 @@ const SensorsPage: React.FC = () => {
     refreshSensors,
   } = useSensors(selectedDeviceId || undefined);
 
-  // Filter standard devices only
   const standardDevices = devices?.filter(device => device.type === 'standard') || [];
 
-  // Function to find device name by id
   const getDeviceName = (deviceId: number) => {
     const device = devices?.find(d => d.id === deviceId);
     return device ? device.name : t('common:unknown');
   };
 
-  // Handle device filter change
   const handleDeviceChange = (deviceId: number | null) => {
     setSelectedDeviceId(deviceId);
   };
 
-  // Open create dialog
   const handleOpenCreateDialog = () => {
     setDialogMode('create');
     setSelectedSensor(null);
     setOpenDialog(true);
   };
 
-  // Open edit dialog
   const handleOpenEditDialog = (sensor: Sensor) => {
     setDialogMode('edit');
     setSelectedSensor(sensor);
     setOpenDialog(true);
   };
 
-  // Open delete dialog
   const handleOpenDeleteDialog = (sensor: Sensor) => {
     setSelectedSensor(sensor);
     setOpenDeleteDialog(true);
   };
 
-  // Handle form submit
   const handleSubmit = async (formData: SensorCreate) => {
     try {
       if (dialogMode === 'create') {
@@ -103,7 +96,7 @@ const SensorsPage: React.FC = () => {
         });
       }
       setOpenDialog(false);
-      refreshSensors();
+      await refreshSensors();
     } catch (error) {
       console.error('Error submitting sensor:', error);
       setSnackbar({
@@ -114,7 +107,6 @@ const SensorsPage: React.FC = () => {
     }
   };
 
-  // Handle delete sensor
   const handleDeleteSensor = async () => {
     if (selectedSensor) {
       try {
@@ -125,7 +117,7 @@ const SensorsPage: React.FC = () => {
           message: t('sensors:sensorDeleted'),
           severity: 'success'
         });
-        refreshSensors();
+        await refreshSensors();
       } catch (error) {
         console.error('Error deleting sensor:', error);
         setSnackbar({
@@ -137,7 +129,6 @@ const SensorsPage: React.FC = () => {
     }
   };
 
-  // Handle resolve alert - now using the global context
   const handleResolveAlert = async (alertId: number) => {
     try {
       const success = await resolveAlert(alertId);
@@ -147,8 +138,13 @@ const SensorsPage: React.FC = () => {
           message: t('sensors:alertResolved'),
           severity: 'success'
         });
+        await refreshAlerts();
       } else {
-        throw new Error('Failed to resolve alert');
+        setSnackbar({
+          open: true,
+          message: t('sensors:errorOccurred'),
+          severity: 'error'
+        });
       }
     } catch (error) {
       console.error('Error resolving alert:', error);
@@ -160,109 +156,97 @@ const SensorsPage: React.FC = () => {
     }
   };
 
-  // Handle close snackbar
   const handleCloseSnackbar = () => {
     setSnackbar({ ...snackbar, open: false });
   };
 
-  // Refresh data when component mounts
   useEffect(() => {
     refreshSensors();
     refreshAlerts();
   }, []);
 
   return (
-    <PageContainer
-      title={t('sensors:title')}
-      subtitle={t('sensors:subtitle')}
-      icon={<SensorsOutlined sx={{ fontSize: 28 }} />}
-      breadcrumbs={[
-        { text: t('common:home'), link: '/' },
-        { text: t('sensors:title') }
-      ]}
-      actions={
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<AddCircleOutlined />}
-          onClick={handleOpenCreateDialog}
-        >
-          {t('sensors:addSensor')}
-        </Button>
-      }
-    >
-      <Grid container spacing={3}>
-        {/* Top Section */}
-        <Grid item xs={12}>
-          <SensorFilter
-            devices={standardDevices}
-            selectedDeviceId={selectedDeviceId}
-            onDeviceChange={handleDeviceChange}
-          />
-        </Grid>
-
-        {/* Main content layout */}
-        <Grid item xs={12} container spacing={3}>
-          {/* Sensors Table */}
-          <Grid item xs={12} lg={8}>
-            <SensorTable
-              sensors={sensors.filter(sensor => selectedDeviceId ? sensor.device_id === selectedDeviceId : true)}
-              loading={sensorsLoading}
-              onEdit={handleOpenEditDialog}
-              onDelete={handleOpenDeleteDialog}
-              getDeviceName={getDeviceName}
-            />
-          </Grid>
-
-          {/* Alerts List */}
-          <Grid item xs={12} lg={4} sx={{ display: 'flex' }}>
-            <AlertsList
-              alerts={activeAlerts}
-              sensors={sensors}
-              onResolve={handleResolveAlert}
-            />
-          </Grid>
-        </Grid>
-      </Grid>
-
-      {/* Dialogs */}
-      <SensorFormDialog
-        open={openDialog}
-        mode={dialogMode}
-        sensor={selectedSensor}
-        devices={standardDevices}
-        onClose={() => setOpenDialog(false)}
-        onSubmit={handleSubmit}
-      />
-
-      <ConfirmDialog
-        open={openDeleteDialog}
-        title={t('sensors:deleteConfirmation')}
-        content={t('sensors:confirmDelete')}
-        warning={t('sensors:deleteWarning')}
-        onConfirm={handleDeleteSensor}
-        onCancel={() => setOpenDeleteDialog(false)}
-        confirmButtonText="delete"
-        confirmButtonColor="error"
-      />
-
-      {/* Snackbar for notifications */}
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={5000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      <PageContainer
+          title={t('sensors:title')}
+          subtitle={t('sensors:subtitle')}
+          icon={<SensorsOutlined sx={{ fontSize: 28 }} />}
+          breadcrumbs={[
+            { text: t('common:home'), link: '/' },
+            { text: t('sensors:title') }
+          ]}
+          actions={
+            <Button
+                variant="contained"
+                color="primary"
+                startIcon={<AddCircleOutlined />}
+                onClick={handleOpenCreateDialog}
+            >
+              {t('sensors:addSensor')}
+            </Button>
+          }
       >
-        <MuiAlert
-          elevation={6}
-          variant="filled"
-          onClose={handleCloseSnackbar}
-          severity={snackbar.severity}
+        <Grid container spacing={3}>
+
+            <SensorFilter
+                devices={standardDevices}
+                selectedDeviceId={selectedDeviceId}
+                onDeviceChange={handleDeviceChange}
+            />
+
+        </Grid>
+
+        <Grid container spacing={3} sx={{ mt: 1 }}>
+            <SensorTable
+                sensors={sensors.filter(sensor => selectedDeviceId ? sensor.device_id === selectedDeviceId : true)}
+                loading={sensorsLoading}
+                onEdit={handleOpenEditDialog}
+                onDelete={handleOpenDeleteDialog}
+                getDeviceName={getDeviceName}
+            />
+
+            <AlertsList
+                alerts={activeAlerts}
+                sensors={sensors}
+                onResolve={handleResolveAlert}
+            />
+        </Grid>
+
+        <SensorFormDialog
+            open={openDialog}
+            mode={dialogMode}
+            sensor={selectedSensor}
+            devices={standardDevices}
+            onClose={() => setOpenDialog(false)}
+            onSubmit={handleSubmit}
+        />
+
+        <ConfirmDialog
+            open={openDeleteDialog}
+            title={t('sensors:deleteConfirmation')}
+            content={t('sensors:confirmDelete')}
+            warning={t('sensors:deleteWarning')}
+            onConfirm={handleDeleteSensor}
+            onCancel={() => setOpenDeleteDialog(false)}
+            confirmButtonText="delete"
+            confirmButtonColor="error"
+        />
+
+        <Snackbar
+            open={snackbar.open}
+            autoHideDuration={5000}
+            onClose={handleCloseSnackbar}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         >
-          {snackbar.message}
-        </MuiAlert>
-      </Snackbar>
-    </PageContainer>
+          <MuiAlert
+              elevation={6}
+              variant="filled"
+              onClose={handleCloseSnackbar}
+              severity={snackbar.severity}
+          >
+            {snackbar.message}
+          </MuiAlert>
+        </Snackbar>
+      </PageContainer>
   );
 };
 

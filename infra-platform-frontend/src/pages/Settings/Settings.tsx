@@ -3,8 +3,8 @@ import React from 'react';
 import { Grid } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import PageContainer from '../../components/common/PageContainer';
-import AppearanceSettings from '../../components/settingspage/AppearanceSettings';
-import LanguageSettings from '../../components/settingspage/LanguageSettings';
+import AppearanceSettings from '../../components/SettingsPage/AppearanceSettings';
+import LanguageSettings from '../../components/SettingsPage/LanguageSettings';
 
 const Settings: React.FC = () => {
   const { t } = useTranslation(['settings', 'common']);

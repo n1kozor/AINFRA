@@ -27,7 +27,12 @@
   "sort": "Sort",
   "retry": "Retry",
   "clearFilters": "Clear Filters",
-  "actions": "Actions",
+  "actions": {
+    "edit": "Edit",
+    "delete": "Delete",
+    "search": "Search",
+    "cancel": "Cancel"
+  },
   "status": {
     "online": "Online",
     "offline": "Offline",
@@ -37,7 +42,9 @@
   },
   "theme": {
     "light": "Light Mode",
-    "dark": "Dark Mode"
+    "dark": "Dark Mode",
+    "paper": "Paper Mode",
+    "windows31": "Windows 3.1"
   },
   "language": {
     "en": "English",
@@ -88,7 +95,8 @@
     "darkMode": "Toggle Dark Mode",
     "lightMode": "Toggle Light Mode",
     "changeLanguage": "Change Language",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "changeTheme": "Change Theme"
   },
   "user": {
     "profile": "Profile",

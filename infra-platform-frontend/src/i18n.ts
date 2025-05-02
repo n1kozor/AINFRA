@@ -13,14 +13,14 @@ i18n
     debug: import.meta.env.DEV,
 
     interpolation: {
-      escapeValue: false, // react already safes from xss
+      escapeValue: false,
     },
 
     backend: {
       loadPath: '/locales/{{lng}}/{{ns}}.json',
     },
 
-    ns: ['common', 'dashboard', 'devices', 'plugins'],
+    ns: ['common', 'dashboard', 'devices', 'plugins', 'sensors', 'settings'],
     defaultNS: 'common',
 
     returnObjects: true

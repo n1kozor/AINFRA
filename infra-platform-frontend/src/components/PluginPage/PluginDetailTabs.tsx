@@ -8,12 +8,11 @@ import {
   Tooltip,
   alpha,
   useTheme,
-  Avatar
+  Paper
 } from '@mui/material';
 import {
   CodeRounded as CodeIcon,
   AccountTreeRounded as SchemaIcon,
-  InfoOutlined as InfoIcon,
   ContentCopyRounded as ClipboardIcon,
   CheckCircleRounded as CheckIcon,
   DownloadRounded as DownloadIcon
@@ -38,8 +37,8 @@ const PluginDetailTabs: React.FC<PluginDetailTabsProps> = ({ plugin }) => {
   };
 
   const handleCopyCode = () => {
-    if (plugin && plugin.config) {
-      navigator.clipboard.writeText(plugin.config);
+    if (plugin && plugin.code) {
+      navigator.clipboard.writeText(plugin.code);
       setCodeCopied(true);
       setTimeout(() => setCodeCopied(false), 2000);
     }
@@ -53,12 +52,24 @@ const PluginDetailTabs: React.FC<PluginDetailTabsProps> = ({ plugin }) => {
     }
   };
 
-  const handleDownloadConfig = () => {
-    if (plugin && plugin.config) {
+  const handleDownloadCode = () => {
+    if (plugin && plugin.code) {
       const element = document.createElement('a');
-      const file = new Blob([plugin.config], { type: 'application/json' });
+      const file = new Blob([plugin.code], { type: 'text/javascript' });
       element.href = URL.createObjectURL(file);
-      element.download = `${plugin.name.replace(/\s+/g, '_').toLowerCase()}_v${plugin.version}.json`;
+      element.download = `${plugin.name.replace(/\s+/g, '_').toLowerCase()}_v${plugin.version}.js`;
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+    }
+  };
+
+  const handleDownloadSchema = () => {
+    if (plugin && plugin.ui_schema) {
+      const element = document.createElement('a');
+      const file = new Blob([JSON.stringify(plugin.ui_schema, null, 2)], { type: 'application/json' });
+      element.href = URL.createObjectURL(file);
+      element.download = `${plugin.name.replace(/\s+/g, '_').toLowerCase()}_schema_v${plugin.version}.json`;
       document.body.appendChild(element);
       element.click();
       document.body.removeChild(element);
@@ -71,32 +82,15 @@ const PluginDetailTabs: React.FC<PluginDetailTabsProps> = ({ plugin }) => {
         value={tabValue}
         onChange={handleTabChange}
         aria-label="plugin tabs"
-        sx={{
-          mb: 2,
-          '& .MuiTab-root': {
-            fontWeight: 600,
-            textTransform: 'none',
-            borderRadius: '10px 10px 0 0',
-            minHeight: '48px',
-          },
-          '& .Mui-selected': {
-            color: `${theme.palette.primary.main} !important`,
-            bgcolor: `${alpha(theme.palette.primary.main, 0.08)} !important`,
-          },
-          '& .MuiTabs-indicator': {
-            height: 3,
-            borderRadius: '3px 3px 0 0',
-          },
-        }}
       >
         <Tab
-          icon={<CodeIcon sx={{ fontSize: '1.1rem' }} />}
+          icon={<CodeIcon />}
           iconPosition="start"
-          label={t('plugins:tabs.configuration')}
+          label={t('plugins:tabs.code')}
         />
         {plugin.ui_schema && Object.keys(plugin.ui_schema).length > 0 && (
           <Tab
-            icon={<SchemaIcon sx={{ fontSize: '1.1rem' }} />}
+            icon={<SchemaIcon />}
             iconPosition="start"
             label={t('plugins:tabs.uiSchema')}
           />
@@ -112,35 +106,16 @@ const PluginDetailTabs: React.FC<PluginDetailTabsProps> = ({ plugin }) => {
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
           >
-            <Box sx={{
-              position: 'relative',
-              border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-              borderRadius: '10px',
-              overflow: 'hidden',
-            }}>
+            <Paper sx={{ mt: 2, overflow: 'hidden' }}>
               <Box sx={{
                 p: 1.5,
                 display: 'flex',
                 justifyContent: 'space-between',
-                bgcolor: alpha(theme.palette.background.paper, 0.5),
                 borderBottom: `1px solid ${alpha(theme.palette.divider, 0.1)}`
               }}>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Avatar
-                    sx={{
-                      width: 28,
-                      height: 28,
-                      mr: 1.5,
-                      bgcolor: alpha(theme.palette.primary.main, 0.1),
-                      color: theme.palette.primary.main
-                    }}
-                  >
-                    <CodeIcon fontSize="small" />
-                  </Avatar>
-                  <Typography variant="subtitle2">
-                    {t('plugins:pluginConfiguration')}
-                  </Typography>
-                </Box>
+                <Typography variant="subtitle1" fontWeight={600}>
+                  {plugin.name} - v{plugin.version}
+                </Typography>
                 <Box>
                   <Tooltip title={codeCopied ? t('plugins:copied') : t('plugins:copy')}>
                     <IconButton size="small" onClick={handleCopyCode}>
@@ -148,7 +123,7 @@ const PluginDetailTabs: React.FC<PluginDetailTabsProps> = ({ plugin }) => {
                     </IconButton>
                   </Tooltip>
                   <Tooltip title={t('plugins:download')}>
-                    <IconButton size="small" onClick={handleDownloadConfig}>
+                    <IconButton size="small" onClick={handleDownloadCode}>
                       <DownloadIcon />
                     </IconButton>
                   </Tooltip>
@@ -156,9 +131,9 @@ const PluginDetailTabs: React.FC<PluginDetailTabsProps> = ({ plugin }) => {
               </Box>
 
               <Editor
-                height="400px"
-                language="json"
-                value={plugin.config || '{}'}
+                height="500px"
+                language="javascript"
+                value={plugin.code || '// No code available'}
                 theme={theme.palette.mode === 'dark' ? 'vs-dark' : 'light'}
                 options={{
                   readOnly: true,
@@ -166,9 +141,10 @@ const PluginDetailTabs: React.FC<PluginDetailTabsProps> = ({ plugin }) => {
                   scrollBeyondLastLine: false,
                   fontSize: 14,
                   wordWrap: 'on',
+                  automaticLayout: true,
                 }}
               />
-            </Box>
+            </Paper>
           </motion.div>
         )}
 
@@ -180,46 +156,32 @@ const PluginDetailTabs: React.FC<PluginDetailTabsProps> = ({ plugin }) => {
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
           >
-            <Box sx={{
-              position: 'relative',
-              border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-              borderRadius: '10px',
-              overflow: 'hidden',
-            }}>
+            <Paper sx={{ mt: 2, overflow: 'hidden' }}>
               <Box sx={{
                 p: 1.5,
                 display: 'flex',
                 justifyContent: 'space-between',
-                bgcolor: alpha(theme.palette.background.paper, 0.5),
                 borderBottom: `1px solid ${alpha(theme.palette.divider, 0.1)}`
               }}>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Avatar
-                    sx={{
-                      width: 28,
-                      height: 28,
-                      mr: 1.5,
-                      bgcolor: alpha(theme.palette.warning.main, 0.1),
-                      color: theme.palette.warning.main
-                    }}
-                  >
-                    <SchemaIcon fontSize="small" />
-                  </Avatar>
-                  <Typography variant="subtitle2">
-                    {t('plugins:uiSchema')}
-                  </Typography>
-                </Box>
+                <Typography variant="subtitle1" fontWeight={600}>
+                  {t('plugins:uiSchema')}
+                </Typography>
                 <Box>
                   <Tooltip title={schemaCopied ? t('plugins:copied') : t('plugins:copy')}>
                     <IconButton size="small" onClick={handleCopySchema}>
                       {schemaCopied ? <CheckIcon /> : <ClipboardIcon />}
                     </IconButton>
                   </Tooltip>
+                  <Tooltip title={t('plugins:download')}>
+                    <IconButton size="small" onClick={handleDownloadSchema}>
+                      <DownloadIcon />
+                    </IconButton>
+                  </Tooltip>
                 </Box>
               </Box>
 
               <Editor
-                height="400px"
+                height="500px"
                 language="json"
                 value={JSON.stringify(plugin.ui_schema, null, 2)}
                 theme={theme.palette.mode === 'dark' ? 'vs-dark' : 'light'}
@@ -229,9 +191,10 @@ const PluginDetailTabs: React.FC<PluginDetailTabsProps> = ({ plugin }) => {
                   scrollBeyondLastLine: false,
                   fontSize: 14,
                   wordWrap: 'on',
+                  automaticLayout: true,
                 }}
               />
-            </Box>
+            </Paper>
           </motion.div>
         )}
       </AnimatePresence>

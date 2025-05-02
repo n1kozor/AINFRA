@@ -59,14 +59,4 @@ export const availabilityApi = {
     const response = await availabilityAxios.post('/settings', settings);
     return response.data;
   },
-
-  syncDevices: async (): Promise<any> => {
-    const response = await availabilityAxios.post('/sync-devices');
-    return response.data;
-  },
-
-  getDevices: async (): Promise<any[]> => {
-    const response = await availabilityAxios.get('/devices');
-    return response.data;
-  }
 };

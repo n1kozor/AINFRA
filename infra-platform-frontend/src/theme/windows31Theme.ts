@@ -1,4 +1,4 @@
-import { ThemeOptions, alpha } from '@mui/material';
+import { ThemeOptions } from '@mui/material';
 
 export const windows31Theme: ThemeOptions = {
   palette: {
@@ -141,7 +141,7 @@ export const windows31Theme: ThemeOptions = {
   },
   shadows: [
     'none',
-    '2px 2px 0 #000000',  // 1 - Simple black shadow
+    '2px 2px 0 #000000',  // 1
     '2px 2px 0 #000000',  // 2
     '2px 2px 0 #000000',  // 3
     '2px 2px 0 #000000',  // 4
@@ -166,6 +166,7 @@ export const windows31Theme: ThemeOptions = {
     '2px 2px 0 #000000',  // 23
     '2px 2px 0 #000000',  // 24
   ],
+
   components: {
     MuiCssBaseline: {
       styleOverrides: {
@@ -237,12 +238,7 @@ export const windows31Theme: ThemeOptions = {
           fontWeight: 400,
           fontStyle: 'normal',
         },
-        '@font-face': {
-          fontFamily: '"MS Sans Serif"',
-          src: 'url("https://unpkg.com/98.css@0.1.17/dist/ms_sans_serif_bold.woff2") format("woff2"), url("https://unpkg.com/98.css@0.1.17/dist/ms_sans_serif_bold.woff") format("woff")',
-          fontWeight: 700,
-          fontStyle: 'normal',
-        },
+
       },
     },
     MuiPaper: {

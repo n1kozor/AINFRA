@@ -150,7 +150,9 @@ export const paperTheme: ThemeOptions = {
     '0 40px 90px -20px rgba(0, 0, 0, 0.5)',
     '0 42px 94px -21px rgba(0, 0, 0, 0.52)',
     '0 8px 25px rgba(0, 0, 0, 0.15), 0 14px 20px rgba(0, 0, 0, 0.1), 0 8px 10px rgba(0, 0, 0, 0.05)',
+    '0 44px 98px -22px rgba(0, 0, 0, 0.54)'
   ],
+
   components: {
     MuiCssBaseline: {
       styleOverrides: {
