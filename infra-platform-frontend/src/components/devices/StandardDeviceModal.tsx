@@ -123,7 +123,6 @@ const StandardDeviceModal: React.FC<StandardDeviceModalProps> = ({ open, onClose
     description: '',
     ip_address: '',
     type: 'standard',
-    is_active: true,
     standard_device: {
       hostname: '',
       os_type: 'linux',
@@ -139,7 +138,6 @@ const StandardDeviceModal: React.FC<StandardDeviceModalProps> = ({ open, onClose
         description: '',
         ip_address: '',
         type: 'standard',
-        is_active: true,
         standard_device: {
           hostname: '',
           os_type: 'linux',
@@ -283,7 +281,7 @@ const StandardDeviceModal: React.FC<StandardDeviceModalProps> = ({ open, onClose
           sx={{ mb: 4, mt: 1 }}
           connector={<ColorlibConnector />}
         >
-          {steps.map((label, index) => (
+          {steps.map((label) => (
             <Step key={label}>
               <StepLabel StepIconComponent={ColorlibStepIcon}>
                 <Typography sx={{ fontWeight: 600, mt: 1, fontSize: '0.875rem' }}>
@@ -318,84 +316,109 @@ const StandardDeviceModal: React.FC<StandardDeviceModalProps> = ({ open, onClose
                 }}
               >
                 <Grid container spacing={3}>
-                  <Grid item xs={12} md={6}>
-                    <TextField
-                      name="name"
-                      label={t('devices:name')}
-                      value={deviceData.name || ''}
-                      onChange={handleChange}
-                      fullWidth
-                      required
-                      error={!deviceData.name && deviceData.name !== undefined}
-                      helperText={
-                        !deviceData.name && deviceData.name !== undefined
-                          ? t('common:errors.required')
-                          : t('devices:nameHint')
-                      }
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <DeviceIcon sx={{ color: theme.palette.primary.main }} />
-                          </InputAdornment>
-                        ),
-                        sx: { borderRadius: '12px' }
+                  <Grid
+                      size={{
+                        xs: 12,
+                        md: 6,
                       }}
-                    />
-                  </Grid>
-
-                  <Grid item xs={12} md={6}>
+                  >
                     <TextField
-                      name="ip_address"
-                      label={t('devices:ipAddress')}
-                      value={deviceData.ip_address || ''}
-                      onChange={handleChange}
-                      fullWidth
-                      required
-                      error={!deviceData.ip_address && deviceData.ip_address !== undefined}
-                      helperText={
-                        !deviceData.ip_address && deviceData.ip_address !== undefined
-                          ? t('common:errors.required')
-                          : t('devices:ipAddressHint')
-                      }
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <NetworkIcon sx={{ color: theme.palette.primary.main }} />
-                          </InputAdornment>
-                        ),
-                        sx: { borderRadius: '12px' }
-                      }}
-                    />
-                  </Grid>
-
-                  <Grid item xs={12}>
-                    <TextField
-                      name="description"
-                      label={t('devices:description')}
-                      value={deviceData.description || ''}
-                      onChange={handleChange}
-                      fullWidth
-                      multiline
-                      rows={3}
-                      helperText={t('devices:descriptionHint')}
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <DescriptionIcon sx={{ color: theme.palette.primary.main }} />
-                          </InputAdornment>
-                        ),
-                        sx: {
-                          borderRadius: '12px',
-                          alignItems: 'flex-start',
-                          '& .MuiInputAdornment-root': {
-                            mt: '14px',
-                            ml: '3px',
-                            mr: '2px'
-                          }
+                        name="name"
+                        label={t('devices:name')}
+                        value={deviceData.name || ''}
+                        onChange={handleChange}
+                        fullWidth
+                        required
+                        error={
+                            !deviceData.name &&
+                            deviceData.name !== undefined
                         }
-                      }}
+                        helperText={
+                          !deviceData.name &&
+                          deviceData.name !== undefined
+                              ? t('common:errors.required')
+                              : t('devices:nameHint')
+                        }
+                        InputProps={{
+                          startAdornment: (
+                              <InputAdornment position="start">
+                                <DeviceIcon sx={{ color: theme.palette.primary.main }} />
+                              </InputAdornment>
+                          ),
+                          sx: { borderRadius: '12px' },
+                        }}
                     />
                   </Grid>
+
+
+                  <Grid
+                      size={{
+                        xs: 12,
+                        md: 6,
+                      }}
+                  >
+                    <TextField
+                        name="ip_address"
+                        label={t('devices:ipAddress')}
+                        value={deviceData.ip_address || ''}
+                        onChange={handleChange}
+                        fullWidth
+                        required
+                        error={
+                            !deviceData.ip_address &&
+                            deviceData.ip_address !== undefined
+                        }
+                        helperText={
+                          !deviceData.ip_address &&
+                          deviceData.ip_address !== undefined
+                              ? t('common:errors.required')
+                              : t('devices:ipAddressHint')
+                        }
+                        InputProps={{
+                          startAdornment: (
+                              <InputAdornment position="start">
+                                <NetworkIcon sx={{ color: theme.palette.primary.main }} />
+                              </InputAdornment>
+                          ),
+                          sx: { borderRadius: '12px' },
+                        }}
+                    />
+                  </Grid>
+
+
+                  <Grid
+                      size={{
+                        xs: 12,
+                      }}
+                  >
+                    <TextField
+                        name="description"
+                        label={t('devices:description')}
+                        value={deviceData.description || ''}
+                        onChange={handleChange}
+                        fullWidth
+                        multiline
+                        rows={3}
+                        helperText={t('devices:descriptionHint')}
+                        InputProps={{
+                          startAdornment: (
+                              <InputAdornment position="start">
+                                <DescriptionIcon sx={{ color: theme.palette.primary.main }} />
+                              </InputAdornment>
+                          ),
+                          sx: {
+                            borderRadius: '12px',
+                            alignItems: 'flex-start',
+                            '& .MuiInputAdornment-root': {
+                              mt: '14px',
+                              ml: '3px',
+                              mr: '2px',
+                            },
+                          },
+                        }}
+                    />
+                  </Grid>
+
                 </Grid>
               </Paper>
             </Box>
@@ -443,45 +466,60 @@ const StandardDeviceModal: React.FC<StandardDeviceModalProps> = ({ open, onClose
                 </Box>
 
                 <Grid container spacing={3}>
-                  <Grid item xs={12} md={6}>
-                    <TextField
-                      name="hostname"
-                      label={t('devices:hostname')}
-                      value={deviceData.standard_device?.hostname || ''}
-                      onChange={handleChange}
-                      fullWidth
-                      required
-                      error={!deviceData.standard_device?.hostname && deviceData.standard_device?.hostname !== undefined}
-                      helperText={
-                        !deviceData.standard_device?.hostname && deviceData.standard_device?.hostname !== undefined
-                          ? t('common:errors.required')
-                          : t('devices:hostnameHint')
-                      }
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <HostnameIcon sx={{ color: theme.palette.primary.main }} />
-                          </InputAdornment>
-                        ),
-                        sx: { borderRadius: '12px' }
+                  <Grid
+                      size={{
+                        xs: 12,
+                        md: 6,
                       }}
+                  >
+                    <TextField
+                        name="hostname"
+                        label={t('devices:hostname')}
+                        value={deviceData.standard_device?.hostname || ''}
+                        onChange={handleChange}
+                        fullWidth
+                        required
+                        error={
+                            !deviceData.standard_device?.hostname &&
+                            deviceData.standard_device?.hostname !== undefined
+                        }
+                        helperText={
+                          !deviceData.standard_device?.hostname &&
+                          deviceData.standard_device?.hostname !== undefined
+                              ? t('common:errors.required')
+                              : t('devices:hostnameHint')
+                        }
+                        InputProps={{
+                          startAdornment: (
+                              <InputAdornment position="start">
+                                <HostnameIcon sx={{ color: theme.palette.primary.main }} />
+                              </InputAdornment>
+                          ),
+                          sx: { borderRadius: '12px' },
+                        }}
                     />
                   </Grid>
 
-                  <Grid item xs={12} md={6}>
+
+                  <Grid
+                      size={{
+                        xs: 12,
+                        md: 6,
+                      }}
+                  >
                     <FormControl fullWidth>
                       <InputLabel id="os-type-label">{t('devices:osType')}</InputLabel>
                       <Select
-                        labelId="os-type-label"
-                        name="os_type"
-                        value={deviceData.standard_device?.os_type || 'linux'}
-                        onChange={handleSelectChange}
-                        sx={{ borderRadius: '12px' }}
-                        startAdornment={
-                          <InputAdornment position="start">
-                            <OSIcon sx={{ color: theme.palette.primary.main }} />
-                          </InputAdornment>
-                        }
+                          labelId="os-type-label"
+                          name="os_type"
+                          value={deviceData.standard_device?.os_type || 'linux'}
+                          onChange={handleSelectChange}
+                          sx={{ borderRadius: '12px' }}
+                          startAdornment={
+                            <InputAdornment position="start">
+                              <OSIcon sx={{ color: theme.palette.primary.main }} />
+                            </InputAdornment>
+                          }
                       >
                         <MenuItem value="linux">Linux</MenuItem>
                         <MenuItem value="windows">Windows</MenuItem>
@@ -489,6 +527,7 @@ const StandardDeviceModal: React.FC<StandardDeviceModalProps> = ({ open, onClose
                       </Select>
                     </FormControl>
                   </Grid>
+
                 </Grid>
               </Paper>
             </Box>

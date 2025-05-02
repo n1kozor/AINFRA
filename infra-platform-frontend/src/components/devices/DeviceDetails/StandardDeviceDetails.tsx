@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Box,
   Typography,
@@ -38,7 +38,6 @@ import {
   LayersTwoTone as LayersIcon,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
-import { Device } from '../../../types/device';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../../api';
 import { formatBytes } from '../../../utils/formatters';
