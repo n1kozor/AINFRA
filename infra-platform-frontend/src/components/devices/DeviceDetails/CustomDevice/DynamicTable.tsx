@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Box, Button, Typography, Table, TableContainer, TableHead, TableBody,
+  Box, Button, Table, TableContainer, TableHead, TableBody,
   TableRow, TableCell, Paper, Chip, useTheme
 } from '@mui/material';
 import { Check as CheckIcon, Close as CloseIcon, Storage as StorageIcon } from '@mui/icons-material';
@@ -28,7 +28,7 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
   onRefresh
 }) => {
   const theme = useTheme();
-  const { t } = useTranslation(['common']);
+  useTranslation(['common']);
 
   if (!data || data.length === 0) return null;
 
@@ -93,7 +93,7 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
                         if (action.enabledWhen) {
                           try {
                             const evalStr = action.enabledWhen
-                              .replace(/row\.(\w+)/g, (match, field) => {
+                              .replace(/row\.(\w+)/g, (_match, field) => {
                                 if (typeof row[field] === 'string') {
                                   return `"${row[field]}"`;
                                 }

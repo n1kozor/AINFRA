@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, Paper, Typography, alpha, useTheme } from '@mui/material';
+import { Button, Paper, Typography, alpha, useTheme } from '@mui/material';
 import {
   PowerSettingsNew as PowerIcon,
   Settings as SettingsIcon,

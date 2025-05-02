@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, Grid, Typography } from '@mui/material';
+import { Button, Grid, Typography } from '@mui/material';
 import { PlayArrow as PlayIcon } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import CardContainer from './CardContainer';
@@ -26,40 +26,49 @@ const OperationsList: React.FC<OperationsListProps> = ({ operations, onSelectOpe
     >
       <Grid container spacing={2}>
         {operations.map((operation) => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={operation.id}>
-            <Button
-              variant="outlined"
-              color="primary"
-              fullWidth
-              onClick={() => onSelectOperation(operation)}
-              sx={{
-                py: 1.5,
-                display: 'flex',
-                flexDirection: 'column',
-                textAlign: 'center',
-                height: '100%',
-                borderRadius: 2
-              }}
+            <Grid
+                size={{
+                  xs: 12,
+                  sm: 6,
+                  md: 4,
+                  lg: 3,
+                }}
+                key={operation.id}
             >
-              <Typography variant="subtitle1" gutterBottom>
-                {operation.name}
-              </Typography>
-              {operation.description && (
-                <Typography
-                  variant="caption"
-                  color="textSecondary"
+              <Button
+                  variant="outlined"
+                  color="primary"
+                  fullWidth
+                  onClick={() => onSelectOperation(operation)}
                   sx={{
-                    display: '-webkit-box',
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: 'vertical',
-                    overflow: 'hidden',
+                    py: 1.5,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    textAlign: 'center',
+                    height: '100%',
+                    borderRadius: 2,
                   }}
-                >
-                  {operation.description}
+              >
+                <Typography variant="subtitle1" gutterBottom>
+                  {operation.name}
                 </Typography>
-              )}
-            </Button>
-          </Grid>
+                {operation.description && (
+                    <Typography
+                        variant="caption"
+                        color="textSecondary"
+                        sx={{
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden',
+                        }}
+                    >
+                      {operation.description}
+                    </Typography>
+                )}
+              </Button>
+            </Grid>
+
         ))}
       </Grid>
     </CardContainer>

@@ -52,44 +52,81 @@ export interface DeviceUpdate {
   ip_address?: string;
 }
 
+export interface ProcessInfo {
+  pid: number;
+  name: string;
+  username: string;
+  cpu_percent: number;
+  memory_percent: number;
+  status: string;
+  cmdline: string;
+}
+
+export interface ContainerInfo {
+  name: string;
+  id: string;
+  status: string;
+  image: string[];
+  cpu_percent: number;
+  memory_percent: number | null;
+  network_rx: number;
+  network_tx: number;
+  uptime: string;
+}
+
 export interface DeviceStats {
+  system?: {
+    hostname: string;
+    os_name: string;
+    os_version: string;
+    platform: string;
+    linux_distro?: string;
+    uptime: string;
+  };
   cpu?: {
     usage: number;
+    user: number;
+    system: number;
+    idle: number;
+    cores_count: number;
+    logical_cores: number;
     cores: { core: number; usage: number }[];
-    temperature: any[];
   };
   memory?: {
     total: number;
     used: number;
     free: number;
     percent: number;
+    cached: number;
+    buffers: number;
+    swap_total: number;
+    swap_used: number;
+    swap_free: number;
+    swap_percent: number;
   };
   disk?: {
     device: string;
     mountpoint: string;
+    fs_type: string;
     total: number;
     used: number;
     free: number;
     percent: number;
   }[];
   network?: {
-    interface: string;
-    rx: number;
-    tx: number;
-    rx_packets: number;
-    tx_packets: number;
+    interface?: string;
+    rx?: number;
+    tx?: number;
+    rx_packets?: number;
+    tx_packets?: number;
   }[];
   processes?: {
     total: number;
     running: number;
     sleeping: number;
     thread: number;
+    list: ProcessInfo[];
   };
-  system?: {
-    hostname: string;
-    os_name: string;
-    os_version: string;
-    uptime: string;
-  };
+  containers?: ContainerInfo[];
   error?: string;
 }

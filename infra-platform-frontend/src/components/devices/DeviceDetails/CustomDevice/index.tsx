@@ -1,6 +1,6 @@
 // Main component file that uses all the smaller components
 import React from 'react';
-import { Box, CircularProgress, Grid, alpha, useTheme } from '@mui/material';
+import { Box, CircularProgress, Grid, useTheme } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Device } from '../../../../types/device';
 
@@ -28,7 +28,6 @@ import {
   SdStorage as DiskIcon,
   Warning as WarningIcon,
   LineStyle as MetricsIcon,
-  Storage as StorageIcon,
   Dns as NetworkIcon
 } from '@mui/icons-material';
 
@@ -38,9 +37,8 @@ interface CustomDeviceDetailsProps {
 
 const CustomDeviceDetails: React.FC<CustomDeviceDetailsProps> = ({ device }) => {
   const { t } = useTranslation(['devices', 'common']);
-  const theme = useTheme();
-
-  // Get device data
+  useTheme();
+// Get device data
   const {
     status,
     metrics,
@@ -61,8 +59,7 @@ const CustomDeviceDetails: React.FC<CustomDeviceDetailsProps> = ({ device }) => 
   const {
     extractMainMetrics,
     extractSystemInfo,
-    extractTableData,
-    getMetricColor
+    extractTableData
   } = useDeviceMetrics();
 
   // Setup operations handling
@@ -169,66 +166,100 @@ const CustomDeviceDetails: React.FC<CustomDeviceDetailsProps> = ({ device }) => 
       <Grid container spacing={3}>
         {/* Quick Action Buttons */}
         {quickActions.length > 0 && (
-          <Grid item xs={12}>
-            <QuickActions
-              actions={quickActions}
-              onAction={handleQuickAction}
-              isLoading={operationMutation.isPending}
-            />
-          </Grid>
+            <Grid
+                size={{
+                  xs: 12,
+                }}
+            >
+              <QuickActions
+                  actions={quickActions}
+                  onAction={handleQuickAction}
+                  isLoading={operationMutation.isPending}
+              />
+            </Grid>
+
         )}
 
         {/* Main metrics */}
         {mainMetrics.length > 0 && (
-          <Grid item xs={12}>
-            <Grid container spacing={3}>
-              {mainMetrics.map((metric, index) => (
-                <Grid item xs={6} md={3} key={index}>
-                  <DynamicCard
-                    title={metric.title}
-                    value={metric.value}
-                    type={metric.type}
-                    icon={getMetricIcon(metric.title.toLowerCase())}
-                    color={metric.color}
-                  />
-                </Grid>
-              ))}
+            <Grid
+                size={{
+                  xs: 12,
+                }}
+            >
+              <Grid container spacing={3}>
+                {mainMetrics.map((metric, index) => (
+                    <Grid
+                        size={{
+                          xs: 6,
+                          md: 3,
+                        }}
+                        key={index}
+                    >
+                      <DynamicCard
+                          title={metric.title}
+                          value={metric.value}
+                          type={metric.type}
+                          icon={getMetricIcon(metric.title.toLowerCase())}
+                          color={metric.color}
+                      />
+                    </Grid>
+                ))}
+              </Grid>
             </Grid>
-          </Grid>
+
         )}
 
         {/* System Info */}
         {systemInfo.length > 0 && (
-          <Grid item xs={12}>
-            <SystemInfoSection
-              data={systemInfo}
-              onRefresh={() => refreshData()}
-            />
-          </Grid>
+            <Grid
+                size={{
+                  xs: 12,
+                }}
+            >
+              <SystemInfoSection
+                  data={systemInfo}
+                  onRefresh={() => refreshData()}
+              />
+            </Grid>
+
         )}
 
         {/* Dynamic tables */}
         {tableData.map(table => (
-          <Grid item xs={12} key={table.key}>
-            <DynamicTable
-              title={plugin?.ui_schema?.components?.[table.key]?.title ||
-                    table.key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
-              data={table.data}
-              actions={generateTableActions(table.key)}
-              onAction={handleTableRowAction}
-              onRefresh={refreshData}
-            />
-          </Grid>
+            <Grid
+                size={{
+                  xs: 12,
+                }}
+                key={table.key}
+            >
+              <DynamicTable
+                  title={
+                      plugin?.ui_schema?.components?.[table.key]?.title ||
+                      table.key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+                  }
+                  data={table.data}
+                  actions={generateTableActions(table.key)}
+                  onAction={handleTableRowAction}
+                  onRefresh={refreshData}
+              />
+            </Grid>
+
         ))}
 
         {/* Available Operations */}
         {availableOperations.length > 0 && (
-          <Grid item xs={12}>
-            <OperationsList
-              operations={availableOperations}
-              onSelectOperation={openOperationModal}
-            />
-          </Grid>
+            <Grid
+                size={{
+                  xs: 12,
+                }}
+            >
+              <OperationsList
+                  operations={availableOperations}
+                  onSelectOperation={openOperationModal}
+              />
+            </Grid>
+
         )}
       </Grid>
 
