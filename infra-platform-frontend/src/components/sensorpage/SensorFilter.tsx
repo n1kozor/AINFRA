@@ -1,4 +1,3 @@
-// src/components/sensorpage/SensorFilter.tsx
 import React from 'react';
 import {
   Card,

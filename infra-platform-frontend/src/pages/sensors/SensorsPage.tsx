@@ -1,9 +1,7 @@
-// src/pages/sensors/SensorsPage.tsx
 import React, { useState, useEffect } from 'react';
-import { Button, Grid, Snackbar } from '@mui/material';
+import { Button, Grid, Snackbar, Alert as MuiAlert, useTheme } from '@mui/material';
 import { AddCircleOutlined, SensorsOutlined } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
-import MuiAlert from '@mui/material/Alert';
 
 import PageContainer from '../../components/common/PageContainer';
 import SensorFilter from '../../components/sensorpage/SensorFilter';
@@ -20,6 +18,7 @@ import { Sensor, SensorCreate, SensorUpdate } from '../../types/sensor';
 const SensorsPage: React.FC = () => {
   const { t } = useTranslation(['sensors', 'common']);
   const { activeAlerts, resolveAlert, refreshAlerts } = useAppContext();
+  const theme = useTheme();
 
   // State variables
   const [selectedDeviceId, setSelectedDeviceId] = useState<number | null>(null);
@@ -168,9 +167,9 @@ const SensorsPage: React.FC = () => {
 
   // Refresh data when component mounts
   useEffect(() => {
-  refreshSensors();
-  refreshAlerts();
-}, []);
+    refreshSensors();
+    refreshAlerts();
+  }, []);
 
   return (
     <PageContainer
@@ -193,7 +192,7 @@ const SensorsPage: React.FC = () => {
       }
     >
       <Grid container spacing={3}>
-        {/* Device Filter */}
+        {/* Top Section */}
         <Grid item xs={12}>
           <SensorFilter
             devices={standardDevices}
@@ -215,8 +214,8 @@ const SensorsPage: React.FC = () => {
             />
           </Grid>
 
-          {/* Alerts List - now using shared alerts from AppContext */}
-          <Grid item xs={12} lg={4}>
+          {/* Alerts List */}
+          <Grid item xs={12} lg={4} sx={{ display: 'flex' }}>
             <AlertsList
               alerts={activeAlerts}
               sensors={sensors}

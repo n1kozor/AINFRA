@@ -1,4 +1,3 @@
-// src/components/sensorpage/SensorFormDialog.tsx
 import React, { useEffect, useState } from 'react';
 import {
   Button,
@@ -8,12 +7,15 @@ import {
   DialogContent,
   DialogTitle,
   FormControl,
-  Grid,
   InputLabel,
   MenuItem,
   Select,
   TextField,
-  Stack,
+  Box,
+  Stepper,
+  Step,
+  StepLabel,
+  Typography,
   alpha,
   useTheme
 } from '@mui/material';
@@ -41,6 +43,13 @@ const SensorFormDialog: React.FC<SensorFormDialogProps> = ({
 }) => {
   const { t } = useTranslation(['sensors', 'common']);
   const theme = useTheme();
+  const [activeStep, setActiveStep] = useState(0);
+
+  const steps = [
+    t('sensors:basicInfo'),
+    t('sensors:deviceSelection'),
+    t('sensors:alertSettings')
+  ];
 
   const [formData, setFormData] = useState<SensorCreate>({
     name: '',
@@ -69,6 +78,7 @@ const SensorFormDialog: React.FC<SensorFormDialogProps> = ({
         alert_condition: '>'
       });
     }
+    setActiveStep(0);
   }, [mode, sensor, open]);
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>) => {
@@ -83,8 +93,57 @@ const SensorFormDialog: React.FC<SensorFormDialogProps> = ({
     onSubmit(formData);
   };
 
+  const handleNext = () => {
+    setActiveStep((prevStep) => prevStep + 1);
+  };
+
+  const handleBack = () => {
+    setActiveStep((prevStep) => prevStep - 1);
+  };
+
   const alertConditionSymbol = formData.alert_condition.replace(/\d+(\.\d+)?/g, '') || '>';
   const alertConditionValue = formData.alert_condition.match(/\d+(\.\d+)?/)?.[0] || '';
+
+  const getAlertLevelChip = (level: AlertLevel) => {
+    const levelConfig = {
+      [AlertLevel.INFO]: {
+        label: "Info",
+        color: theme.palette.info.main
+      },
+      [AlertLevel.WARNING]: {
+        label: "Warning",
+        color: theme.palette.warning.main
+      },
+      [AlertLevel.CRITICAL]: {
+        label: "Critical",
+        color: theme.palette.error.main
+      }
+    };
+
+    const config = levelConfig[level];
+
+    return (
+      <Chip
+        label={config.label}
+        size="small"
+        sx={{
+          bgcolor: alpha(config.color, 0.1),
+          color: config.color,
+          fontWeight: 600
+        }}
+      />
+    );
+  };
+
+  const isFormValid = () => {
+    if (activeStep === 0) {
+      return formData.name.trim() !== '';
+    } else if (activeStep === 1) {
+      return !!formData.device_id && formData.metric_key !== '';
+    } else {
+      return alertConditionSymbol && alertConditionValue !== '';
+    }
+  };
 
   return (
     <Dialog
@@ -92,19 +151,26 @@ const SensorFormDialog: React.FC<SensorFormDialogProps> = ({
       onClose={onClose}
       maxWidth="sm"
       fullWidth
-      PaperProps={{
-        sx: {
-          borderRadius: 2,
-          overflow: 'hidden'
-        }
-      }}
     >
       <DialogTitle>
         {mode === 'create' ? t('sensors:createSensor') : t('sensors:editSensor')}
       </DialogTitle>
-      <DialogContent>
-        <Grid container spacing={3} sx={{ mt: 0.5 }}>
-          <Grid item xs={12}>
+
+      <DialogContent sx={{ pb: 1 }}>
+        <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
+          {steps.map((label) => (
+            <Step key={label}>
+              <StepLabel>{label}</StepLabel>
+            </Step>
+          ))}
+        </Stepper>
+
+        {activeStep === 0 && (
+          <Box sx={{ p: 1 }}>
+            <Typography variant="h6" gutterBottom>
+              {t('sensors:basicInfo')}
+            </Typography>
+
             <TextField
               name="name"
               label={t('sensors:sensorName')}
@@ -113,37 +179,37 @@ const SensorFormDialog: React.FC<SensorFormDialogProps> = ({
               value={formData.name}
               onChange={handleFormChange}
               variant="outlined"
-              InputLabelProps={{ shrink: true }}
+              sx={{ mb: 3 }}
             />
-          </Grid>
-          <Grid item xs={12}>
+
             <TextField
               name="description"
               label={t('sensors:sensorDescription')}
               fullWidth
               multiline
-              rows={2}
+              rows={3}
               value={formData.description}
               onChange={handleFormChange}
               variant="outlined"
-              InputLabelProps={{ shrink: true }}
             />
-          </Grid>
-          <Grid item xs={12}>
-            <FormControl fullWidth required variant="outlined">
-              <InputLabel shrink>{t('sensors:device')}</InputLabel>
+          </Box>
+        )}
+
+        {activeStep === 1 && (
+          <Box sx={{ p: 1 }}>
+            <Typography variant="h6" gutterBottom>
+              {t('sensors:deviceSelection')}
+            </Typography>
+
+            <FormControl fullWidth required sx={{ mb: 3 }}>
+              <InputLabel>{t('sensors:device')}</InputLabel>
               <Select
                 name="device_id"
                 value={formData.device_id || ''}
                 label={t('sensors:device')}
                 onChange={handleFormChange}
                 disabled={mode === 'edit'}
-                displayEmpty
-                notched
               >
-                <MenuItem value="" disabled>
-                  <em>{t('common:select')}</em>
-                </MenuItem>
                 {devices.map((device) => (
                   <MenuItem key={device.id} value={device.id}>
                     {device.name}
@@ -151,21 +217,15 @@ const SensorFormDialog: React.FC<SensorFormDialogProps> = ({
                 ))}
               </Select>
             </FormControl>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <FormControl fullWidth required variant="outlined">
-              <InputLabel shrink>{t('sensors:metricKey')}</InputLabel>
+
+            <FormControl fullWidth required>
+              <InputLabel>{t('sensors:metricKey')}</InputLabel>
               <Select
                 name="metric_key"
                 value={formData.metric_key || ''}
                 label={t('sensors:metricKey')}
                 onChange={handleFormChange}
-                displayEmpty
-                notched
               >
-                <MenuItem value="" disabled>
-                  <em>{t('common:select')}</em>
-                </MenuItem>
                 {getCommonMetricKeys().map((option) => (
                   <MenuItem key={option.value} value={option.value}>
                     {option.label}
@@ -173,108 +233,122 @@ const SensorFormDialog: React.FC<SensorFormDialogProps> = ({
                 ))}
               </Select>
             </FormControl>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <Stack direction="row" spacing={1}>
-              <FormControl fullWidth required variant="outlined">
-                <InputLabel shrink>{t('sensors:alertCondition')}</InputLabel>
-                <Select
-                  name="alertConditionSymbol"
-                  value={alertConditionSymbol}
-                  label={t('sensors:alertCondition')}
+          </Box>
+        )}
+
+        {activeStep === 2 && (
+          <Box sx={{ p: 1 }}>
+            <Typography variant="h6" gutterBottom>
+              {t('sensors:alertSettings')}
+            </Typography>
+
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="subtitle2" gutterBottom>
+                {t('sensors:alertCondition')}
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <FormControl fullWidth required>
+                  <InputLabel>{t('sensors:condition')}</InputLabel>
+                  <Select
+                    value={alertConditionSymbol}
+                    label={t('sensors:condition')}
+                    onChange={(e) => {
+                      setFormData({
+                        ...formData,
+                        alert_condition: `${e.target.value}${alertConditionValue}`
+                      });
+                    }}
+                  >
+                    {getCommonAlertConditions().map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <TextField
+                  label={t('common:threshold')}
+                  type="number"
+                  value={alertConditionValue}
                   onChange={(e) => {
                     setFormData({
                       ...formData,
-                      alert_condition: `${e.target.value}${alertConditionValue}`
+                      alert_condition: `${alertConditionSymbol}${e.target.value}`
                     });
                   }}
-                  displayEmpty
-                  notched
-                >
-                  <MenuItem value="" disabled>
-                    <em>{t('common:select')}</em>
-                  </MenuItem>
-                  {getCommonAlertConditions().map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <TextField
-                label={t('common:value')}
-                type="number"
-                value={alertConditionValue}
-                onChange={(e) => {
-                  setFormData({
-                    ...formData,
-                    alert_condition: `${alertConditionSymbol}${e.target.value}`
-                  });
-                }}
-                sx={{ width: '40%' }}
-                variant="outlined"
-                InputLabelProps={{ shrink: true }}
-              />
-            </Stack>
-          </Grid>
-          <Grid item xs={12}>
-            <FormControl fullWidth variant="outlined">
-              <InputLabel shrink>{t('sensors:alertLevel')}</InputLabel>
+                  fullWidth
+                  required
+                />
+              </Box>
+            </Box>
+
+            <FormControl fullWidth required>
+              <InputLabel>{t('sensors:alertLevel')}</InputLabel>
               <Select
                 name="alert_level"
                 value={formData.alert_level || AlertLevel.WARNING}
                 label={t('sensors:alertLevel')}
                 onChange={handleFormChange}
-                displayEmpty
-                notched
+                renderValue={(value) => (
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    {getAlertLevelChip(value as AlertLevel)}
+                  </Box>
+                )}
               >
                 <MenuItem value={AlertLevel.INFO}>
-                  <Chip
-                    label="Info"
-                    size="small"
-                    sx={{
-                      bgcolor: alpha(theme.palette.info.main, 0.1),
-                      color: theme.palette.info.main
-                    }}
-                  />
+                  {getAlertLevelChip(AlertLevel.INFO)}
                 </MenuItem>
                 <MenuItem value={AlertLevel.WARNING}>
-                  <Chip
-                    label="Warning"
-                    size="small"
-                    sx={{
-                      bgcolor: alpha(theme.palette.warning.main, 0.1),
-                      color: theme.palette.warning.main
-                    }}
-                  />
+                  {getAlertLevelChip(AlertLevel.WARNING)}
                 </MenuItem>
                 <MenuItem value={AlertLevel.CRITICAL}>
-                  <Chip
-                    label="Critical"
-                    size="small"
-                    sx={{
-                      bgcolor: alpha(theme.palette.error.main, 0.1),
-                      color: theme.palette.error.main
-                    }}
-                  />
+                  {getAlertLevelChip(AlertLevel.CRITICAL)}
                 </MenuItem>
               </Select>
             </FormControl>
-          </Grid>
-        </Grid>
+          </Box>
+        )}
       </DialogContent>
-      <DialogActions sx={{ px: 3, pb: 3 }}>
-        <Button onClick={onClose} color="inherit" variant="outlined">
-          {t('common:cancel')}
-        </Button>
-        <Button
-          onClick={handleSubmit}
-          color="primary"
-          variant="contained"
-          disabled={!formData.name || !formData.device_id || !formData.metric_key || !formData.alert_condition}
-        >
-          {t('common:save')}
-        </Button>
+
+      <DialogActions sx={{ px: 3, py: 2, justifyContent: 'space-between' }}>
+        <Box>
+          {activeStep > 0 && (
+            <Button onClick={handleBack} color="inherit">
+              {t('common:back')}
+            </Button>
+          )}
+        </Box>
+        <Box>
+          <Button
+            onClick={onClose}
+            color="inherit"
+            variant="outlined"
+            sx={{ mr: 1 }}
+          >
+            {t('common:cancel')}
+          </Button>
+
+          {activeStep < steps.length - 1 ? (
+            <Button
+              onClick={handleNext}
+              color="primary"
+              variant="contained"
+              disabled={!isFormValid()}
+            >
+              {t('common:next')}
+            </Button>
+          ) : (
+            <Button
+              onClick={handleSubmit}
+              color="primary"
+              variant="contained"
+              disabled={!isFormValid()}
+            >
+              {mode === 'create' ? t('common:create') : t('common:save')}
+            </Button>
+          )}
+        </Box>
       </DialogActions>
     </Dialog>
   );

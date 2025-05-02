@@ -12,7 +12,7 @@ import DeviceDetails from './pages/Devices/DeviceDetails';
 import Plugins from './pages/Plugins';
 import PluginDetails from './pages/Plugins/PluginDetails';
 import NewPlugin from './pages/Plugins/NewPlugin';
-import Settings from './pages/Settings';
+import Settings from './pages/Settings/Settings';
 import DevicesPage from './pages/Devices/DevicesPage';
 import SensorsPage from './pages/sensors/SensorsPage';
 

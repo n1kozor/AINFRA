@@ -1,4 +1,3 @@
-// src/components/sensorpage/SensorTable.tsx
 import React from 'react';
 import {
   Box,

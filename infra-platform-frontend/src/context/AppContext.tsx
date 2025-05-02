@@ -8,7 +8,6 @@ type AppContextType = {
   toggleSidebar: () => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  // Alert management
   activeAlerts: Alert[];
   loadingAlerts: boolean;
   refreshAlerts: () => Promise<Alert[]>;
@@ -21,7 +20,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Alert state
   const [activeAlerts, setActiveAlerts] = useState<Alert[]>([]);
   const [loadingAlerts, setLoadingAlerts] = useState(false);
 
@@ -29,7 +27,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setSidebarOpen((prev) => !prev);
   };
 
-  // Fetch active alerts
   const refreshAlerts = async () => {
     try {
       setLoadingAlerts(true);
@@ -48,11 +45,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Resolve an alert
   const resolveAlert = async (alertId: number) => {
     try {
       await sensorApi.resolveAlert(alertId);
-      // Update local state without needing a refetch
       setActiveAlerts(prevAlerts => prevAlerts.filter(alert => alert.id !== alertId));
       return true;
     } catch (error) {
@@ -61,14 +56,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Initial alerts fetch
   useEffect(() => {
     refreshAlerts();
 
-    // Set up periodic refresh
     const interval = setInterval(() => {
       refreshAlerts();
-    }, 30000); // Refresh every 30 seconds
+    }, 30000);
 
     return () => clearInterval(interval);
   }, []);

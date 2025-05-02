@@ -1,4 +1,3 @@
-// src/components/sensorpage/ConfirmDialog.tsx
 import React from 'react';
 import {
   Button,

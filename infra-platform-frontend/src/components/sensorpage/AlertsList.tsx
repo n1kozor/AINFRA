@@ -1,4 +1,3 @@
-// src/components/sensorpage/AlertsList.tsx
 import React from 'react';
 import {
   Box,
