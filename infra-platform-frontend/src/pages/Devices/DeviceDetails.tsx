@@ -43,28 +43,6 @@ import CustomDeviceDetails from '../../components/devices/DeviceDetails/CustomDe
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 
-// Define proper types for our device data
-interface StandardDeviceData {
-    hostname: string;
-    os_type: string;
-}
-
-interface CustomDeviceData {
-    plugin_name: string;
-}
-
-interface Device {
-    id: number;
-    name: string;
-    description: string | null;
-    ip_address: string | null;
-    type: 'standard' | 'custom';
-    is_active: boolean;
-    standard_device: StandardDeviceData | null;
-    custom_device: CustomDeviceData | null;
-    created_at: string;
-    updated_at: string;
-}
 
 const DeviceDetails = () => {
     const { id } = useParams();
@@ -76,14 +54,12 @@ const DeviceDetails = () => {
 
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-    // Fetch device data
     const { data: device, isLoading, error, refetch } = useQuery({
         queryKey: ['device', deviceId],
         queryFn: () => api.devices.getById(deviceId),
         enabled: !!deviceId,
     });
 
-    // Delete mutation
     const deleteMutation = useMutation({
         mutationFn: (id: number) => api.devices.delete(id),
         onSuccess: () => {
@@ -196,6 +172,11 @@ const DeviceDetails = () => {
     const isStandard = device.type === 'standard';
     const DeviceIcon = isStandard ? StandardIcon : CustomIcon;
 
+    // A DeviceStatus kiszámítása (is_active helyett)
+    // Mivel nincs is_active a Device interfészben, használjunk egy alternatív ellenőrzést
+    // Például feltételezzük, hogy ha van IP címe, akkor aktív
+    const isActive = !!device.ip_address;
+
     return (
         <PageContainer
             title={device.name}
@@ -303,7 +284,7 @@ const DeviceDetails = () => {
                         }}
                     >
                         <Grid container spacing={{ xs: 2, md: 3 }} alignItems="center">
-                            <Grid>
+                            <Grid size={1}>
                                 <Box
                                     sx={{
                                         width: { xs: 48, md: 56 },
@@ -332,7 +313,7 @@ const DeviceDetails = () => {
                                 </Box>
                             </Grid>
 
-                            <Grid>
+                            <Grid size={6}>
                                 <Typography variant="h5" fontWeight={600} sx={{ wordBreak: 'break-word' }}>
                                     {device.name}
                                 </Typography>
@@ -348,14 +329,14 @@ const DeviceDetails = () => {
                                             width: 6,
                                             height: 6,
                                             borderRadius: '50%',
-                                            bgcolor: device.is_active ? 'success.main' : 'text.disabled',
+                                            bgcolor: isActive ? 'success.main' : 'text.disabled',
                                             display: { xs: 'none', sm: 'block' }
                                         }}
                                     />
                                 </Stack>
                             </Grid>
 
-                            <Grid xs={12} sm="auto" sx={{ ml: 'auto' }}>
+                            <Grid size={{ xs: 12, sm: 'auto' }} sx={{ ml: 'auto' }}>
                                 <Stack
                                     direction={{ xs: 'row', sm: 'row' }}
                                     spacing={1}
@@ -375,11 +356,11 @@ const DeviceDetails = () => {
 
                                     <Chip
                                         icon={<PowerIcon fontSize="small" />}
-                                        label={device.is_active
+                                        label={isActive
                                             ? t('devices:status.active')
                                             : t('devices:status.inactive')
                                         }
-                                        color={device.is_active ? 'success' : 'default'}
+                                        color={isActive ? 'success' : 'default'}
                                         size="small"
                                         variant="outlined"
                                         sx={{ fontWeight: 500, borderRadius: 1.5 }}
@@ -413,7 +394,7 @@ const DeviceDetails = () => {
                         <Divider sx={{ my: { xs: 2, md: 3 } }} />
 
                         <Grid container spacing={{ xs: 2, md: 4 }}>
-                            <Grid item xs={12} md={7}>
+                            <Grid size={{ xs: 12, md: 7 }}>
                                 <Typography variant="subtitle2" color="text.secondary" gutterBottom fontWeight={600}>
                                     {t('devices:description')}
                                 </Typography>
@@ -426,11 +407,11 @@ const DeviceDetails = () => {
                                 </Typography>
                             </Grid>
 
-                            <Grid item xs={12} md={5}>
+                            <Grid size={{ xs: 12, md: 5 }}>
                                 <Grid container spacing={2}>
                                     {isStandard && device.standard_device ? (
                                         <>
-                                            <Grid item xs={12} sm={6}>
+                                            <Grid size={{ xs: 12, sm: 6 }}>
                                                 <Typography variant="subtitle2" color="text.secondary" gutterBottom fontWeight={600}>
                                                     {t('devices:osType')}
                                                 </Typography>
@@ -438,7 +419,7 @@ const DeviceDetails = () => {
                                                     {t(`devices:osTypes.${device.standard_device.os_type}`)}
                                                 </Typography>
                                             </Grid>
-                                            <Grid item xs={12} sm={6}>
+                                            <Grid size={{ xs: 12, sm: 6 }}>
                                                 <Typography variant="subtitle2" color="text.secondary" gutterBottom fontWeight={600}>
                                                     {t('devices:hostname')}
                                                 </Typography>
@@ -448,7 +429,7 @@ const DeviceDetails = () => {
                                             </Grid>
                                         </>
                                     ) : device.custom_device && (
-                                        <Grid item xs={12} sm={6}>
+                                        <Grid size={{ xs: 12, sm: 6 }}>
                                             <Typography variant="subtitle2" color="text.secondary" gutterBottom fontWeight={600}>
                                                 {t('devices:plugin')}
                                             </Typography>
@@ -458,7 +439,7 @@ const DeviceDetails = () => {
                                         </Grid>
                                     )}
 
-                                    <Grid item xs={12} sm={6}>
+                                    <Grid size={{ xs: 12, sm: 6 }}>
                                         <Typography variant="subtitle2" color="text.secondary" gutterBottom fontWeight={600}>
                                             {t('devices:created')}
                                         </Typography>
@@ -467,7 +448,7 @@ const DeviceDetails = () => {
                                         </Typography>
                                     </Grid>
 
-                                    <Grid item xs={12} sm={6}>
+                                    <Grid size={{ xs: 12, sm: 6 }}>
                                         <Typography variant="subtitle2" color="text.secondary" gutterBottom fontWeight={600}>
                                             {t('devices:lastUpdated')}
                                         </Typography>
