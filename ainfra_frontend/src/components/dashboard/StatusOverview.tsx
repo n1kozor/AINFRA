@@ -89,26 +89,27 @@ export const StatusOverview: React.FC<StatusOverviewProps> = ({
   };
 
   const chartData = useMemo(() => {
-    if (!statistics) return [];
+  if (!statistics || !statistics.hourly_trend) return [];
 
-    const filteredData = statistics.hourly_trend
-        .filter(h => h.check_count > 0)
-        .map(item => ({
-          ...item,
-          hour: item.hour.split(' ')[1],
-          availability: item.availability_rate
-        }));
+  const filteredData = statistics.hourly_trend
+      .filter(h => h.check_count > 0)
+      .map(item => ({
+        ...item,
+        hour: item.hour.split(' ')[1],
+        availability: item.availability_rate
+      }));
 
-    if (filteredData.length === 1) {
-      const singlePoint = filteredData[0];
-      return [
-        singlePoint,
-        { ...singlePoint, hour: `${singlePoint.hour}+` }
-      ];
-    }
+  if (filteredData.length === 1) {
+    const singlePoint = filteredData[0];
+    return [
+      singlePoint,
+      { ...singlePoint, hour: `${singlePoint.hour}+` }
+    ];
+  }
 
-    return filteredData;
-  }, [statistics]);
+  return filteredData;
+}, [statistics]);
+
 
   const availabilityStatus = useMemo(() => {
     if (!statistics) return { rate: 0, status: 'unknown' };

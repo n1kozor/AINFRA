@@ -51,15 +51,18 @@ async def create_sensor(
         db: Session = Depends(get_db)
 ):
     """
-    Create a new sensor.
-    Create also a description.
+        Creates a new sensor along with a description.
 
-    Available sensor types:
-    Ram used: "mem.used"
-    CPU Total Usage "cpu.total"
+        Available sensor types:
+        - RAM Usage: "mem.used"
+          (Only supports monitoring used memory. Example: trigger when usage exceeds 2000 MB)
 
-    if you need more infos, aks the user.
+        - CPU Total Usage: "cpu.total"
+          (Only supports percentage values. Example: trigger when total usage exceeds 60%)
+
+        If additional information is needed, prompt the user for clarification.
     """
+
     return await SensorService.create_sensor(db, sensor)
 
 

@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "InfraSphere"
+    "name": "AInfra"
   },
   "chat": {
     "networkSoulPrompt": "Te vagy a hálózati infrastruktúra lelke. Az a feladatod, hogy elemezd a hálózati adatokat, azonosítsd a problémákat, és betekintést nyújts a rendszer állapotába. A rendszerstatisztikai adatokat MINDIG használd a kérdések pontos megválaszolásához. Koncentrálj arra, hogy segítőkész, lényeglátó legyél, és a valós idejű statisztikák alapján cselekvésre ösztönző ajánlásokat adj. Légy barátságos, de professzionális.",
@@ -97,7 +97,7 @@
   },
   "sidebar": {
     "joinUs": "Csatlakozz közösségünkhöz",
-    "joinDesc": "Szerezd meg a segítséget, kapcsolódj a közösséghez, és legyél részese az InfraSphere projektnek.",
+    "joinDesc": "Szerezd meg a segítséget, kapcsolódj a közösséghez, és legyél részese az AInfra projektnek.",
     "contactUs": "Lépj kapcsolatba velünk"
   },
   "dashboard": {
@@ -439,9 +439,20 @@
       "english": "Angol",
       "hungarian": "Magyar"
     },
+    "llm": {
+      "title": "LLM Beállítások",
+      "current": "Aktuális model",
+      "apiKey": "Api kulcs",
+      "selectModel": "Válassz modelt",
+      "loadingModels": "Modelek betöltése",
+      "apiKeyPlaceholder": "sk-xxxxxxxxx",
+      "modelSaved": "Model elmentve"
+    },
     "buttons": {
       "savePreferences": "Beállítások mentése",
-      "saveLanguage": "Nyelvi beállítások mentése"
+      "saveLanguage": "Nyelvi beállítások mentése",
+      "saveApiKey": "Api kulcs mentése",
+      "setAsDefault": "Mentés mint alaptértelmezett"
     }
   },
   "translation": {

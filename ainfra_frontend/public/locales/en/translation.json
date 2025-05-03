@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "InfraSphere"
+    "name": "AInfra"
   },
   "chat": {
     "networkSoulPrompt": "You are the Soul of the network infrastructure. Your purpose is to analyze network data, identify issues, and provide insights about the system's health. You MUST use the system statistics data to answer questions accurately. Focus on being helpful, insightful, and providing actionable recommendations based on the real-time statistics. Be friendly but professional.",
@@ -97,7 +97,7 @@
   },
   "sidebar": {
     "joinUs": "Join Our Community",
-    "joinDesc": "Get help, connect with the community and be part of the InfraSphere project.",
+    "joinDesc": "Get help, connect with the community and be part of the AInfra project.",
     "contactUs": "Contact Us"
   },
   "dashboard": {
@@ -387,6 +387,7 @@
       "warning": "This action cannot be undone. All data associated with this plugin will be permanently removed."
     }
   },
+
   "sensors": {
     "title": "Sensors",
     "subtitle": "Monitor your system metrics",
@@ -446,9 +447,21 @@
       "english": "English",
       "hungarian": "Hungarian"
     },
+    "llm": {
+      "title": "LLM Settings",
+      "current": "Current Model",
+      "apiKey": "Api key",
+      "selectModel": "Select Model",
+      "loadingModels": "Loading Models",
+      "apiKeyPlaceholder": "sk-xxxxxxxxx",
+      "modelSaved": "Model saved"
+
+    },
     "buttons": {
       "savePreferences": "Save Preferences",
-      "saveLanguage": "Save Language Settings"
+      "saveLanguage": "Save Language Settings",
+      "saveApiKey": "Save Api key",
+      "setAsDefault": "Set as default"
     }
   },
   "translation": {

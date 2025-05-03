@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+
+  llm_service:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    command: python ainfra_llm_microservice/main.py
+    volumes:
+      - .:/app
+    ports:
+      - "8002:8002"
+
+  availability_service:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    command: python ainfra_availability_microservice/run.py
+    volumes:
+      - .:/app
+    ports:
+      - "8001:8001"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    volumes:
+      - ./ainfra_frontend:/frontend
+      - /frontend/node_modules
+    ports:
+      - "3000:3000"

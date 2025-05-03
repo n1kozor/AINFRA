@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import PageContainer from '../../components/common/PageContainer';
 import AppearanceSettings from '../../components/SettingsPage/AppearanceSettings';
 import LanguageSettings from '../../components/SettingsPage/LanguageSettings';
+import LLMSettings from '../../components/SettingsPage/LLMSettings';
 
 const Settings: React.FC = () => {
   const { t } = useTranslation(['settings', 'common']);
@@ -24,7 +25,11 @@ const Settings: React.FC = () => {
           <Grid size={{ xs: 12, md: 6 }}>
             <LanguageSettings />
           </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <LLMSettings />
+          </Grid>
         </Grid>
+
       </PageContainer>
   );
 };
