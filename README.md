@@ -1,14 +1,16 @@
-# AINFRA Project
+# AINFRA Project - MCP Monitoring
 
-![image](https://github.com/user-attachments/assets/0f42a280-ae3f-46ab-aae0-1e41db65d9dd)
+## Introduction
 
+AINFRA is a monitoring project that has reached its alpha version.
 
 ## Getting Started
 
 ### Prerequisites
 - Git installed on your system
 - Docker and Docker Compose installed on your system
-- OpenAI API key ( Optional for LLM service )
+- OpenAI API key (Required for LLM service)
+- For standard devices: Glances running on target systems
 
 ### Installation
 
@@ -24,6 +26,14 @@
    docker-compose up -d
    ```
 
+3. For standard devices (Windows, Linux, Mac), install Glances:
+   ```bash
+   docker run -d --restart="always" -p 61208-61209:61208-61209 -e GLANCES_OPT="-w" \
+   -v /var/run/docker.sock:/var/run/docker.sock:ro \
+   -v /run/user/1000/podman/podman.sock:/run/user/1000/podman/podman.sock:ro \
+   --pid host nicolargo/glances:latest
+   ```
+
 ## Configuration
 
 ### LLM Service Setup
@@ -34,15 +44,37 @@ Currently, the LLM service only works with OpenAI. During the first startup, you
 2. The system will retrieve the available models that you can access with your API key
 3. Select which model you would like to use from the list of available models
 
+### Device Types
+
+#### Standard Devices (Windows, Linux, Mac)
+- Requires Glances to be running
+- All statistics are transferred to the MCP server
+- LLM can be used to query any system information
+
+#### Custom Devices
+- Create custom plugins to add any networked device
+- Successfully tested with: ESXi, TVs, lab equipment, Synology NAS, Proxmox, Fritz!Box routers
+- Supports both querying and controlling devices
+- LLM can understand and execute operations defined in plugins
+
 ## Usage
 
-After configuration, you can interact with the system through the provided interface. The selected model will be used for all language processing tasks.
+- **Device Management**: Add and monitor devices on the Devices page
+- **Chat Interface**: Communicate with your devices through the chat interface
+- **Dashboard**: Click on the floating "soul" icon to generate network summaries
+- **Sensors**: Create RAM and CPU monitors (currently for standard devices only)
 
-## Notes
+## Known Issues
 
-- Make sure your OpenAI API key has the necessary permissions to access the models you wish to use
-- Internet connectivity is required for the service to communicate with OpenAI's API
+- New devices require 30-50 seconds before becoming available due to connectivity checks
+- Auto-refresh functionality needs improvement; manual page refreshes often required
+- Plugins can only be added in JSON format
+- Device filtering is not yet implemented
+- Ollama integration is still in development
 
-## Support
+## Planned Features
 
-For issues or questions, please file an issue on the GitHub repository at https://github.com/n1kozor/AINFRA.
+- Additional sensor types (processes monitoring, etc.)
+- Sensor support for custom devices
+- Custom agent for standard devices
+- Enhanced dynamic interface for plugin-based devices
