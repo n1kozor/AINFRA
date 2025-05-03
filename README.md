@@ -29,7 +29,7 @@ AINFRA is a monitoring project that has reached its alpha version.
    docker-compose up -d
    ```
 
-3. For standard devices (Windows, Linux, Mac), install Glances:
+3. For standard devices (Windows, Linux, Mac), install Glances ON THE TARGET DEVICE:
    ```bash
    docker run -d --restart="always" -p 61208-61209:61208-61209 -e GLANCES_OPT="-w" \
    -v /var/run/docker.sock:/var/run/docker.sock:ro \
