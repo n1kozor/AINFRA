@@ -1,5 +1,7 @@
 # AINFRA Project
 
+![image](https://github.com/user-attachments/assets/0f42a280-ae3f-46ab-aae0-1e41db65d9dd)
+
 
 ## Getting Started
 
