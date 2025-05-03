@@ -7,6 +7,9 @@
 
 AINFRA is a monitoring project that has reached its alpha version.
 
+![Screenshot 2025-05-03 223430](https://github.com/user-attachments/assets/6c01fd0c-fcbb-4607-ba67-6cb88a01768c)
+
+
 ## Getting Started
 
 ### Prerequisites
@@ -37,9 +40,14 @@ AINFRA is a monitoring project that has reached its alpha version.
    --pid host nicolargo/glances:latest
    ```
 
+![Screenshot 2025-05-03 223452](https://github.com/user-attachments/assets/d00c8bdc-13fa-43b0-87e0-9d91c348d493)
+
 ## Configuration
 
 ### LLM Service Setup
+![Screenshot 2025-05-03 223612](https://github.com/user-attachments/assets/e6b59da5-56d7-4e20-95d3-c11ed0f21eb8)
+![Screenshot 2025-05-03 223546](https://github.com/user-attachments/assets/1abcc847-2d3a-45a3-a947-5097a773b07d)
+![Screenshot 2025-05-03 223538](https://github.com/user-attachments/assets/5e77308b-5a99-40b6-80c2-1ace178e45fb)
 
 Currently, the LLM service only works with OpenAI. During the first startup, you'll need to configure the service:
 
@@ -48,6 +56,8 @@ Currently, the LLM service only works with OpenAI. During the first startup, you
 3. Select which model you would like to use from the list of available models
 
 ### Device Types
+
+
 
 #### Standard Devices (Windows, Linux, Mac)
 - Requires Glances to be running
