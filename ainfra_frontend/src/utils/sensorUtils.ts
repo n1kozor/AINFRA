@@ -23,7 +23,7 @@ export const formatTimeSince = (dateString: string): string => {
 export const getCommonMetricKeys = (): { label: string, value: string }[] => {
   return [
     { label: 'CPU Total Usage', value: 'cpu.total' },
-    { label: 'Memory Used', value: 'mem.available' },
+    { label: 'Memory Usage', value: 'mem.used' },
 
   ];
 };

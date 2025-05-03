@@ -52,6 +52,13 @@ async def create_sensor(
 ):
     """
     Create a new sensor.
+    Create also a description.
+
+    Available sensor types:
+    Ram used: "mem.used"
+    CPU Total Usage "cpu.total"
+
+    if you need more infos, aks the user.
     """
     return await SensorService.create_sensor(db, sensor)
 
