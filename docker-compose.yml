@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   app:
+    container_name: app
     build:
       context: .
       dockerfile: Dockerfile.backend
@@ -12,6 +13,7 @@ services:
       - "8000:8000"
 
   llm_service:
+    container_name: llm_service
     build:
       context: .
       dockerfile: Dockerfile.backend
@@ -22,6 +24,7 @@ services:
       - "8002:8002"
 
   availability_service:
+    container_name: availability_service
     build:
       context: .
       dockerfile: Dockerfile.backend
@@ -32,6 +35,7 @@ services:
       - "8001:8001"
 
   frontend:
+    container_name: frontend
     build:
       context: .
       dockerfile: Dockerfile.frontend

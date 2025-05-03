@@ -43,15 +43,27 @@ def get_db():
         db.close()
 
 
+def is_running_in_docker():
+    """Check if the code is running inside a Docker container"""
+    try:
+        with open('/proc/1/cgroup', 'rt') as f:
+            return 'docker' in f.read()
+    except:
+        return False
+
+
 def init_db():
     """Initialize the database with required tables and default values"""
     Base.metadata.create_all(bind=engine)
+
+    # Set the MCP base URL based on environment
+    mcp_base_url = "http://app:8000/mcp" if is_running_in_docker() else "http://localhost:8000/mcp"
 
     # Insert default settings if they don't exist
     default_settings = {
         "default_model": "gpt-4.1-mini",
         "openai_api_key": "",
-        "mcp_base_url": "http://localhost:8000/mcp"
+        "mcp_base_url": mcp_base_url
     }
 
     with get_db() as db:
@@ -82,10 +94,18 @@ def update_setting(key: str, value: str) -> bool:
 
 
 def get_all_settings() -> Dict[str, str]:
-    """Get all settings as a dictionary"""
+    """Get all settings as a dictionary with Docker environment awareness"""
     with get_db() as db:
         settings = db.query(Setting).all()
-        return {setting.key: setting.value for setting in settings}
+        settings_dict = {setting.key: setting.value for setting in settings}
+
+        # Adjust MCP base URL for Docker environment
+        if is_running_in_docker() and 'mcp_base_url' in settings_dict:
+            if 'localhost' in settings_dict['mcp_base_url']:
+                settings_dict['mcp_base_url'] = settings_dict['mcp_base_url'].replace(
+                    'http://localhost:', 'http://app:')
+
+        return settings_dict
 
 
 def save_models(models: List[Dict[str, str]]) -> bool:

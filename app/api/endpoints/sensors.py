@@ -51,16 +51,71 @@ async def create_sensor(
         db: Session = Depends(get_db)
 ):
     """
-        Creates a new sensor along with a description.
+    Creates a new sensor for monitoring CPU or RAM usage on a standard device.
 
-        Available sensor types:
-        - RAM Usage: "mem.used"
-          (Only supports monitoring used memory. Example: trigger when usage exceeds 2000 MB)
+    ## Required parameters:
+    - `name`: Human-readable name for the sensor (e.g., "High CPU Alert", "Memory Warning")
+    - `description`: Detailed description of what this sensor monitors
+    - `device_id`: ID of the standard device to monitor
+    - `metric_key`: The specific metric to monitor (see supported types below)
+    - `alert_condition`: The condition that triggers an alert (see format below)
+    - `alert_level`: Severity level ("INFO", "WARNING", "CRITICAL")
 
-        - CPU Total Usage: "cpu.total"
-          (Only supports percentage values. Example: trigger when total usage exceeds 60%)
+    ## Supported sensor types (metric_key):
+    1. RAM Usage: "mem.used"
+       - Monitors memory usage in megabytes (MB)
+       - Example: Create an alert when RAM usage exceeds 2000 MB
 
-        If additional information is needed, prompt the user for clarification.
+    2. CPU Total Usage: "cpu.total"
+       - Monitors CPU usage as a percentage (0-100)
+       - Example: Create an alert when CPU usage exceeds 80%
+
+    ## Alert condition format:
+    The alert_condition must use one of these comparison operators followed by a threshold value:
+    - `>` greater than (e.g., ">80" triggers when value is above 80)
+    - `<` less than (e.g., "<10" triggers when value is below 10)
+    - `>=` greater than or equal to (e.g., ">=90" triggers when value is 90 or above)
+    - `<=` less than or equal to (e.g., "<=5" triggers when value is 5 or below)
+    - `==` equal to (e.g., "==0" triggers when value is exactly 0)
+    - `!=` not equal to (e.g., "!=0" triggers when value is not 0)
+
+    ## Examples:
+
+    1. Create a RAM usage alert:
+    ```json
+    {
+      "name": "High Memory Usage Alert",
+      "description": "Alerts when system memory usage exceeds 2GB",
+      "device_id": 1,
+      "metric_key": "mem.used",
+      "alert_condition": ">2000",
+      "alert_level": "WARNING"
+    }
+    ```
+
+    2. Create a CPU usage alert:
+    ```json
+    {
+      "name": "Critical CPU Load",
+      "description": "Alerts when CPU usage exceeds 90%",
+      "device_id": 1,
+      "metric_key": "cpu.total",
+      "alert_condition": ">=90",
+      "alert_level": "CRITICAL"
+    }
+    ```
+
+    3. Create a low CPU usage alert:
+    ```json
+    {
+      "name": "Idle CPU Alert",
+      "description": "Detects when CPU usage is abnormally low",
+      "device_id": 1,
+      "metric_key": "cpu.total",
+      "alert_condition": "<5",
+      "alert_level": "INFO"
+    }
+    ```
     """
 
     return await SensorService.create_sensor(db, sensor)

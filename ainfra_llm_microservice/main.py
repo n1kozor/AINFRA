@@ -1,5 +1,5 @@
 import os
-
+import traceback
 from fastapi import FastAPI, Body, HTTPException, Query
 from pydantic import BaseModel
 from pydantic_ai import Agent
@@ -71,12 +71,14 @@ class ModelsList(BaseModel):
 
 
 def get_model_config():
-    """Get the model configuration from the database"""
+    """Get the model configuration from the database with Docker environment awareness"""
     settings = database.get_all_settings()
+
+    # Use environment-aware settings
     return {
         "default_model": settings.get("default_model", "gpt-4.1-mini"),
         "openai_api_key": settings.get("openai_api_key", ""),
-        "mcp_base_url": settings.get("mcp_base_url", "http://localhost:8000/mcp")
+        "mcp_base_url": settings.get("mcp_base_url", "")
     }
 
 
@@ -98,6 +100,9 @@ async def generate_report(request: ReportRequest = Body(...)):
         # This is necessary because pydantic_ai may be using openai SDK internally
         # which looks for this environment variable
         os.environ["OPENAI_API_KEY"] = config["openai_api_key"]
+
+        # Debug output - include the MCP URL for troubleshooting
+        print(f"Using MCP base URL: {config['mcp_base_url']}")
 
         server = MCPServerHTTP(url=config["mcp_base_url"])
         agent = Agent(f"openai:{model_name}", mcp_servers=[server])
@@ -122,11 +127,17 @@ async def generate_report(request: ReportRequest = Body(...)):
         print(prompt)
         print("=" * 50)
 
-        async with agent.run_mcp_servers():
-            result = await agent.run(prompt)
-            return ReportResponse(output=result.output)
+        try:
+            async with agent.run_mcp_servers():
+                result = await agent.run(prompt)
+                return ReportResponse(output=result.output)
+        except Exception as inner_e:
+            print(f"Inner exception in generate_report: {str(inner_e)}")
+            print(traceback.format_exc())
+            return ReportResponse(output=f"Error: {str(inner_e)}")
     except Exception as e:
         print(f"Error in generate_report: {str(e)}")
+        print(traceback.format_exc())
         return ReportResponse(output=f"Error: {str(e)}")
 
 
@@ -146,6 +157,9 @@ async def generate_statistics_all(request: StatisticsRequest = Body(...)):
 
         # IMPORTANT: Set the environment variable with the API key from database
         os.environ["OPENAI_API_KEY"] = config["openai_api_key"]
+
+        # Debug output - include the MCP URL for troubleshooting
+        print(f"Using MCP base URL: {config['mcp_base_url']}")
 
         server = MCPServerHTTP(url=config["mcp_base_url"])
         agent = Agent(f"openai:{model_name}", mcp_servers=[server])
@@ -169,11 +183,17 @@ async def generate_statistics_all(request: StatisticsRequest = Body(...)):
         print(enhanced_prompt)
         print("=" * 50)
 
-        async with agent.run_mcp_servers():
-            result = await agent.run(enhanced_prompt)
-            return ReportResponse(output=result.output)
+        try:
+            async with agent.run_mcp_servers():
+                result = await agent.run(enhanced_prompt)
+                return ReportResponse(output=result.output)
+        except Exception as inner_e:
+            print(f"Inner exception in generate_statistics_all: {str(inner_e)}")
+            print(traceback.format_exc())
+            return ReportResponse(output=f"Error: {str(inner_e)}")
     except Exception as e:
         print(f"Error in generate_statistics_all: {str(e)}")
+        print(traceback.format_exc())
         return ReportResponse(output=f"Error: {str(e)}")
 
 
@@ -186,7 +206,7 @@ async def get_settings():
     return Settings(
         openai_api_key=settings.get("openai_api_key", ""),
         default_model=settings.get("default_model", "gpt-4.1-mini"),
-        mcp_base_url=settings.get("mcp_base_url", "http://localhost:8000/mcp")
+        mcp_base_url=settings.get("mcp_base_url", "")
     )
 
 
@@ -210,7 +230,7 @@ async def update_settings(settings_update: SettingsUpdate):
     return Settings(
         openai_api_key=updated_settings.get("openai_api_key", ""),
         default_model=updated_settings.get("default_model", "gpt-4.1-mini"),
-        mcp_base_url=updated_settings.get("mcp_base_url", "http://localhost:8000/mcp")
+        mcp_base_url=updated_settings.get("mcp_base_url", "")
     )
 
 
