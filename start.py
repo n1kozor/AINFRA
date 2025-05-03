@@ -18,12 +18,12 @@ else:
 # --- Determine npm command ---
 npm_cmd = "npm.cmd" if platform.system() == "Windows" else "npm"
 
-# --- Load .env for llm_service ---
-load_dotenv(dotenv_path=BASE_DIR / "llm_service" / ".env")
+# --- Load .env for ainfra_llm_microservice ---
+load_dotenv(dotenv_path=BASE_DIR / "ainfra_llm_microservice" / ".env")
 openai_api_key = os.getenv("OPENAI_API_KEY")
 
 if not openai_api_key:
-    print("❌ OPENAI_API_KEY not found in llm_service/.env")
+    print("❌ OPENAI_API_KEY not found in ainfra_llm_microservice/.env")
     exit(1)
 
 # --- Define all services ---
@@ -34,20 +34,20 @@ commands = [
         "cwd": BASE_DIR
     },
     {
-        "name": "availability_microservice (8001)",
+        "name": "ainfra_availability_microservice (8001)",
         "cmd": [PYTHON_BIN, "run.py"],
-        "cwd": BASE_DIR / "availability_microservice"
+        "cwd": BASE_DIR / "ainfra_availability_microservice"
     },
     {
-        "name": "llm_service (8002)",
+        "name": "ainfra_llm_microservice (8002)",
         "cmd": [PYTHON_BIN, "main.py"],
-        "cwd": BASE_DIR / "llm_service",
+        "cwd": BASE_DIR / "ainfra_llm_microservice",
         "env": {**os.environ, "OPENAI_API_KEY": openai_api_key}
     },
     {
         "name": "frontend (Vite)",
         "cmd": [npm_cmd, "run", "dev"],
-        "cwd": BASE_DIR / "infra-platform-frontend"
+        "cwd": BASE_DIR / "ainfra_frontend"
     }
 ]
 

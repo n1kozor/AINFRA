@@ -115,7 +115,7 @@ class StandardDeviceService:
                 "uptime": uptime
             },
             "cpu": {
-                "usage": cpu_data.get("total", 0) * 100 if isinstance(cpu_data.get("total"), (int, float)) else 0,
+                "total": cpu_data.get("total", 0) if isinstance(cpu_data.get("total"), (int, float)) else 0,
                 "user": cpu_data.get("user", 0) * 100 if isinstance(cpu_data.get("user"), (int, float)) else 0,
                 "system": cpu_data.get("system", 0) * 100 if isinstance(cpu_data.get("system"), (int, float)) else 0,
                 "idle": cpu_data.get("idle", 0) * 100 if isinstance(cpu_data.get("idle"), (int, float)) else 0,

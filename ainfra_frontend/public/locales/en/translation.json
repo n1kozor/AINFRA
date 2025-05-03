@@ -1,0 +1,459 @@
+{
+  "app": {
+    "name": "InfraSphere"
+  },
+  "chat": {
+    "networkSoulPrompt": "You are the Soul of the network infrastructure. Your purpose is to analyze network data, identify issues, and provide insights about the system's health. You MUST use the system statistics data to answer questions accurately. Focus on being helpful, insightful, and providing actionable recommendations based on the real-time statistics. Be friendly but professional.",
+    "deviceChatPrompt": "You are {{deviceName}} device and you behave as if you were this actual device! You are very friendly and creative! You MUST use EMOJIS! You should ONLY perform operations related to this specific device, even if I ask you to do something else! (Device ID: {{deviceId}}, Device Name: {{deviceName}})",
+    "welcomeMessage": "Hello! I am the Soul of your network infrastructure. I'm currently monitoring all systems and can assist with any questions about your network health and performance. The current network health status is {{status}} ({{score}}%). How can I help you today?",
+    "deviceWelcomeMessage": "Hello! I'm {{deviceName}}. How can I assist you today?",
+    "excellent": "Excellent",
+    "good": "Good",
+    "critical": "Critical",
+    "typing": "{{deviceName}} is typing...",
+    "messagePlaceholder": "Message {{deviceName}}...",
+    "deviceMessagePlaceholder": "Message {{deviceName}}...",
+    "errorFetchingResponse": "Sorry, I encountered an error while processing your request."
+  },
+  "header": {
+    "tooltips": {
+      "notifications": "Notifications",
+      "changeTheme": "Change Theme",
+      "changeLanguage": "Change Language"
+    }
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "paper": "Paper",
+    "windows31": "Windows 3.1"
+  },
+  "language": {
+    "english": "English",
+    "hungarian": "Hungarian"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "viewAll": "View All Notifications",
+    "noAlerts": "No active alerts"
+  },
+  "common": {
+    "loading": "Loading...",
+    "errors": {
+      "required": "This field is required",
+      "unknownError": "An unknown error occurred"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "back": "Back",
+      "next": "Next",
+      "saveDevice": "Save Device",
+      "view": "View",
+      "copy": "Copy",
+      "close": "Close",
+      "confirm": "Confirm",
+      "edit": "Edit",
+      "delete": "Delete",
+      "create": "Create",
+      "save": "Save",
+      "retry": "Retry",
+      "backToDevices": "Back to Devices",
+      "backToPlugins": "Back to Plugins",
+      "refresh": "Refresh",
+      "search": "Search"
+    },
+    "status": {
+      "online": "Online",
+      "offline": "Offline"
+    },
+    "threshold": "Threshold",
+    "home": "Home",
+    "unknown": "Unknown",
+    "navigation": {
+      "dashboard": "Dashboard",
+      "devices": "Devices",
+      "sensors": "Sensors",
+      "plugins": "Plugins",
+      "settings": "Settings",
+      "standardDevices": "Standard Devices",
+      "customDevices": "Custom Devices"
+    }
+  },
+  "alerts": {
+    "status": {
+      "new": "New Alert",
+      "ongoing": "Ongoing Alert"
+    },
+    "value": "Value",
+    "resolve": "Resolve"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "devices": "Devices",
+    "sensors": "Sensors",
+    "plugins": "Plugins",
+    "settings": "Settings",
+    "new": "New"
+  },
+  "sidebar": {
+    "joinUs": "Join Our Community",
+    "joinDesc": "Get help, connect with the community and be part of the InfraSphere project.",
+    "contactUs": "Contact Us"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "System Overview",
+    "systemStats": {
+      "title": "System Status Overview",
+      "availability": "Availability",
+      "avgResponseTime": "Avg Response Time",
+      "checkInterval": "Check Interval",
+      "availabilityTrend": "Availability Trend",
+      "recentErrors": "Recent Errors",
+      "slowestDevices": "Slowest Devices",
+      "noData": "No data available",
+      "noErrors": "No errors detected",
+      "noSlowDevices": "No slow devices detected",
+      "availabilityPercent": "Availability (%)",
+      "dataPoints": "data points"
+    },
+    "timeRange": {
+      "thirtyMinutes": "Last 30 Minutes",
+      "oneHour": "Last Hour",
+      "sixHours": "Last 6 Hours",
+      "oneDay": "Last 24 Hours",
+      "sevenDays": "Last 7 Days",
+      "allTime": "All Time",
+      "minutes": "minutes",
+      "minute": "minute"
+    },
+    "lastUpdated": "Last updated",
+    "deviceStatus": {
+      "totalDevices": "Total Devices",
+      "available": "Available",
+      "unavailable": "Unavailable"
+    },
+    "networkSoul": {
+      "status": {
+        "excellent": "Excellent",
+        "good": "Good",
+        "critical": "Critical",
+        "unknown": "Unknown"
+      }
+    }
+  },
+  "devices": {
+    "steps": {
+      "basicInfo": "Basic Information",
+      "selectPlugin": "Select Plugin",
+      "connectionDetails": "Connection Details",
+      "hostname": "Hostname",
+      "review": "Review"
+    },
+    "addCustomDevice": "Add Custom Device",
+    "addStandardDevice": "Add Standard Device",
+    "added": "Added",
+    "enterBasicInfo": "Enter the basic device information",
+    "enterHostname": "Enter hostname information",
+    "selectPlugin": "Select a plugin for your device",
+    "name": "Device Name",
+    "nameHint": "A descriptive name for the device",
+    "ipAddress": "IP Address",
+    "ipAddressHint": "The IP address of the device",
+    "description": "Description",
+    "descriptionHint": "Optional description of the device",
+    "hostname": "Hostname",
+    "hostnameHint": "The network hostname of the device",
+    "hostnameDescription": "The hostname is used to identify the device on the network. It can be a domain name (like server.example.com) or a simple machine name.",
+    "osType": "Operating System",
+    "basicInfo": "Basic Information",
+    "connectionDetails": "Connection Details",
+    "noDescription": "No description provided",
+    "tabs": {
+      "parameters": "Parameters",
+      "jsonEditor": "JSON Editor",
+      "hardware": "Hardware",
+      "storage": "Storage",
+      "network": "Network",
+      "processes": "Processes",
+      "containers": "Containers"
+    },
+    "searchPlugins": "Search plugins...",
+    "noPluginsFound": "No plugins found matching your search",
+    "noPluginsAvailable": "No plugins available",
+    "connectionParamsDescription": "Configure the connection parameters for this plugin. These fields will be used to connect to your device.",
+    "noUiSchema": "This plugin doesn't provide a UI schema for configuration. Please use the JSON editor to set connection parameters.",
+    "jsonEditorDescription": "Edit the connection parameters directly in JSON format. Changes here will be synchronized with the form fields.",
+    "reviewDeviceInfo": "Review device information",
+    "pluginDetails": "Plugin Details",
+    "pluginName": "Plugin Name",
+    "pluginVersion": "Version",
+    "author": "Author",
+    "connectionParams": "Connection Parameters",
+    "paramsObject": "Parameters Object",
+    "deviceTypes": {
+      "standard": "Add Standard Device",
+      "custom": "Custom Device"
+    },
+    "osTypes": {
+      "linux": "Linux",
+      "windows": "Windows",
+      "macos": "macOS"
+    },
+    "status": {
+      "online": "Online",
+      "offline": "Offline",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "actions": {
+      "chat": "Chat with device"
+    },
+    "errors": {
+      "deviceOffline": "Device is offline",
+      "failedToLoadStats": "Failed to load device statistics",
+      "unknownError": "An unknown error occurred",
+      "glancesError": "Error connecting to Glances service",
+      "failedToLoadData": "Failed to load data",
+      "pluginError": "Plugin error occurred",
+      "deviceMayHaveBeenRemoved": "The device may have been removed or does not exist."
+    },
+    "fetchingStats": "Fetching device statistics...",
+    "refresh": "Refresh",
+    "refreshing": "Refreshing...",
+    "retry": "Retry",
+    "systemInfo": {
+      "platform": "Platform",
+      "uptime": "Uptime"
+    },
+    "cpuInfo": {
+      "title": "CPU Information",
+      "usage": "CPU Usage",
+      "user": "User",
+      "system": "System",
+      "idle": "Idle",
+      "cores": "CPU Cores",
+      "physicalCores": "Physical Cores",
+      "logicalCores": "Logical Cores"
+    },
+    "memoryInfo": {
+      "title": "Memory Information",
+      "ramUsage": "RAM Usage",
+      "free": "Free",
+      "cached": "Cached",
+      "buffers": "Buffers",
+      "used": "Used",
+      "swap": "Swap",
+      "swapUsage": "Swap Usage"
+    },
+    "storage": {
+      "title": "Storage Information",
+      "mountpoint": "Mount Point",
+      "usage": "Usage",
+      "total": "Total",
+      "used": "Used",
+      "free": "Free",
+      "noData": "No storage information available"
+    },
+    "network": {
+      "title": "Network Information",
+      "received": "Received",
+      "sent": "Sent",
+      "packets": "packets",
+      "noData": "No network information available"
+    },
+    "processInfo": {
+      "title": "Process Information",
+      "total": "Total",
+      "running": "Running",
+      "sleeping": "Sleeping",
+      "threads": "Threads",
+      "processes": "Processes",
+      "pid": "PID",
+      "name": "Name",
+      "user": "User",
+      "cpu": "CPU",
+      "memory": "Memory",
+      "status": "Status",
+      "noData": "No process information available"
+    },
+    "containers": {
+      "title": "Containers",
+      "count": "{{count}} containers detected",
+      "image": "Image",
+      "cpu": "CPU",
+      "memory": "Memory",
+      "rx": "Received",
+      "tx": "Sent",
+      "uptime": "Uptime"
+    },
+    "cards": {
+      "systemInfo": "System Information",
+      "availableOperations": "Available Operations"
+    },
+    "quickActions": "Quick Actions",
+    "operations": {
+      "execute": "Execute Operation",
+      "noParameters": "This operation doesn't require any parameters"
+    },
+    "confirmAction": "Confirm Action",
+    "confirmActionMessage": "Are you sure you want to execute this action?",
+    "confirmActionDescription": "This action may affect the device's operation. Please confirm to proceed.",
+    "noDataAvailable": "No data available",
+    "allDevices": "All Devices",
+    "standardDeviceDescription": "Common servers and devices with SSH access",
+    "customDeviceDescription": "Special devices using custom plugins",
+    "deviceCount": "{{count}} devices found",
+    "loadingDevices": "Loading devices...",
+    "addDevice": "Add Device",
+    "addFirstDevice": "Add First Device",
+    "noDevicesYet": "No Devices Yet",
+    "addYourFirstDevice": "Get started by adding your first device",
+    "errorFetchingDevices": "Error Fetching Devices",
+    "errorFetchDescription": "There was a problem retrieving the device list. Please try again.",
+    "deviceNotFound": "Device Not Found",
+    "plugin": "Plugin",
+    "created": "Created",
+    "lastUpdated": "Last Updated",
+    "loading": "Loading",
+    "loadingDeviceDetails": "Loading device details...",
+    "error": "Error",
+    "deleteDevice": {
+      "title": "Delete Device",
+      "confirmation": "Are you sure you want to delete the device {{name}}?",
+      "warning": "This action cannot be undone. All data associated with this device will be permanently removed."
+    }
+  },
+  "plugins": {
+    "title": "Plugins",
+    "subtitle": "Manage your plugins",
+    "verifiedPlugin": "Verified Plugin",
+    "active": "Active",
+    "inactive": "Inactive",
+    "noDescription": "No description provided",
+    "view": "View plugin",
+    "copy": "Copy code",
+    "copied": "Copied to clipboard",
+    "download": "Download file",
+    "tabs": {
+      "code": "Plugin Code",
+      "uiSchema": "UI Schema",
+      "all": "All Plugins",
+      "active": "Active Plugins",
+      "inactive": "Inactive Plugins"
+    },
+    "uiSchema": "UI Schema",
+    "basicInfo": "Basic Information",
+    "basicInformation": "Basic Information",
+    "name": "Plugin Name",
+    "version": "Version",
+    "author": "Author",
+    "description": "Description",
+    "pluginConfiguration": "Plugin Configuration",
+    "jsonConfigDescription": "Configure the plugin using JSON. This configuration will be used when the plugin is executed.",
+    "editPlugin": "Edit Plugin",
+    "code": "Plugin Code",
+    "fields": {
+      "name": "Plugin Name",
+      "description": "Description",
+      "version": "Version",
+      "author": "Author",
+      "active": "Active Plugin"
+    },
+    "error": {
+      "title": "Error",
+      "loading": "Error loading plugin data"
+    },
+    "loadingPlugins": "Loading plugins...",
+    "loadingPlugin": "Loading plugin details...",
+    "tryAgain": "Try Again",
+    "noPluginsFound": "No Plugins Found",
+    "tryDifferentSearch": "Try a different search term or check your filters",
+    "clearSearch": "Clear Search",
+    "noPluginsYet": "No Plugins Yet",
+    "getStarted": "Get started by adding your first plugin to extend system functionality",
+    "addPlugin": "Add Plugin",
+    "addFirstPlugin": "Add First Plugin",
+    "pluginVersion": "Version",
+    "createdAt": "Created",
+    "updatedAt": "Last Updated",
+    "loading": "Loading",
+    "pluginNotFound": "Plugin Not Found",
+    "pluginNotFoundMessage": "The requested plugin could not be found or may have been deleted",
+    "importPluginJson": "Import Plugin JSON",
+    "deletePlugin": {
+      "title": "Delete Plugin",
+      "confirmation": "Are you sure you want to delete the plugin \"{{name}}\"?",
+      "warning": "This action cannot be undone. All data associated with this plugin will be permanently removed."
+    }
+  },
+  "sensors": {
+    "title": "Sensors",
+    "subtitle": "Monitor your system metrics",
+    "activeAlerts": "Active Alerts",
+    "noActiveAlerts": "No active alerts",
+    "sensorName": "Sensor Name",
+    "sensorDescription": "Sensor Description",
+    "device": "Device",
+    "metricKey": "Metric Key",
+    "alertCondition": "Alert Condition",
+    "alertLevel": "Alert Level",
+    "createSensor": "Create Sensor",
+    "editSensor": "Edit Sensor",
+    "noSensors": "No sensors found",
+    "resolveAlert": "Resolve Alert",
+    "deviceFilter": "Filter Sensors",
+    "allDevices": "All Devices",
+    "tableHeaders": {
+      "actions": "Actions"
+    },
+    "basicInfo": "Basic Information",
+    "deviceSelection": "Device Selection",
+    "alertSettings": "Alert Settings",
+    "processName": "Process Name",
+    "enterProcessName": "Enter process name",
+    "condition": "Condition",
+    "processAlertHelp": "Set alert conditions for process existence. Use '==' for 'exists' and '!=' for 'not exists'.",
+    "cpuThresholdHelp": "Enter CPU usage threshold as percentage (0-100%)",
+    "memThresholdHelp": "Enter memory threshold in megabytes (MB)",
+    "actions": {
+      "edit": "Edit Sensor",
+      "delete": "Delete Sensor"
+    },
+    "value": "Value",
+    "sensorCreated": "Sensor created successfully",
+    "sensorUpdated": "Sensor updated successfully",
+    "errorOccurred": "An error occurred",
+    "sensorDeleted": "Sensor deleted successfully",
+    "alertResolved": "Alert resolved successfully",
+    "addSensor": "Add Sensor",
+    "deleteConfirmation": "Delete Confirmation",
+    "confirmDelete": "Are you sure you want to delete this sensor?",
+    "deleteWarning": "This action cannot be undone."
+  },
+  "settings": {
+    "appearance": {
+      "title": "Appearance",
+      "currentTheme": "Current Theme",
+      "darkMode": "Dark Mode",
+      "lightMode": "Light Mode",
+      "paperMode": "Paper Mode",
+      "windowsMode": "Windows 3.1 Mode"
+    },
+    "language": {
+      "title": "Language",
+      "current": "Current Language",
+      "english": "English",
+      "hungarian": "Hungarian"
+    },
+    "buttons": {
+      "savePreferences": "Save Preferences",
+      "saveLanguage": "Save Language Settings"
+    }
+  },
+  "translation": {
+    "navigation": {
+      "Sensors": "Sensors"
+    }
+  }
+}

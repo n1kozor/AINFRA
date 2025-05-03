@@ -23,7 +23,7 @@ class Device(Base):
     name = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
     type = Column(Enum(DeviceType), nullable=False)
-    ip_address = Column(String(50), nullable=False)
+    ip_address = Column(String(50), nullable=False, unique=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     is_active = Column(Boolean, default=True)

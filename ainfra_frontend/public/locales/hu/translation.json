@@ -1,0 +1,452 @@
+{
+  "app": {
+    "name": "InfraSphere"
+  },
+  "chat": {
+    "networkSoulPrompt": "Te vagy a hálózati infrastruktúra lelke. Az a feladatod, hogy elemezd a hálózati adatokat, azonosítsd a problémákat, és betekintést nyújts a rendszer állapotába. A rendszerstatisztikai adatokat MINDIG használd a kérdések pontos megválaszolásához. Koncentrálj arra, hogy segítőkész, lényeglátó legyél, és a valós idejű statisztikák alapján cselekvésre ösztönző ajánlásokat adj. Légy barátságos, de professzionális.",
+    "deviceChatPrompt": "Te vagy a(z) {{deviceName}} készülék, és úgy viselkedsz, mintha valóban ez a készülék lennél! Nagyon barátságos és kreatív vagy! EMOJIKAT KELL HASZNÁLNOD! Csak és kizárólag ehhez a készülékhez kapcsolódó műveleteket hajthatsz végre, még akkor is, ha mást kérnék! (Eszközazonosító: {{deviceId}}, Eszköz neve: {{deviceName}})",
+    "welcomeMessage": "Szia! Én vagyok a hálózati infrastruktúrád lelke. Jelenleg minden rendszert figyelek, és szívesen segítek bármilyen kérdésben a hálózatod egészségével és teljesítményével kapcsolatban. A hálózat aktuális állapota: {{status}} ({{score}}%). Miben segíthetek ma?",
+    "deviceWelcomeMessage": "Szia! Én vagyok a(z) {{deviceName}}. Miben segíthetek ma?",
+    "excellent": "Kiváló",
+    "good": "Jó",
+    "critical": "Kritikus",
+    "typing": "{{deviceName}} gépel...",
+    "messagePlaceholder": "Üzenet {{deviceName}}...",
+    "deviceMessagePlaceholder": "Üzenet {{deviceName}}...",
+    "errorFetchingResponse": "Sajnálom, hiba történt a kérés feldolgozása közben."
+  },
+  "header": {
+    "tooltips": {
+      "notifications": "Értesítések",
+      "changeTheme": "Téma váltása",
+      "changeLanguage": "Nyelv váltása"
+    }
+  },
+  "theme": {
+    "light": "Világos",
+    "dark": "Sötét",
+    "paper": "Papír",
+    "windows31": "Windows 3.1"
+  },
+  "language": {
+    "english": "Angol",
+    "hungarian": "Magyar"
+  },
+  "notifications": {
+    "title": "Értesítések",
+    "viewAll": "Összes értesítés megtekintése",
+    "noAlerts": "Nincs aktív riasztás"
+  },
+  "common": {
+    "loading": "Betöltés...",
+    "errors": {
+      "required": "Ez a mező kötelező",
+      "unknownError": "Ismeretlen hiba történt"
+    },
+    "actions": {
+      "cancel": "Mégse",
+      "back": "Vissza",
+      "next": "Tovább",
+      "saveDevice": "Eszköz mentése",
+      "view": "Megtekintés",
+      "copy": "Másolás",
+      "close": "Bezárás",
+      "confirm": "Megerősítés",
+      "edit": "Szerkesztés",
+      "delete": "Törlés",
+      "create": "Létrehozás",
+      "save": "Mentés",
+      "retry": "Újrapróbálkozás",
+      "backToDevices": "Vissza az eszközökhöz",
+      "backToPlugins": "Vissza a bővítményekhez",
+      "refresh": "Frissítés",
+      "search": "Keresés"
+    },
+    "status": {
+      "online": "Online",
+      "offline": "Offline"
+    },
+    "threshold": "Küszöbérték",
+    "home": "Főoldal",
+    "unknown": "Ismeretlen",
+    "navigation": {
+      "dashboard": "Irányítópult",
+      "devices": "Eszközök",
+      "sensors": "Szenzorok",
+      "plugins": "Bővítmények",
+      "settings": "Beállítások",
+      "standardDevices": "Standard eszközök",
+      "customDevices": "Egyedi eszközök"
+    }
+  },
+  "alerts": {
+    "status": {
+      "new": "Új riasztás",
+      "ongoing": "Folyamatban lévő riasztás"
+    },
+    "value": "Érték",
+    "resolve": "Megoldás"
+  },
+  "navigation": {
+    "dashboard": "Irányítópult",
+    "devices": "Eszközök",
+    "sensors": "Szenzorok",
+    "plugins": "Bővítmények",
+    "settings": "Beállítások",
+    "new": "Új"
+  },
+  "sidebar": {
+    "joinUs": "Csatlakozz közösségünkhöz",
+    "joinDesc": "Szerezd meg a segítséget, kapcsolódj a közösséghez, és legyél részese az InfraSphere projektnek.",
+    "contactUs": "Lépj kapcsolatba velünk"
+  },
+  "dashboard": {
+    "title": "Irányítópult",
+    "subtitle": "Rendszer áttekintés",
+    "systemStats": {
+      "title": "Rendszer állapot összefoglaló",
+      "availability": "Elérhetőség",
+      "avgResponseTime": "Átlagos válaszidő",
+      "checkInterval": "Ellenőrzési intervallum",
+      "availabilityTrend": "Elérhetőségi trend",
+      "recentErrors": "Legutóbbi hibák",
+      "slowestDevices": "Leglassabb eszközök",
+      "noData": "Nincs elérhető adat",
+      "noErrors": "Nincs észlelt hiba",
+      "noSlowDevices": "Nincsenek lassú eszközök",
+      "availabilityPercent": "Elérhetőség (%)",
+      "dataPoints": "adatpontok"
+    },
+    "timeRange": {
+      "thirtyMinutes": "Az elmúlt 30 perc",
+      "oneHour": "Az elmúlt 1 óra",
+      "sixHours": "Az elmúlt 6 óra",
+      "oneDay": "Az elmúlt 24 óra",
+      "sevenDays": "Az elmúlt 7 nap",
+      "allTime": "Összes idő",
+      "minutes": "percek",
+      "minute": "perc"
+    },
+    "lastUpdated": "Utoljára frissítve",
+    "deviceStatus": {
+      "totalDevices": "Összes eszköz",
+      "available": "Elérhető",
+      "unavailable": "Nem elérhető"
+    },
+    "networkSoul": {
+      "status": {
+        "excellent": "Kiváló",
+        "good": "Jó",
+        "critical": "Kritikus",
+        "unknown": "Ismeretlen"
+      }
+    }
+  },
+  "devices": {
+    "steps": {
+      "basicInfo": "Alapvető információk",
+      "selectPlugin": "Bővítmény kiválasztása",
+      "connectionDetails": "Kapcsolati adatok",
+      "hostname": "Hosztnév",
+      "review": "Áttekintés"
+    },
+    "addCustomDevice": "Egyedi eszköz hozzáadása",
+    "addStandardDevice": "Standard eszköz hozzáadása",
+    "added": "Hozzáadva",
+    "enterBasicInfo": "Add meg az eszköz alapvető adatait",
+    "enterHostname": "Add meg a hosztnevet",
+    "selectPlugin": "Válassz egy bővítményt az eszközödhöz",
+    "name": "Eszköz neve",
+    "nameHint": "Az eszköz leíró neve",
+    "ipAddress": "IP-cím",
+    "ipAddressHint": "Az eszköz IP-címe",
+    "description": "Leírás",
+    "descriptionHint": "Opcionális leírás az eszközről",
+    "hostname": "Hosztnév",
+    "hostnameHint": "A hálózaton az eszközt azonosító hosztnév. Ez lehet domain név (pl. server.example.com) vagy egyszerű gépnév.",
+    "hostnameDescription": "A hosztnév a hálózaton az eszköz azonosítására szolgál. Lehet domain név (például server.example.com) vagy egyszerű gépnév.",
+    "osType": "Operációs rendszer",
+    "basicInfo": "Alapvető információk",
+    "connectionDetails": "Kapcsolati adatok",
+    "noDescription": "Nincs megadva leírás",
+    "tabs": {
+      "parameters": "Paraméterek",
+      "jsonEditor": "JSON szerkesztő",
+      "hardware": "Hardver",
+      "storage": "Tároló",
+      "network": "Hálózat",
+      "processes": "Folyamatok",
+      "containers": "Konténerek"
+    },
+    "searchPlugins": "Keresés bővítmények között...",
+    "noPluginsFound": "Nem található bővítmény a keresésnek megfelelően",
+    "noPluginsAvailable": "Nincsenek elérhető bővítmények",
+    "connectionParamsDescription": "Állítsd be a bővítmény kapcsolati paramétereit. Ezeket a mezőket fogja használni az eszköz eléréséhez.",
+    "noUiSchema": "Ez a bővítmény nem biztosít UI sémát a konfigurációhoz. Kérlek, használd a JSON szerkesztőt a kapcsolat paramétereinek megadásához.",
+    "jsonEditorDescription": "Szerkeszd a kapcsolati paramétereket közvetlenül JSON formátumban. Az itt végzett módosítások szinkronizálódnak a form mezőkkel.",
+    "reviewDeviceInfo": "Eszköz adatok áttekintése",
+    "pluginDetails": "Bővítmény részletei",
+    "pluginName": "Bővítmény neve",
+    "pluginVersion": "Verzió",
+    "author": "Készítő",
+    "connectionParams": "Kapcsolati paraméterek",
+    "paramsObject": "Paraméter objektum",
+    "deviceTypes": {
+      "standard": "Standard eszköz hozzáadása",
+      "custom": "Egyedi eszköz"
+    },
+    "osTypes": {
+      "linux": "Linux",
+      "windows": "Windows",
+      "macos": "macOS"
+    },
+    "status": {
+      "online": "Online",
+      "offline": "Offline",
+      "active": "Aktív",
+      "inactive": "Inaktív"
+    },
+    "actions": {
+      "chat": "Eszközzel való csevegés"
+    },
+    "errors": {
+      "deviceOffline": "Az eszköz offline",
+      "failedToLoadStats": "Nem sikerült betölteni az eszköz statisztikáit",
+      "unknownError": "Ismeretlen hiba történt",
+      "glancesError": "Hiba a Glances szolgáltatáshoz való csatlakozáskor",
+      "failedToLoadData": "Nem sikerült betölteni az adatokat",
+      "pluginError": "Bővítmény hiba történt",
+      "deviceMayHaveBeenRemoved": "Előfordulhat, hogy az eszköz eltávolításra került vagy nem létezik."
+    },
+    "fetchingStats": "Statisztikák lekérése...",
+    "refresh": "Frissítés",
+    "refreshing": "Frissítés...",
+    "retry": "Újrapróbálkozás",
+    "systemInfo": {
+      "platform": "Platform",
+      "uptime": "Üzemidő"
+    },
+    "cpuInfo": {
+      "title": "CPU információk",
+      "usage": "CPU kihasználtság",
+      "user": "Felhasználói",
+      "system": "Rendszer",
+      "idle": "Tétlen",
+      "cores": "CPU magok",
+      "physicalCores": "Fizikai magok",
+      "logicalCores": "Logikai magok"
+    },
+    "memoryInfo": {
+      "title": "Memória információk",
+      "ramUsage": "RAM használat",
+      "free": "Szabad",
+      "cached": "Gyorsítótárazott",
+      "buffers": "Pufferek",
+      "used": "Használt",
+      "swap": "Swap",
+      "swapUsage": "Swap használat"
+    },
+    "storage": {
+      "title": "Tároló információk",
+      "mountpoint": "Csatolási pont",
+      "usage": "Használat",
+      "total": "Összesen",
+      "used": "Használt",
+      "free": "Szabad",
+      "noData": "Nincs tároló információ"
+    },
+    "network": {
+      "title": "Hálózati információk",
+      "received": "Fogadott",
+      "sent": "Küldött",
+      "packets": "csomagok",
+      "noData": "Nincs hálózati információ"
+    },
+    "processInfo": {
+      "title": "Folyamat információk",
+      "total": "Összesen",
+      "running": "Futó",
+      "sleeping": "Alvó",
+      "threads": "Szálak",
+      "processes": "Folyamatok",
+      "pid": "PID",
+      "name": "Név",
+      "user": "Felhasználó",
+      "cpu": "CPU",
+      "memory": "Memória",
+      "status": "Állapot",
+      "noData": "Nincs folyamat információ"
+    },
+    "containers": {
+      "title": "Konténerek",
+      "count": "{{count}} konténer észlelve",
+      "image": "Kép",
+      "cpu": "CPU",
+      "memory": "Memória",
+      "rx": "Fogadott",
+      "tx": "Küldött",
+      "uptime": "Üzemidő"
+    },
+    "cards": {
+      "systemInfo": "Rendszer információk",
+      "availableOperations": "Elérhető műveletek"
+    },
+    "quickActions": "Gyors műveletek",
+    "operations": {
+      "execute": "Művelet végrehajtása",
+      "noParameters": "Ez a művelet nem igényel paramétereket"
+    },
+    "confirmAction": "Művelet megerősítése",
+    "confirmActionMessage": "Biztosan végre szeretnéd hajtani ezt a műveletet?",
+    "confirmActionDescription": "Ez a művelet befolyásolhatja az eszköz működését. Kérlek, erősítsd meg a folytatáshoz.",
+    "noDataAvailable": "Nincs elérhető adat",
+    "allDevices": "Minden eszköz",
+    "standardDeviceDescription": "Általános szerverek és eszközök SSH hozzáféréssel",
+    "customDeviceDescription": "Speciális eszközök egyedi bővítményekkel",
+    "deviceCount": "{{count}} eszköz találva",
+    "loadingDevices": "Eszközök betöltése...",
+    "addDevice": "Eszköz hozzáadása",
+    "addFirstDevice": "Első eszköz hozzáadása",
+    "noDevicesYet": "Még nincs eszköz",
+    "addYourFirstDevice": "Kezdj azzal, hogy hozzáadod az első eszközödet",
+    "errorFetchingDevices": "Hiba az eszközlista lekérésekor",
+    "errorFetchDescription": "Probléma lépett fel az eszközlista lekérésekor. Kérlek, próbáld újra.",
+    "deviceNotFound": "Az eszköz nem található",
+    "plugin": "Bővítmény",
+    "created": "Létrehozva",
+    "lastUpdated": "Utoljára frissítve",
+    "loading": "Betöltés",
+    "loadingDeviceDetails": "Eszköz részleteinek betöltése...",
+    "error": "Hiba",
+    "deleteDevice": {
+      "title": "Eszköz törlése",
+      "confirmation": "Biztosan törölni szeretnéd a(z) {{name}} eszközt?",
+      "warning": "Ez a művelet nem visszavonható. Az eszközhöz tartozó összes adat véglegesen törlésre kerül."
+    }
+  },
+  "plugins": {
+    "title": "Bővítmények",
+    "subtitle": "Kezeld a bővítményeidet",
+    "verifiedPlugin": "Hitelesített bővítmény",
+    "active": "Aktív",
+    "inactive": "Inaktív",
+    "noDescription": "Nincs leírás megadva",
+    "view": "Megtekintés",
+    "copy": "Másolás",
+    "copied": "Vágólapra másolva",
+    "download": "Letöltés",
+    "tabs": {
+      "code": "Bővítmény kódja",
+      "uiSchema": "UI séma",
+      "all": "Összes bővítmény",
+      "active": "Aktív bővítmények",
+      "inactive": "Inaktív bővítmények"
+    },
+    "pluginConfiguration": "Bővítmény konfiguráció",
+    "jsonConfigDescription": "A bővítmény konfigurálása JSON segítségével. Ez a konfiguráció fog lefutni a bővítmény végrehajtásakor.",
+    "editPlugin": "Bővítmény szerkesztése",
+    "code": "Kód",
+    "fields": {
+      "name": "Bővítmény neve",
+      "description": "Leírás",
+      "version": "Verzió",
+      "author": "Készítő",
+      "active": "Aktív bővítmény"
+    },
+    "error": {
+      "title": "Hiba",
+      "loading": "Hiba a bővítmény adatok betöltésekor"
+    },
+    "loadingPlugins": "Bővítmények betöltése...",
+    "loadingPlugin": "Bővítmény részleteinek betöltése...",
+    "tryAgain": "Próbáld újra",
+    "noPluginsFound": "Nincs bővítmény",
+    "tryDifferentSearch": "Próbálj más keresőkifejezést vagy ellenőrizd a szűrőket",
+    "clearSearch": "Keresés törlése",
+    "noPluginsYet": "Még nincs bővítmény",
+    "getStarted": "Kezdj az első bővítmény hozzáadásával a rendszer funkcionalitásának bővítéséhez",
+    "addPlugin": "Bővítmény hozzáadása",
+    "addFirstPlugin": "Első bővítmény hozzáadása",
+    "pluginVersion": "Verzió",
+    "createdAt": "Létrehozva",
+    "updatedAt": "Utoljára frissítve",
+    "loading": "Betöltés",
+    "pluginNotFound": "Bővítmény nem található",
+    "pluginNotFoundMessage": "A kért bővítmény nem található vagy törlésre került",
+    "importPluginJson": "Importálás JSON-ból",
+    "deletePlugin": {
+      "title": "Bővítmény törlése",
+      "confirmation": "Biztosan törölni szeretnéd a \"{{name}}\" bővítményt?",
+      "warning": "Ez a művelet nem visszavonható. A bővítményhez tartozó összes adat véglegesen törlődik."
+    }
+  },
+  "sensors": {
+    "title": "Szenzorok",
+    "subtitle": "Rendszer metrikáid monitorozása",
+    "activeAlerts": "Aktív riasztások",
+    "noActiveAlerts": "Nincsenek aktív riasztások",
+    "sensorName": "Szenzor neve",
+    "sensorDescription": "Szenzor leírása",
+    "device": "Eszköz",
+    "metricKey": "Metrika kulcsa",
+    "alertCondition": "Riasztási feltétel",
+    "alertLevel": "Riasztási szint",
+    "createSensor": "Szenzor létrehozása",
+    "editSensor": "Szenzor szerkesztése",
+    "noSensors": "Nincs szenzor",
+    "resolveAlert": "Riasztás megoldása",
+    "deviceFilter": "Szenzorok szűrése",
+    "allDevices": "Minden eszköz",
+    "tableHeaders": {
+      "actions": "Műveletek"
+    },
+    "basicInfo": "Alapvető információk",
+    "deviceSelection": "Eszköz kiválasztása",
+    "alertSettings": "Riasztási beállítások",
+    "processName": "Folyamat neve",
+    "enterProcessName": "Add meg a folyamat nevét",
+    "condition": "Feltétel",
+    "processAlertHelp": "Állíts be riasztási feltételeket a folyamat létezésére. Használd az '=='-t a 'létezik', illetve '!='-t a 'nem létezik' esetén.",
+    "cpuThresholdHelp": "Add meg a CPU használat küszöbértékét százalékban (0–100%)",
+    "memThresholdHelp": "Add meg a memória küszöbértékét megabájtban (MB)",
+    "actions": {
+      "edit": "Szerkesztés",
+      "delete": "Törlés"
+    },
+    "value": "Érték",
+    "sensorCreated": "Szenzor sikeresen létrehozva",
+    "sensorUpdated": "Szenzor sikeresen frissítve",
+    "errorOccurred": "Hiba történt",
+    "sensorDeleted": "Szenzor sikeresen törölve",
+    "alertResolved": "Riasztás sikeresen megoldva",
+    "addSensor": "Szenzor hozzáadása",
+    "deleteConfirmation": "Törlés megerősítése",
+    "confirmDelete": "Biztosan törölni szeretnéd ezt a szenzort?",
+    "deleteWarning": "Ez a művelet nem visszavonható."
+  },
+  "settings": {
+    "appearance": {
+      "title": "Megjelenés",
+      "currentTheme": "Jelenlegi téma",
+      "darkMode": "Sötét mód",
+      "lightMode": "Világos mód",
+      "paperMode": "Papír mód",
+      "windowsMode": "Windows 3.1 mód"
+    },
+    "language": {
+      "title": "Nyelv",
+      "current": "Aktuális nyelv",
+      "english": "Angol",
+      "hungarian": "Magyar"
+    },
+    "buttons": {
+      "savePreferences": "Beállítások mentése",
+      "saveLanguage": "Nyelvi beállítások mentése"
+    }
+  },
+  "translation": {
+    "navigation": {
+      "Sensors": "Szenzorok"
+    }
+  }
+}
