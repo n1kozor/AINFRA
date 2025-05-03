@@ -1,5 +1,8 @@
 # AINFRA Project - MCP Monitoring
 
+![Screenshot 2025-05-03 215632](https://github.com/user-attachments/assets/f97528a3-4da0-4074-bb79-79ae40eb8dc4)
+
+
 ## Introduction
 
 AINFRA is a monitoring project that has reached its alpha version.
